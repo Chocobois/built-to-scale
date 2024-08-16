@@ -23,11 +23,15 @@ const images: Image[] = [
 	image('titlescreen/background', 'title_background'),
 	image('titlescreen/foreground', 'title_foreground'),
 	image('titlescreen/character', 'title_character'),
+
+
+
 ];
 
 /* Spritesheets */
 const spritesheets: SpriteSheet[] = [
-
+	//temp
+	spritesheet('temp/invbutton', 'invbutton', 128, 128),
 ];
 
 /* Audios */
