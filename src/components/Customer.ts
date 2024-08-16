@@ -10,8 +10,15 @@ export class Customer extends Button {
 	public dragY: number;
 	public currentStation: Station | null;
 	public currentEmployee: Employee | null;
+
+	// Requests
+	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
+
+	// Customer stats
 	public doingCuteThing: boolean;
+	public tasksCompleted: number;
+	public moneySpent: number;
 
 	// Customer sprite
 	private sprite: Phaser.GameObjects.Sprite;
@@ -31,7 +38,13 @@ export class Customer extends Button {
 		this.dragY = y;
 		this.currentStation = null;
 		this.currentEmployee = null;
+
+		this.itinerary = [];
 		this.requestedStation = null;
+
+		this.doingCuteThing = false;
+		this.tasksCompleted = 0;
+		this.moneySpent = 0;
 
 		/* Sprite */
 		const size = 150;
@@ -108,5 +121,31 @@ export class Customer extends Button {
 			this.bubble.setVisible(false);
 			this.bubbleImage.setVisible(false);
 		}
+	}
+
+	nextActivity() {
+		if (this.itinerary.length > 0) {
+			this.setRequest(this.itinerary.shift() || null);
+		} else {
+			if (this.currentStation) {
+				this.currentStation.setCustomer(null);
+				this.setStation(null);
+			}
+			this.leave();
+		}
+	}
+
+	leave() {
+		this.sprite.input!.enabled = false;
+		this.scene.tweens.add({
+			targets: this,
+			dragX: this.lastX + 1920,
+			dragY: this.lastY,
+			duration: 2000,
+			ease: "Linear",
+			onComplete: () => {
+				this.emit("offscreen");
+			},
+		});
 	}
 }
