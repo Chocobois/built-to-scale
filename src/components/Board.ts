@@ -32,10 +32,17 @@ export class Board extends Phaser.GameObjects.Container {
 	update(time: number, delta: number) {}
 
 	// Return coordinates of the grid cell
-	getGridCell(gridX: number, gridY: number) {
+	gridToCoord(gridX: number, gridY: number) {
 		return {
 			x: this.x - this.grid.width / 2 + gridX * this.size + this.size / 2,
 			y: this.y - this.grid.height / 2 + gridY * this.size + this.size / 2,
 		};
+	}
+
+	// Return grid cell of the coordinates
+	coordToGrid(x: number, y: number) {
+		const gridX = Math.floor((x - this.x + this.grid.width / 2) / this.size);
+		const gridY = Math.floor((y - this.y + this.grid.height / 2) / this.size);
+		return { gridX, gridY };
 	}
 }

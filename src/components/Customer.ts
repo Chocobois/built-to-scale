@@ -1,6 +1,7 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
 import { Station } from "./Station";
+import { Employee } from "./Employee";
 
 export class Customer extends Button {
 	public lastX: number; // Last position on the grid
@@ -8,6 +9,8 @@ export class Customer extends Button {
 	public dragX: number; // Current drag position
 	public dragY: number;
 	public currentStation: Station | null;
+	public currentEmployee: Employee | null;
+	public doingCuteThing: boolean;
 
 	private spriteSize: number;
 	private sprite: Phaser.GameObjects.Sprite;
@@ -22,6 +25,7 @@ export class Customer extends Button {
 		this.dragX = x;
 		this.dragY = y;
 		this.currentStation = null;
+		this.currentEmployee = null;
 
 		/* Sprite */
 		this.spriteSize = 150;
@@ -39,7 +43,8 @@ export class Customer extends Button {
 		this.x += (this.dragX - this.x) * 0.5;
 		this.y += (this.dragY - this.y) * 0.5;
 
-		const squish = 1.0 + 0.02 * Math.sin((6 * time) / 1000);
+		const factor = this.doingCuteThing ? 0.1 : 0.02;
+		const squish = 1.0 + factor * Math.sin((6 * time) / 1000);
 		this.setScale(1.0, squish);
 	}
 
@@ -48,6 +53,7 @@ export class Customer extends Button {
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
+		this.hold = false;
 		this.dragX = pointer.x;
 		this.dragY = pointer.y;
 		this.emit("drag");
@@ -64,5 +70,15 @@ export class Customer extends Button {
 
 	setStation(station: Station | null) {
 		this.currentStation = station;
+	}
+
+	setEmployee(employee: Employee | null) {
+		this.currentEmployee = employee;
+
+		this.sprite.input!.enabled = !employee;
+	}
+
+	setAction(temp: boolean) {
+		this.doingCuteThing = temp;
 	}
 }
