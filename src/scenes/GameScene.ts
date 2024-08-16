@@ -75,8 +75,8 @@ export class GameScene extends BaseScene {
 		// Picking up a customer
 		customer.on("pickup", () => {
 			if (customer.currentStation) {
-				customer.currentStation.setCustomer(null);
-				customer.currentStation = null;
+				// customer.currentStation.setCustomer(null);
+				// customer.setStation(null);
 			}
 		});
 
@@ -92,8 +92,13 @@ export class GameScene extends BaseScene {
 		customer.on("drop", () => {
 			let station = this.getClosestStation(customer);
 			if (station) {
+				if (customer.currentStation) {
+					customer.currentStation.setCustomer(null);
+					customer.setStation(null);
+				}
+
 				station.setCustomer(customer);
-				customer.currentStation = station;
+				customer.setStation(station);
 				customer.lastX = station.x;
 				customer.lastY = station.y;
 			} else if (customer.currentStation) {

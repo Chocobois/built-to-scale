@@ -13,7 +13,7 @@ export class Employee extends Button {
 
 		/* Sprite */
 		this.spriteSize = 200;
-		this.sprite = this.scene.add.sprite(0, 0, "player");
+		this.sprite = this.scene.add.sprite(0, 0, "worker");
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.y += this.spriteSize / 2;
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
