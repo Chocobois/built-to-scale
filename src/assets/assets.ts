@@ -5,6 +5,7 @@ import { image, sound, music, loadFont, spritesheet } from './util';
 const images: Image[] = [
 	// Backgrounds
 	image('backgrounds/background', 'background'),
+	image('backgrounds/playarea-base', 'playArea_base'),
 
 	// Characters
 	image('characters/player', 'player'),
