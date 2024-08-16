@@ -31,19 +31,23 @@ export class GameScene extends BaseScene {
 		this.board = new Board(this, 900, 500);
 
 		this.stations = [];
-		this.addStation(2, 3, StationType.HornAndNails);
-		this.addStation(4, 3, StationType.HornAndNails);
-		this.addStation(6, 3, StationType.ScalePolish);
-		this.addStation(6, 1, StationType.GoldBath);
+		this.addStation(0, 0, StationType.WaitingSeat);
+		this.addStation(1, 0, StationType.WaitingSeat);
+		this.addStation(2, 0, StationType.WaitingSeat);
+		this.addStation(1, 2, StationType.HornAndNails);
+		this.addStation(3, 2, StationType.HornAndNails);
+		this.addStation(5, 1, StationType.ScalePolish);
+		this.addStation(5, 3, StationType.GoldBath);
+		this.addStation(7, 5, StationType.CashRegister);
 
 		this.employees = [];
-		this.addEmployee(5, 5);
-		this.addEmployee(4, 5);
+		this.addEmployee(1, 5);
+		this.addEmployee(3, 5);
 
 		this.customers = [];
-		this.addCustomer(0, 0);
-		this.addCustomer(1, 0);
-		this.addCustomer(2, 0);
+		this.addCustomer();
+		this.addCustomer();
+		this.addCustomer();
 
 		this.ui = new UI(this);
 		this.ui.setVisible(false);
@@ -101,10 +105,22 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new customer
-	addCustomer(gridX: number, gridY: number) {
-		const coord = this.board.gridToCoord(gridX, gridY);
+	addCustomer() {
+		const coord = this.board.gridToCoord(-8, 0);
 		const customer = new Customer(this, coord.x, coord.y);
 		this.customers.push(customer);
+
+		// Place in available waiting seat
+		const seat = this.stations.find(
+			(s) => s.stationType === StationType.WaitingSeat && !s.currentCustomer
+		);
+		if (seat) {
+			seat.setCustomer(customer);
+			customer.setStation(seat);
+			customer.snapTo(seat.x, seat.y);
+		} else {
+			console.error("Whoops");
+		}
 
 		// Set list of activities for customer
 		this.setCustomerItinerary(customer);
@@ -148,7 +164,9 @@ export class GameScene extends BaseScene {
 
 		// Clicking a customer
 		customer.on("click", () => {
-			this.callEmployee(customer);
+			if (customer.currentStation?.stationType == customer.requestedStation) {
+				this.callEmployee(customer);
+			}
 		});
 
 		// Customer leaving the game
@@ -157,9 +175,7 @@ export class GameScene extends BaseScene {
 			customer.destroy();
 
 			// Spawn new customer
-			const x = Phaser.Math.Between(0, 3);
-			const y = Phaser.Math.Between(0, 1);
-			this.addCustomer(x, y);
+			this.addCustomer();
 		});
 	}
 
@@ -239,11 +255,12 @@ export class GameScene extends BaseScene {
 			if (Math.random() < 0.5) {
 				activities.push(StationType.GoldBath);
 			}
+			activities.push(StationType.CashRegister);
 			return activities;
 		}
 
 		let activities: StationType[] = [];
-		while (activities.length === 0) {
+		while (activities.length < 2) {
 			activities = getActivities();
 		}
 
