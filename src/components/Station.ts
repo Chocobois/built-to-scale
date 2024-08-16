@@ -2,35 +2,51 @@ import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
 import { Customer } from "./Customer";
 
+export enum StationType {
+	HornAndNails = 0,
+	ScalePolish = 1,
+	GoldBath = 2,
+}
+
+export const StationTypeColors: { [key in StationType]: number } = {
+	[StationType.HornAndNails]: 0xff0000,
+	[StationType.ScalePolish]: 0x00ff00,
+	[StationType.GoldBath]: 0x0000ff,
+};
+
 export class Station extends Button {
+	public stationType: StationType;
 	public currentCustomer: Customer | null; // The customer using the station
 	public taskDuration: number; // Time it takes to complete a task
 
 	private sprite: Phaser.GameObjects.Rectangle;
 	private text: Phaser.GameObjects.Text;
 
-	constructor(scene: GameScene, x: number, y: number) {
+	constructor(scene: GameScene, x: number, y: number, type: StationType) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
+		this.stationType = type;
 
 		this.currentCustomer = null;
 		this.taskDuration = 3000;
 
 		/* Sprite */
 		const size = 150;
-		this.sprite = this.scene.add.rectangle(0, 0, size, size, 0x777777);
+		const color = StationTypeColors[type];
+		this.sprite = this.scene.add.rectangle(0, 0, size, size, color);
+		this.sprite.alpha = 0.5;
 		this.add(this.sprite);
 
 		this.text = this.scene.addText({
 			x: 0,
 			y: size / 2,
-            size: 32,
+			size: 32,
 			text: "Available",
 		});
-        this.text.setOrigin(0.5);
-        this.text.setStroke("#000000", 4);
-        this.add(this.text);
+		this.text.setOrigin(0.5);
+		this.text.setStroke("#000000", 4);
+		this.add(this.text);
 	}
 
 	update(time: number, delta: number) {
@@ -41,18 +57,18 @@ export class Station extends Button {
 	setCustomer(customer: Customer | null) {
 		this.currentCustomer = customer;
 
-		this.sprite.fillColor = customer ? 0x7777ff : 0x777777;
-        this.text.setText(customer ? "Click me!" : "Available");
+		this.sprite.alpha = customer ? 0.75 : 0.5;
+		this.text.setText(customer ? "Click me!" : "Available");
 	}
 
 	startTask() {
-		this.sprite.fillColor = 0x0000ff;
-        this.text.setText("Working");
+		this.sprite.alpha = 1.0;
+		this.text.setText("Working");
 
 		this.scene.addEvent(this.taskDuration, () => {
 			this.emit("taskend");
-			this.sprite.fillColor = this.currentCustomer ? 0x7777ff : 0xff0000;
-            this.text.setText("Click me!");
+			this.sprite.alpha = this.currentCustomer ? 0.75 : 0.5;
+			this.text.setText("Click me!");
 		});
 	}
 }

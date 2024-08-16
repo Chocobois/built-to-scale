@@ -1,6 +1,6 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
-import { Station } from "./Station";
+import { Station, StationType, StationTypeColors } from "./Station";
 import { Employee } from "./Employee";
 
 export class Customer extends Button {
@@ -10,10 +10,15 @@ export class Customer extends Button {
 	public dragY: number;
 	public currentStation: Station | null;
 	public currentEmployee: Employee | null;
+	public requestedStation: StationType | null;
 	public doingCuteThing: boolean;
 
-	private spriteSize: number;
+	// Customer sprite
 	private sprite: Phaser.GameObjects.Sprite;
+
+	// Request bubble
+	private bubble: Phaser.GameObjects.Sprite;
+	private bubbleImage: Phaser.GameObjects.Ellipse;
 
 	constructor(scene: GameScene, x: number, y: number) {
 		super(scene, x, y);
@@ -26,14 +31,24 @@ export class Customer extends Button {
 		this.dragY = y;
 		this.currentStation = null;
 		this.currentEmployee = null;
+		this.requestedStation = null;
 
 		/* Sprite */
-		this.spriteSize = 150;
+		const size = 150;
 		this.sprite = this.scene.add.sprite(0, 0, "player");
 		this.sprite.setOrigin(0.5, 1.0);
-		this.sprite.y += this.spriteSize / 2;
-		this.sprite.setScale(this.spriteSize / this.sprite.width);
+		this.sprite.y += size / 2;
+		this.sprite.setScale(size / this.sprite.width);
 		this.add(this.sprite);
+
+		this.bubble = this.scene.add.sprite(0, -0.75 * size, "bubble");
+		this.bubble.setScale(0.5);
+		this.bubble.setVisible(false);
+		this.add(this.bubble);
+
+		this.bubbleImage = this.scene.add.ellipse(0, -0.82 * size, 40, 40, 0);
+		this.bubbleImage.setVisible(false);
+		this.add(this.bubbleImage);
 
 		this.bindInteractive(this.sprite, true);
 	}
@@ -80,5 +95,18 @@ export class Customer extends Button {
 
 	setAction(temp: boolean) {
 		this.doingCuteThing = temp;
+	}
+
+	setRequest(type: StationType | null) {
+		if (type !== null) {
+			this.requestedStation = type;
+
+			this.bubble.setVisible(true);
+			this.bubbleImage.setVisible(true);
+			this.bubbleImage.fillColor = StationTypeColors[type];
+		} else {
+			this.bubble.setVisible(false);
+			this.bubbleImage.setVisible(false);
+		}
 	}
 }

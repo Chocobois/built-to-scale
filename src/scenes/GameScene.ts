@@ -2,7 +2,7 @@ import { BaseScene } from "@/scenes/BaseScene";
 import { Board } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
-import { Station } from "@/components/Station";
+import { Station, StationType } from "@/components/Station";
 import { UI } from "@/components/UI";
 import { custom } from "@neutralinojs/lib";
 
@@ -30,10 +30,10 @@ export class GameScene extends BaseScene {
 		this.board = new Board(this, 900, 500);
 
 		this.stations = [];
-		this.addStation(2, 3);
-		this.addStation(4, 3);
-		this.addStation(6, 3);
-		this.addStation(6, 1);
+		this.addStation(2, 3, StationType.HornAndNails);
+		this.addStation(4, 3, StationType.HornAndNails);
+		this.addStation(6, 3, StationType.ScalePolish);
+		this.addStation(6, 1, StationType.GoldBath);
 
 		this.employees = [];
 		this.addEmployee(5, 5);
@@ -55,9 +55,9 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new station
-	addStation(gridX: number, gridY: number) {
+	addStation(gridX: number, gridY: number, type: StationType) {
 		const coord = this.board.gridToCoord(gridX, gridY);
-		const station = new Station(this, coord.x, coord.y);
+		const station = new Station(this, coord.x, coord.y, type);
 		this.stations.push(station);
 
 		// Station task completed
@@ -69,6 +69,8 @@ export class GameScene extends BaseScene {
 				customer.setEmployee(null);
 				employee.setAction(false);
 				employee.setCustomer(null);
+
+				this.setCustomerRequest(customer);
 			}
 		});
 	}
@@ -100,6 +102,9 @@ export class GameScene extends BaseScene {
 		const coord = this.board.gridToCoord(gridX, gridY);
 		const customer = new Customer(this, coord.x, coord.y);
 		this.customers.push(customer);
+
+		// Set random customer request
+		this.setCustomerRequest(customer);
 
 		// Picking up a customer
 		customer.on("pickup", () => {
@@ -140,7 +145,6 @@ export class GameScene extends BaseScene {
 
 		// Clicking a customer
 		customer.on("click", () => {
-			console.log("CLICK");
 			this.callEmployee(customer);
 		});
 	}
@@ -161,7 +165,8 @@ export class GameScene extends BaseScene {
 			if (
 				!station.currentCustomer &&
 				distance < closestDistance &&
-				distance < maxDistance
+				distance < maxDistance &&
+				station.stationType === customer.requestedStation
 			) {
 				closestStation = station;
 				closestDistance = distance;
@@ -199,9 +204,17 @@ export class GameScene extends BaseScene {
 			const { x, y } = this.board.gridToCoord(gridX, gridY - 1);
 
 			customer.setEmployee(closestEmployee);
+			customer.setRequest(null);
+
 			closestEmployee.setCustomer(customer);
 			closestEmployee.walkTo(x, y);
 			// Wait for employee.on("walkend")
 		}
+	}
+
+	// Set a random request for the customer
+	setCustomerRequest(customer: Customer) {
+		const type = Phaser.Math.RND.between(0, 2);
+		customer.setRequest(type);
 	}
 }
