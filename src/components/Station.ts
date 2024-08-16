@@ -25,4 +25,10 @@ export class Station extends Button {
 		const squish = 1.0 + 0.02 * Math.sin((6 * time) / 1000);
 		this.setScale(1.0, squish);
 	}
+
+	setCustomer(customer: Customer | null) {
+		this.currentCustomer = customer;
+
+        this.sprite.fillColor = customer ? 0x00ff00 : 0xff0000;
+	}
 }

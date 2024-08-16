@@ -3,7 +3,9 @@ import { Button } from "./elements/Button";
 import { Station } from "./Station";
 
 export class Customer extends Button {
-	public dragX: number;
+	public lastX: number; // Last position on the grid
+	public lastY: number;
+	public dragX: number; // Current drag position
 	public dragY: number;
 	public currentStation: Station | null;
 
@@ -15,6 +17,8 @@ export class Customer extends Button {
 		scene.add.existing(this);
 		this.scene = scene;
 
+		this.lastX = x;
+		this.lastY = y;
 		this.dragX = x;
 		this.dragY = y;
 		this.currentStation = null;
@@ -56,5 +60,9 @@ export class Customer extends Button {
 	snapTo(x: number, y: number) {
 		this.dragX = x;
 		this.dragY = y;
+	}
+
+	setStation(station: Station | null) {
+		this.currentStation = station;
 	}
 }

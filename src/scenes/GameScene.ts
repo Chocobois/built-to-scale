@@ -27,63 +27,81 @@ export class GameScene extends BaseScene {
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.board = new Board(this, 1300, 500);
+		this.board = new Board(this, 900, 500);
 
-		this.stations = [
-			new Station(this, 200, 800),
-			new Station(this, 400, 800),
-			new Station(this, 600, 800),
-		];
+		this.stations = [];
+		this.addStation(2, 3);
+		this.addStation(4, 3);
 
-		this.employees = [
-			new Employee(this, 200, 200),
-			new Employee(this, 400, 200),
-		];
+		this.employees = [];
+		this.addEmployee(5, 5);
+		this.addEmployee(4, 5);
 
-		this.customers = [
-			new Customer(this, 200, 500),
-			new Customer(this, 400, 500),
-			new Customer(this, 600, 500),
-		];
+		this.customers = [];
+		this.addCustomer(0, 0);
+		this.addCustomer(1, 0);
+		this.addCustomer(2, 0);
 
 		this.ui = new UI(this);
 		this.ui.setVisible(false);
-
-		// Customer interaction logic
-		this.customers.forEach((customer) => {
-			// Picking up a customer
-			customer.on("pickup", () => {
-				if (customer.currentStation) {
-					customer.currentStation.currentCustomer = null;
-					customer.currentStation = null;
-				}
-			});
-
-			// Dragging a customer
-			customer.on("drag", () => {
-				let station = this.getClosestStation(customer);
-				if (station) {
-					customer.snapTo(station.x, station.y);
-				}
-			});
-
-			// Dropping a customer
-			customer.on("drop", () => {
-				let station = this.getClosestStation(customer);
-				if (station) {
-					station.currentCustomer = customer;
-					customer.currentStation = station;
-				} else if (customer.currentStation) {
-					customer.snapTo(customer.currentStation.x, customer.currentStation.y);
-				}
-			});
-		});
 	}
 
 	update(time: number, delta: number) {
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
 		this.customers.forEach((c) => c.update(time, delta));
+	}
+
+	// Add new station
+	addStation(gridX: number, gridY: number) {
+		const coord = this.board.getGridCell(gridX, gridY);
+		const station = new Station(this, coord.x, coord.y);
+		this.stations.push(station);
+	}
+
+	// Add new employee
+	addEmployee(gridX: number, gridY: number) {
+		const coord = this.board.getGridCell(gridX, gridY);
+		const employee = new Employee(this, coord.x, coord.y);
+		this.employees.push(employee);
+	}
+
+	// Add new customer
+	addCustomer(gridX: number, gridY: number) {
+		const coord = this.board.getGridCell(gridX, gridY);
+		const customer = new Customer(this, coord.x, coord.y);
+		this.customers.push(customer);
+
+		// Picking up a customer
+		customer.on("pickup", () => {
+			if (customer.currentStation) {
+				customer.currentStation.setCustomer(null);
+				customer.currentStation = null;
+			}
+		});
+
+		// Dragging a customer
+		customer.on("drag", () => {
+			let station = this.getClosestStation(customer);
+			if (station) {
+				customer.snapTo(station.x, station.y);
+			}
+		});
+
+		// Dropping a customer
+		customer.on("drop", () => {
+			let station = this.getClosestStation(customer);
+			if (station) {
+				station.setCustomer(customer);
+				customer.currentStation = station;
+				customer.lastX = station.x;
+				customer.lastY = station.y;
+			} else if (customer.currentStation) {
+				customer.snapTo(customer.currentStation.x, customer.currentStation.y);
+			} else {
+				customer.snapTo(customer.lastX, customer.lastY);
+			}
+		});
 	}
 
 	// Find the closest station to the customer that is not occupied
