@@ -1,8 +1,12 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
+import { Station } from "./Station";
 
 export class Customer extends Button {
-	// Sprites
+	public dragX: number;
+	public dragY: number;
+	public currentStation: Station | null;
+
 	private spriteSize: number;
 	private sprite: Phaser.GameObjects.Sprite;
 
@@ -10,6 +14,10 @@ export class Customer extends Button {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
+
+		this.dragX = x;
+		this.dragY = y;
+		this.currentStation = null;
 
 		/* Sprite */
 		this.spriteSize = 150;
@@ -19,23 +27,34 @@ export class Customer extends Button {
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.add(this.sprite);
 
-		// this.sprite = this.scene.add.ellipse(0, 0, 100, 100, 0x000000);
-		// this.add(this.sprite);
-
 		this.bindInteractive(this.sprite, true);
 	}
 
 	update(time: number, delta: number) {
+		// Smooth follow the drag point
+		this.x += (this.dragX - this.x) * 0.5;
+		this.y += (this.dragY - this.y) * 0.5;
+
 		const squish = 1.0 + 0.02 * Math.sin((6 * time) / 1000);
 		this.setScale(1.0, squish);
 	}
 
-	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {}
-
-	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
-		this.x = pointer.x;
-		this.y = pointer.y;
+	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
+		this.emit("pickup");
 	}
 
-	onDragEnd(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {}
+	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
+		this.dragX = pointer.x;
+		this.dragY = pointer.y;
+		this.emit("drag");
+	}
+
+	onDragEnd(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
+		this.emit("drop");
+	}
+
+	snapTo(x: number, y: number) {
+		this.dragX = x;
+		this.dragY = y;
+	}
 }

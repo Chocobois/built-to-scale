@@ -1,8 +1,10 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
+import { Customer } from "./Customer";
 
 export class Station extends Button {
-	// Sprites
+	public currentCustomer: Customer | null;
+
 	private sprite: Phaser.GameObjects.Rectangle;
 
 	constructor(scene: GameScene, x: number, y: number) {
@@ -10,9 +12,12 @@ export class Station extends Button {
 		scene.add.existing(this);
 		this.scene = scene;
 
+		// The customer using the station
+		this.currentCustomer = null;
+
 		/* Sprite */
 		const size = 150;
-		this.sprite = this.scene.add.rectangle(0, 0, size, size, 0xFF0000);
+		this.sprite = this.scene.add.rectangle(0, 0, size, size, 0xff0000);
 		this.add(this.sprite);
 	}
 
