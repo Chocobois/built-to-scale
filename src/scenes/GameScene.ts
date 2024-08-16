@@ -13,6 +13,8 @@ export class GameScene extends BaseScene {
 	private employees: Employee[];
 	private customers: Customer[];
 	private ui: UI;
+	private paused: boolean = false;
+	private browsing: boolean = false;
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -54,6 +56,9 @@ export class GameScene extends BaseScene {
 	}
 
 	update(time: number, delta: number) {
+		if(this.browsing || this.paused) {
+			return;
+		}
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
 		this.customers.forEach((c) => c.update(time, delta));
@@ -80,6 +85,10 @@ export class GameScene extends BaseScene {
 				customer.nextActivity();
 			}
 		});
+	}
+
+	openInventory(){
+		this.browsing = true;
 	}
 
 	// Add new employee
