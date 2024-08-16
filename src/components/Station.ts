@@ -3,21 +3,26 @@ import { Button } from "./elements/Button";
 import { Customer } from "./Customer";
 
 export enum StationType {
-	HornAndNails = 0,
-	ScalePolish = 1,
-	GoldBath = 2,
+	WaitingSeat,
+	HornAndNails,
+	ScalePolish,
+	GoldBath,
+	CashRegister,
 }
 
 export const StationTypeColors: { [key in StationType]: number } = {
+	[StationType.WaitingSeat]: 0x777777,
 	[StationType.HornAndNails]: 0xff0000,
 	[StationType.ScalePolish]: 0x00ff00,
 	[StationType.GoldBath]: 0x0000ff,
+	[StationType.CashRegister]: 0xffff00,
 };
 
 export class Station extends Button {
 	public stationType: StationType;
 	public currentCustomer: Customer | null; // The customer using the station
 	public taskDuration: number; // Time it takes to complete a task
+	public admissionFee: number; // Cost to use the station
 
 	private sprite: Phaser.GameObjects.Rectangle;
 	private text: Phaser.GameObjects.Text;
@@ -30,6 +35,7 @@ export class Station extends Button {
 
 		this.currentCustomer = null;
 		this.taskDuration = 3000;
+		this.admissionFee = 10;
 
 		/* Sprite */
 		const size = 150;

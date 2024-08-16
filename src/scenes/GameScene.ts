@@ -24,6 +24,7 @@ export class GameScene extends BaseScene {
 		this.fade(false, 200, 0x000000);
 
 		this.input.addPointer(2);
+		this.input.dragDistanceThreshold = 10;
 
 		this.background = this.add.image(0, 0, "background");
 		this.background.setOrigin(0);
@@ -75,7 +76,9 @@ export class GameScene extends BaseScene {
 				employee.setAction(false);
 				employee.setCustomer(null);
 
-				this.setCustomerRequest(customer);
+				customer.tasksCompleted += 1;
+				customer.moneySpent += station.admissionFee;
+				customer.nextActivity();
 			}
 		});
 	}
@@ -112,8 +115,8 @@ export class GameScene extends BaseScene {
 		const customer = new Customer(this, coord.x, coord.y);
 		this.customers.push(customer);
 
-		// Set random customer request
-		this.setCustomerRequest(customer);
+		// Set list of activities for customer
+		this.setCustomerItinerary(customer);
 
 		// Picking up a customer
 		customer.on("pickup", () => {
@@ -155,6 +158,17 @@ export class GameScene extends BaseScene {
 		// Clicking a customer
 		customer.on("click", () => {
 			this.callEmployee(customer);
+		});
+
+		// Customer leaving the game
+		customer.on("offscreen", () => {
+			this.customers = this.customers.filter((c) => c !== customer);
+			customer.destroy();
+
+			// Spawn new customer
+			const x = Phaser.Math.Between(0, 3);
+			const y = Phaser.Math.Between(0, 1);
+			this.addCustomer(x, y);
 		});
 	}
 
@@ -222,8 +236,28 @@ export class GameScene extends BaseScene {
 	}
 
 	// Set a random request for the customer
-	setCustomerRequest(customer: Customer) {
-		const type = Phaser.Math.RND.between(0, 2);
-		customer.setRequest(type);
+	setCustomerItinerary(customer: Customer) {
+		function getActivities() {
+			let activities = [];
+			if (Math.random() < 0.5) {
+				activities.push(StationType.HornAndNails);
+			}
+			if (Math.random() < 0.5) {
+				activities.push(StationType.ScalePolish);
+			}
+			if (Math.random() < 0.5) {
+				activities.push(StationType.GoldBath);
+			}
+			return activities;
+		}
+
+		let activities: StationType[] = [];
+		while (activities.length === 0) {
+			activities = getActivities();
+		}
+
+		customer.itinerary = activities;
+		customer.requestedStation = activities[0];
+		customer.nextActivity();
 	}
 }
