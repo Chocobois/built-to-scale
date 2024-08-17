@@ -13,6 +13,19 @@ const images: Image[] = [
 
 	// Items
 	image('items/coin', 'coin'),
+	image('items/bath1', 'bath_1'),
+	image('items/bath2', 'bath_2'),
+	image('items/bath3', 'bath_3'),
+	image('items/wax1', 'wax_1'),
+	image('items/wax2', 'wax_2'),
+	image('items/wax3', 'wax_3'),
+	image('items/nail1', 'nail_1'),
+	image('items/nail2', 'nail_2'),
+	image('items/nail3', 'nail_3'),
+	image('items/waitchair1', 'waitchair_1'),
+	image('items/waitchair2', 'waitchair_2'),
+	image('items/waitchair3', 'waitchair_3'),
+	image('items/checkout', 'checkout'),
 
 	// UI
 	image('ui/hud', 'hud'),
