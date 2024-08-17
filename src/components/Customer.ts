@@ -2,8 +2,11 @@ import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
 import { Station, StationType, StationTypeColors } from "./Station";
 import { Employee } from "./Employee";
+import { Timer } from "./Timer";
+import { interpolateColor } from "@/functions";
 
 export class Customer extends Button {
+	// Movement
 	public lastX: number; // Last position on the grid
 	public lastY: number;
 	public dragX: number; // Current drag position
@@ -15,17 +18,18 @@ export class Customer extends Button {
 	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
 
-	// Customer stats
+	// Stats
 	public doingCuteThing: boolean;
 	public tasksCompleted: number;
 	public moneySpent: number;
+	public maxHappiness: number;
+	public happiness: number;
 
-	// Customer sprite
+	// Graphics
 	private sprite: Phaser.GameObjects.Sprite;
-
-	// Request bubble
 	private bubble: Phaser.GameObjects.Sprite;
 	private bubbleImage: Phaser.GameObjects.Ellipse;
+	private happinessTimer: Timer;
 
 	constructor(scene: GameScene, x: number, y: number) {
 		super(scene, x, y);
@@ -45,6 +49,8 @@ export class Customer extends Button {
 		this.doingCuteThing = false;
 		this.tasksCompleted = 0;
 		this.moneySpent = 0;
+		this.maxHappiness = 100;
+		this.happiness = 100;
 
 		/* Sprite */
 		const size = 150;
@@ -63,6 +69,15 @@ export class Customer extends Button {
 		this.bubbleImage.setVisible(false);
 		this.add(this.bubbleImage);
 
+		this.happinessTimer = new Timer(
+			scene,
+			0.3 * size,
+			-0.4 * size,
+			0.6 * size,
+			0xfa9425
+		);
+		this.add(this.happinessTimer);
+
 		this.bindInteractive(this.sprite, true);
 	}
 
@@ -71,13 +86,33 @@ export class Customer extends Button {
 		this.x += (this.dragX - this.x) * 0.5;
 		this.y += (this.dragY - this.y) * 0.5;
 
-		const factor = this.doingCuteThing ? 0.1 : 0.02;
-		const squish = 1.0 + factor * Math.sin((6 * time) / 1000);
+		const wobble = this.doingCuteThing ? 0.1 : 0.02;
+		const squish = 1.0 + wobble * Math.sin((6 * time) / 1000);
 		this.setScale(1.0, squish);
+
+		if (this.isWaiting) {
+			this.happinessTimer.setVisible(true);
+			if (!this.dragged) {
+				this.happiness -= (100 / 20) * (delta / 1000);
+			}
+
+			const factor = this.happiness / this.maxHappiness;
+			this.happinessTimer.setColor(
+				interpolateColor(0xff0000, 0x00ff00, factor)
+			);
+			this.happinessTimer.redraw(factor);
+
+			if (this.happiness <= 0) {
+				this.leave();
+			}
+		} else {
+			this.happinessTimer.setVisible(false);
+		}
 	}
 
 	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
 		this.emit("pickup");
+		this.dragged = true;
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -88,6 +123,7 @@ export class Customer extends Button {
 	}
 
 	onDragEnd(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
+		this.dragged = false;
 		this.emit("drop");
 	}
 
@@ -98,6 +134,12 @@ export class Customer extends Button {
 
 	setStation(station: Station | null) {
 		this.currentStation = station;
+
+		if (station) {
+			this.lastX = station.x;
+			this.lastY = station.y;
+			this.happiness = 100;
+		}
 	}
 
 	setEmployee(employee: Employee | null) {
@@ -127,19 +169,27 @@ export class Customer extends Button {
 		if (this.itinerary.length > 0) {
 			this.setRequest(this.itinerary.shift() || null);
 		} else {
-			if (this.currentStation) {
-				this.currentStation.setCustomer(null);
-				this.setStation(null);
-			}
+			this.emit("pay", this.moneySpent);
 			this.leave();
 		}
 	}
 
 	leave() {
 		this.sprite.input!.enabled = false;
+
+		if (this.currentStation) {
+			this.currentStation.setCustomer(null);
+			this.setStation(null);
+		}
+
+		if (this.currentEmployee) {
+			this.currentEmployee.setCustomer(null);
+			this.setEmployee(null);
+		}
+
 		this.scene.tweens.add({
 			targets: this,
-			dragX: this.lastX + 1920,
+			dragX: "+=1920",
 			dragY: this.lastY,
 			duration: 2000,
 			ease: "Linear",
@@ -147,5 +197,9 @@ export class Customer extends Button {
 				this.emit("offscreen");
 			},
 		});
+	}
+
+	get isWaiting(): boolean {
+		return this.currentStation !== null && this.currentEmployee === null;
 	}
 }

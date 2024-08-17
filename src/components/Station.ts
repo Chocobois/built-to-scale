@@ -1,6 +1,7 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
 import { Customer } from "./Customer";
+import { Timer } from "./Timer";
 
 export enum StationType {
 	WaitingSeat,
@@ -18,6 +19,14 @@ export const StationTypeColors: { [key in StationType]: number } = {
 	[StationType.CashRegister]: 0xffff00,
 };
 
+export const StationDuration: { [key in StationType]: number } = {
+	[StationType.WaitingSeat]: 0,
+	[StationType.HornAndNails]: 3000,
+	[StationType.ScalePolish]: 4000,
+	[StationType.GoldBath]: 2000,
+	[StationType.CashRegister]: 500,
+};
+
 export class Station extends Button {
 	public stationType: StationType;
 	public currentCustomer: Customer | null; // The customer using the station
@@ -27,6 +36,8 @@ export class Station extends Button {
 	private sprite: Phaser.GameObjects.Rectangle;
 	private text: Phaser.GameObjects.Text;
 
+	private progressTimer: Timer;
+
 	constructor(scene: GameScene, x: number, y: number, type: StationType) {
 		super(scene, x, y);
 		scene.add.existing(this);
@@ -34,7 +45,7 @@ export class Station extends Button {
 		this.stationType = type;
 
 		this.currentCustomer = null;
-		this.taskDuration = 3000;
+		this.taskDuration = StationDuration[type];
 		this.admissionFee = 10;
 
 		/* Sprite */
@@ -53,6 +64,16 @@ export class Station extends Button {
 		this.text.setOrigin(0.5);
 		this.text.setStroke("#000000", 4);
 		this.add(this.text);
+
+		this.progressTimer = new Timer(
+			scene,
+			-0.4 * size,
+			0.4 * size,
+			0.8 * size,
+			0xed51a4
+		);
+		this.progressTimer.setVisible(false);
+		this.add(this.progressTimer);
 	}
 
 	update(time: number, delta: number) {
@@ -71,10 +92,22 @@ export class Station extends Button {
 		this.sprite.alpha = 1.0;
 		this.text.setText("Working");
 
-		this.scene.addEvent(this.taskDuration, () => {
-			this.emit("taskend");
-			this.sprite.alpha = this.currentCustomer ? 0.75 : 0.5;
-			this.text.setText("Click me!");
+		this.scene.tweens.addCounter({
+			from: 1,
+			to: 0,
+			duration: this.taskDuration,
+			onStart: () => {
+				this.progressTimer.setVisible(true);
+			},
+			onUpdate: (tween) => {
+				this.progressTimer.redraw(tween.getValue());
+			},
+			onComplete: () => {
+				this.emit("taskend");
+				this.progressTimer.setVisible(false);
+				this.sprite.alpha = this.currentCustomer ? 0.75 : 0.5;
+				this.text.setText("Click me!");
+			},
 		});
 	}
 }

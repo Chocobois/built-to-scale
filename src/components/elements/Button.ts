@@ -4,6 +4,7 @@ export class Button extends Phaser.GameObjects.Container {
 	public scene: BaseScene;
 	// private hover: boolean;
 	private _hold: boolean;
+	protected dragged: boolean;
 	protected blocked: boolean;
 	public liftSmooth: number;
 	public holdSmooth: number;
@@ -17,6 +18,7 @@ export class Button extends Phaser.GameObjects.Container {
 
 		// this.hover = false;
 		this._hold = false;
+		this.dragged = false;
 		this.blocked = false;
 
 		this.liftSmooth = 0;

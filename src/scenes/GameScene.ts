@@ -16,6 +16,9 @@ export class GameScene extends BaseScene {
 	private paused: boolean = false;
 	private browsing: boolean = false;
 
+	// Game stats
+	private money: number = 0;
+
 	constructor() {
 		super({ key: "GameScene" });
 	}
@@ -52,11 +55,10 @@ export class GameScene extends BaseScene {
 		this.addCustomer();
 
 		this.ui = new UI(this);
-		this.ui.setVisible(false);
 	}
 
 	update(time: number, delta: number) {
-		if(this.browsing || this.paused) {
+		if (this.browsing || this.paused) {
 			return;
 		}
 		this.stations.forEach((s) => s.update(time, delta));
@@ -87,7 +89,7 @@ export class GameScene extends BaseScene {
 		});
 	}
 
-	openInventory(){
+	openInventory() {
 		this.browsing = true;
 	}
 
@@ -162,8 +164,6 @@ export class GameScene extends BaseScene {
 
 				station.setCustomer(customer);
 				customer.setStation(station);
-				customer.lastX = station.x;
-				customer.lastY = station.y;
 			} else if (customer.currentStation) {
 				customer.snapTo(customer.currentStation.x, customer.currentStation.y);
 			} else {
@@ -185,6 +185,12 @@ export class GameScene extends BaseScene {
 
 			// Spawn new customer
 			this.addCustomer();
+		});
+
+		// Customer completing their itinerary and paying
+		customer.on("pay", (money: number) => {
+			this.money += money;
+			this.ui.setMoney(this.money);
 		});
 	}
 
@@ -251,7 +257,7 @@ export class GameScene extends BaseScene {
 		}
 	}
 
-	// Set a random request for the customer
+	// Generate a list of requests for the customer
 	setCustomerItinerary(customer: Customer) {
 		function getActivities() {
 			let activities = [];

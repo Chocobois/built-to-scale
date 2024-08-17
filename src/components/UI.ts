@@ -19,6 +19,7 @@ export class UI extends Phaser.GameObjects.Container {
 
 		this.background = this.scene.add.image(0, 0, "hud");
 		this.background.setScale(panelHeight / this.background.height);
+		this.background.setVisible(false);
 		this.panel.add(this.background);
 
 		this.text = this.scene.addText({
@@ -26,7 +27,7 @@ export class UI extends Phaser.GameObjects.Container {
 			y: 0,
 			size: 60,
 			color: "#FFFFFF",
-			text: "Score: 123",
+			text: "Money: $0",
 		});
 		this.text.setStroke("black", 4);
 		this.text.setOrigin(0, 0.5);
@@ -39,4 +40,8 @@ export class UI extends Phaser.GameObjects.Container {
 	}
 
 	update(time: number, delta: number) {}
+
+	setMoney(money: number) {
+		this.text.setText(`Money: $${money}`);
+	}
 }

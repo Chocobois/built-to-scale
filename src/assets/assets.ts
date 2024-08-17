@@ -17,6 +17,7 @@ const images: Image[] = [
 	// UI
 	image('ui/hud', 'hud'),
 	image('ui/bubble', 'bubble'),
+	image('ui/timer', 'timer'),
 
 	// Titlescreen
 	image('titlescreen/sky', 'title_sky'),
