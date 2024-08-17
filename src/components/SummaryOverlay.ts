@@ -2,7 +2,7 @@ import { GameScene } from "@/scenes/GameScene";
 import { RoundRectangle } from "./elements/RoundRectangle";
 import { TextButton } from "./TextButton";
 
-export class Overlay extends Phaser.GameObjects.Container {
+export class SummaryOverlay extends Phaser.GameObjects.Container {
 	public scene: GameScene;
 
 	private background: Phaser.GameObjects.Rectangle;
@@ -16,10 +16,14 @@ export class Overlay extends Phaser.GameObjects.Container {
 		scene.add.existing(this);
 		this.scene = scene;
 
+		this.setVisible(false);
+		this.setAlpha(0);
+
 		// Fullscreen blackness
 		this.background = this.scene.add.rectangle(0, 0, scene.W, scene.H, 0, 0.75);
 		this.background.setOrigin(0);
 		this.add(this.background);
+		this.background.setInteractive();
 
 		this.panel = new RoundRectangle(scene, {
 			x: scene.W / 2,
@@ -65,5 +69,28 @@ export class Overlay extends Phaser.GameObjects.Container {
 
 	update(time: number, delta: number) {
 		this.okButton.update(time, delta);
+	}
+
+	open() {
+		this.setVisible(true);
+		this.setAlpha(0);
+		this.scene.tweens.add({
+			targets: this,
+			alpha: 1,
+			duration: 200,
+		});
+	}
+
+	close() {
+		this.setVisible(true);
+		this.setAlpha(1);
+		this.scene.tweens.add({
+			targets: this,
+			alpha: 0,
+			duration: 200,
+			onComplete: () => {
+				this.setVisible(false);
+			},
+		});
 	}
 }

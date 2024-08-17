@@ -7,18 +7,39 @@ import { interpolateColor } from "@/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
 import { StationType } from "./StationData";
 
+export interface CustomerType {
+	spr: string;
+	tags: string[];
+	antitags: string[];
+	budget: number;
+	
+}
+
 export class Customer extends Button {
 	// Movement
 	public lastX: number; // Last position on the grid
 	public lastY: number;
 	public dragX: number; // Current drag position
 	public dragY: number;
+	public tags: string[];
 	public currentStation: Station | null;
 	public currentEmployee: Employee | null;
-
+	public cdata: CustomerType;
 	// Requests
 	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
+
+	// Happiness variables
+	public baseTip: number;
+	public tipMultiplier: number;
+	public tipBonus: number;
+	public happinessStage: number; //0-6, rounds down
+	public minHappiness: number = 0; // bonuses
+	public maxHappiness: number = 6; // bonuses
+
+	public patience: number;
+	public minPatience: number; // bonuses
+	public lockPatience: boolean; // bonuses
 
 	// Stats
 	public doingCuteThing: boolean;
@@ -29,6 +50,7 @@ export class Customer extends Button {
 	// Graphics
 	private sprite: Phaser.GameObjects.Sprite;
 	private thoughtBubble: ThoughtBubble;
+	private angryImage: Phaser.GameObjects.Image;
 	private happinessTimer: Timer;
 
 	constructor(scene: GameScene, x: number, y: number) {
@@ -52,16 +74,21 @@ export class Customer extends Button {
 		this.happiness = 1;
 
 		/* Sprite */
-		const size = 150;
-		this.sprite = this.scene.add.sprite(0, 0, "player");
+		const size = 120;
+		this.sprite = this.scene.add.sprite(0, 0, "small_customer_walk1");
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.y += size / 2;
 		this.sprite.setScale(size / this.sprite.width);
 		this.add(this.sprite);
 
+		this.angryImage = this.scene.add.image(0, -0.3 * size, "angyv");
+		this.angryImage.setScale(0.25);
+		this.angryImage.setVisible(false);
+		this.add(this.angryImage);
+
 		this.thoughtBubble = new ThoughtBubble(
 			scene,
-			0.2 * size,
+			0.4 * size,
 			-0.6 * size,
 			size
 		);
@@ -86,9 +113,8 @@ export class Customer extends Button {
 		this.y += (this.dragY - this.y) * 0.5;
 
 		const wobble = this.doingCuteThing ? 0.1 : 0.02;
-		const squish =
-			1.0 + wobble * Math.sin((6 * time) / 1000) - 0.2 * this.holdSmooth;
-		this.setScale(1.0, squish);
+		const squish = 1.0 + wobble * Math.sin((6 * time) / 1000);
+		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
 		this.sprite.setTint(
 			interpolateColor(0xffffff, 0xff0000, 1 - this.happiness)
 		);
@@ -104,12 +130,15 @@ export class Customer extends Button {
 				interpolateColor(0xff0000, 0x00ff00, this.happiness)
 			);
 			this.happinessTimer.redraw(this.happiness);
+			this.angryImage.setVisible(this.happiness <= 0.5);
 
 			if (this.happiness <= 0) {
 				this.leave();
+				this.thoughtBubble.showSymbol("sad");
 			}
 		} else {
 			this.happinessTimer.setVisible(false);
+			this.angryImage.setVisible(false);
 		}
 	}
 
@@ -144,7 +173,7 @@ export class Customer extends Button {
 			this.happiness = 1;
 
 			if (this.requestedStation === station.stationType) {
-				this.thoughtBubble.markAsReady();
+				this.thoughtBubble.showSymbol("exclamation");
 			}
 		}
 	}
@@ -153,10 +182,13 @@ export class Customer extends Button {
 		this.currentEmployee = employee;
 
 		this.sprite.input!.enabled = !employee;
+
+		this.thoughtBubble.showSymbol(Phaser.Math.RND.pick(["happy", "love"]));
 	}
 
 	setAction(temp: boolean) {
 		this.doingCuteThing = temp;
+		this.thoughtBubble.hide();
 	}
 
 	setRequest(type: StationType | null) {

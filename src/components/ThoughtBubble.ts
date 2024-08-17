@@ -4,7 +4,7 @@ import { StationType, StationTypeData } from "./StationData";
 export class ThoughtBubble extends Phaser.GameObjects.Container {
 	private background: Phaser.GameObjects.Image;
 	private image: Phaser.GameObjects.Ellipse;
-	private exclamation: Phaser.GameObjects.Image;
+	private symbol: Phaser.GameObjects.Image;
 
 	constructor(scene: GameScene, x: number, y: number, size: number) {
 		super(scene, x, y);
@@ -16,28 +16,50 @@ export class ThoughtBubble extends Phaser.GameObjects.Container {
 		this.background.setVisible(false);
 		this.add(this.background);
 
-		this.image = this.scene.add.ellipse(0, -0.07 * size, 40, 40, 0);
+		this.image = this.scene.add.ellipse(0, -0.05 * size, 40, 40, 0);
 		this.image.setVisible(false);
 		this.add(this.image);
 
-		this.exclamation = this.scene.add.image(0, -0.07 * size, "exclamation");
-		this.exclamation.setScale(60 / this.exclamation.width);
-		this.exclamation.setVisible(false);
-		this.add(this.exclamation);
+		this.symbol = this.scene.add.image(0, -0.02 * size, "exclamation");
+		this.symbol.setScale(70 / this.symbol.width);
+		this.symbol.setVisible(false);
+		this.add(this.symbol);
+	}
+
+	hide() {
+		this.background.setVisible(false);
+		this.image.setVisible(false);
+		this.symbol.setVisible(false);
 	}
 
 	setRequest(type: StationType | null) {
 		this.background.setVisible(type !== null);
 		this.image.setVisible(type !== null);
-		this.exclamation.setVisible(false);
+		this.symbol.setVisible(false);
 
 		if (type !== null) {
 			this.image.fillColor = StationTypeData[type].color;
 		}
+
+		if (type === StationType.CashRegister) {
+			this.showSymbol("money");
+		}
 	}
 
-	markAsReady() {
+	showSymbol(
+		key:
+			| "exclamation"
+			| "angyv"
+			| "happy"
+			| "love"
+			| "money"
+			| "question"
+			| "sad"
+	) {
+		this.background.setVisible(true);
 		this.image.setVisible(false);
-		this.exclamation.setVisible(true);
+		this.symbol.setVisible(true);
+
+		this.symbol.setTexture(key);
 	}
 }

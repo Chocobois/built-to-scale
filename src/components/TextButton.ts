@@ -49,7 +49,12 @@ export class TextButton extends Button {
 		this.setScale(1.0 - 0.1 * this.holdSmooth);
 	}
 
-    open() {
-        
-    }
+	setText(text: string) {
+		this.text.setText(text);
+	}
+
+	setEnabled(enabled: boolean) {
+		this.setAlpha(enabled ? 1 : 0.5);
+		this.border.input!.enabled = enabled;
+	}
 }

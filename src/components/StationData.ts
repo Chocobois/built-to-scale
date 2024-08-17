@@ -24,7 +24,7 @@ export const StationTypeData: { [key in StationType]: StationTypeInterface } = {
 	},
 	[StationType.ScalePolish]: {
 		symbolKey: "wax",
-		color: 0x00ff00,
+		color: 0xffff00,
 	},
 	[StationType.GoldBath]: {
 		symbolKey: "gold",
@@ -32,7 +32,7 @@ export const StationTypeData: { [key in StationType]: StationTypeInterface } = {
 	},
 	[StationType.CashRegister]: {
 		symbolKey: "cash",
-		color: 0xffff00,
+		color: 0x00ff00,
 	},
 };
 
@@ -56,6 +56,8 @@ export enum StationId {
 
 export interface StationInterface {
 	type: StationType; // Station type
+	name: string; // Station name
+	tier: number; // Tier number
 	spriteKey: string; // Station image key
 	taskDuration?: number; // Time it takes to complete a task
 	admissionFee?: number; // Customer pays this amount to use the station
@@ -66,23 +68,31 @@ export interface StationInterface {
 export const StationData: { [key in StationId]: StationInterface } = {
 	[StationId.WaitingSeatTier1]: {
 		type: StationType.WaitingSeat,
+		name: "WaitingSeat station",
+		tier: 1,
 		spriteKey: "waitchair_1",
 		upgradeCost: 100,
 		upgradeTo: StationId.WaitingSeatTier2,
 	},
 	[StationId.WaitingSeatTier2]: {
 		type: StationType.WaitingSeat,
+		name: "WaitingSeat station",
+		tier: 2,
 		spriteKey: "waitchair_2",
 		upgradeCost: 500,
 		upgradeTo: StationId.WaitingSeatTier3,
 	},
 	[StationId.WaitingSeatTier3]: {
 		type: StationType.WaitingSeat,
+		name: "WaitingSeat station",
+		tier: 3,
 		spriteKey: "waitchair_3",
 	},
 
 	[StationId.HornAndNailsTier1]: {
 		type: StationType.HornAndNails,
+		name: "HornAndNails station",
+		tier: 1,
 		spriteKey: "nail_1",
 		taskDuration: 3000,
 		admissionFee: 10,
@@ -91,6 +101,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.HornAndNailsTier2]: {
 		type: StationType.HornAndNails,
+		name: "HornAndNails station",
+		tier: 2,
 		spriteKey: "nail_2",
 		taskDuration: 2500,
 		admissionFee: 20,
@@ -99,6 +111,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.HornAndNailsTier3]: {
 		type: StationType.HornAndNails,
+		name: "HornAndNails station",
+		tier: 3,
 		spriteKey: "nail_3",
 		taskDuration: 2000,
 		admissionFee: 30,
@@ -106,6 +120,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.ScalePolishTier1]: {
 		type: StationType.ScalePolish,
+		name: "ScalePolish station",
+		tier: 1,
 		spriteKey: "wax_1",
 		taskDuration: 2000,
 		admissionFee: 10,
@@ -114,6 +130,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.ScalePolishTier2]: {
 		type: StationType.ScalePolish,
+		name: "ScalePolish station",
+		tier: 2,
 		spriteKey: "wax_2",
 		taskDuration: 1500,
 		admissionFee: 20,
@@ -122,6 +140,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.ScalePolishTier3]: {
 		type: StationType.ScalePolish,
+		name: "ScalePolish station",
+		tier: 3,
 		spriteKey: "wax_3",
 		taskDuration: 1000,
 		admissionFee: 30,
@@ -129,6 +149,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.GoldBathTier1]: {
 		type: StationType.GoldBath,
+		name: "GoldBath station",
+		tier: 1,
 		spriteKey: "bath_1",
 		taskDuration: 4000,
 		admissionFee: 20,
@@ -137,6 +159,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.GoldBathTier2]: {
 		type: StationType.GoldBath,
+		name: "GoldBath station",
+		tier: 2,
 		spriteKey: "bath_2",
 		taskDuration: 3000,
 		admissionFee: 30,
@@ -145,6 +169,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.GoldBathTier3]: {
 		type: StationType.GoldBath,
+		name: "GoldBath station",
+		tier: 3,
 		spriteKey: "bath_3",
 		taskDuration: 2000,
 		admissionFee: 40,
@@ -152,6 +178,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.CashRegister]: {
 		type: StationType.CashRegister,
+		name: "CashRegister station",
+		tier: 1,
 		spriteKey: "checkout",
 		taskDuration: 500,
 	},

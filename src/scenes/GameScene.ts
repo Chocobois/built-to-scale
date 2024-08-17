@@ -4,8 +4,22 @@ import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
-import { Overlay } from "@/components/Overlay";
 import { StationId, StationType } from "@/components/StationData";
+import { Inventory } from "@/components/Inventory";
+import { SimpleButton } from "@/components/elements/SimpleButton";
+import { ToggleButton } from "@/components/elements/ToggleButton";
+import { ItemButton } from "@/components/ItemButton";
+import { ItemHandler } from "@/components/ItemHandler";
+import { UpgradeOverlay } from "@/components/UpgradeOverlay";
+import { SummaryOverlay } from "@/components/SummaryOverlay";
+import { EmployeeId } from "@/components/EmployeeData";
+import { BlockType, LevelData, LevelId } from "@/components/Levels";
+
+enum GameState {
+	Cutscene,
+	Day,
+	Shopping,
+}
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -14,15 +28,21 @@ export class GameScene extends BaseScene {
 	private employees: Employee[];
 	private customers: Customer[];
 	private ui: UI;
-	private overlay: Overlay;
+	private upgradeOverlay: UpgradeOverlay;
+	private summaryOverlay: SummaryOverlay;
 	private paused: boolean = false;
 	private browsing: boolean = false;
+	private inventory: Inventory;
+	private invButton: ToggleButton;
+	private iHandler: ItemHandler;
+	public activeItem: ItemButton;
 
 	// Game stats
-	private day: number = 0;
-	private dayDuration: number = 60000; // 1 minute
-	private timeOfDay: number = 0;
-	private money: number = 0;
+	public state: GameState = GameState.Cutscene;
+	public day: number = 0;
+	public dayDuration: number = 60000; // 1 minute
+	public timeOfDay: number = 0;
+	public money: number = 0;
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -34,52 +54,97 @@ export class GameScene extends BaseScene {
 		this.input.addPointer(2);
 		this.input.dragDistanceThreshold = 10;
 
-		this.background = this.add.image(0, 0, "background");
+		this.background = this.add.image(0, 0, "grid1");
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.board = new Board(this, 930, 550, 8, 6);
+		this.board = new Board(this, this.CX, this.CY, 6, 4);
 
 		this.stations = [];
-		this.addStation(0, 0, StationId.WaitingSeatTier1);
-		this.addStation(0, 1, StationId.WaitingSeatTier2);
-		this.addStation(0, 2, StationId.WaitingSeatTier3);
-		this.addStation(2, 2, StationId.HornAndNailsTier1);
-		this.addStation(3, 2, StationId.HornAndNailsTier2);
-		this.addStation(4, 2, StationId.HornAndNailsTier3);
-		this.addStation(2, 0, StationId.HornAndNailsTier1);
-		this.addStation(3, 0, StationId.HornAndNailsTier2);
-		this.addStation(4, 0, StationId.HornAndNailsTier3);
-		this.addStation(5, 1, StationId.ScalePolishTier1);
-		this.addStation(6, 1, StationId.ScalePolishTier2);
-		this.addStation(7, 1, StationId.ScalePolishTier3);
-		this.addStation(5, 3, StationId.GoldBathTier1);
-		this.addStation(6, 3, StationId.GoldBathTier2);
-		this.addStation(7, 3, StationId.GoldBathTier3);
-		this.addStation(5, 5, StationId.CashRegister);
+		// this.addStation(0, 0, StationId.WaitingSeatTier1);
+		// this.addStation(0, 1, StationId.WaitingSeatTier2);
+		// this.addStation(0, 2, StationId.WaitingSeatTier3);
+		// this.addStation(2, 2, StationId.HornAndNailsTier1);
+		// this.addStation(3, 2, StationId.HornAndNailsTier2);
+		// this.addStation(4, 2, StationId.HornAndNailsTier3);
+		// this.addStation(2, 0, StationId.HornAndNailsTier1);
+		// this.addStation(3, 0, StationId.HornAndNailsTier2);
+		// this.addStation(4, 0, StationId.HornAndNailsTier3);
+		// this.addStation(5, 1, StationId.ScalePolishTier1);
+		// this.addStation(6, 1, StationId.ScalePolishTier2);
+		// this.addStation(7, 1, StationId.ScalePolishTier3);
+		// this.addStation(5, 3, StationId.GoldBathTier1);
+		// this.addStation(6, 3, StationId.GoldBathTier2);
+		// this.addStation(7, 3, StationId.GoldBathTier3);
+		// this.addStation(5, 5, StationId.CashRegister);
 
 		this.employees = [];
-		this.addEmployee(0, 5);
-		this.addEmployee(1, 5);
-		this.addEmployee(2, 5);
-		this.addEmployee(3, 5);
+		// this.addEmployee(0, 5, EmployeeId.RaccoonTier1);
+		// this.addEmployee(1, 5, EmployeeId.RaccoonTier1);
+		// this.addEmployee(2, 5, EmployeeId.RaccoonTier1);
+		// this.addEmployee(3, 5, EmployeeId.HumanTier1);
 
 		this.customers = [];
-		this.addCustomer();
-		this.addCustomer();
-		this.addCustomer();
 
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
+		this.iHandler = new ItemHandler(this);
 
-		this.overlay = new Overlay(this);
-		this.overlay.setVisible(false);
-		this.overlay.setDepth(1001);
-		this.overlay.on("progress", () => {
-			this.overlay.setVisible(false);
+		this.inventory = new Inventory(this,-650,0,[4,5,2,6,3,0,0,0,0,0,0,0,0]);
+		this.invButton = new ToggleButton(this,64,540,"invbutton");
+		this.add.existing(this.invButton);
+        this.invButton.on("click", ()=> {this.toggleInventory()});
+		this.inventory.setDepth(10);
+		this.invButton.setDepth(9);
+		this.invButton.setAlpha(0.75);
+		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+		this.ui.setMoney(this.money);
+		this.ui.setDay(this.day);
+		this.ui.on("nextDay", () => {
 			this.startDay();
 		});
 
+		this.upgradeOverlay = new UpgradeOverlay(this);
+		this.upgradeOverlay.setDepth(1010);
+		this.upgradeOverlay.on("upgradeStation", (station: Station) => {
+			this.money -= station.upgradeCost;
+			this.ui.setMoney(this.money);
+			station.upgrade();
+			this.upgradeOverlay.selectStation(station);
+		});
+		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
+			this.money -= employee.upgradeCost;
+			this.ui.setMoney(this.money);
+			employee.upgrade();
+			this.upgradeOverlay.selectEmployee(employee);
+		});
+
+		this.summaryOverlay = new SummaryOverlay(this);
+		this.summaryOverlay.setDepth(1020);
+		this.summaryOverlay.on("progress", () => {
+			this.summaryOverlay.setVisible(false);
+		});
+
+		/* Init */
+
+		// TEMPORARY: Spawn customers every 5 seconds, if allowed
+		this.time.addEvent({
+			delay: 5000,
+			callback: () => {
+				// Spawn new customer if shop is still open
+				if (
+					this.state == GameState.Day &&
+					this.timeOfDay > 0 &&
+					this.getAvailableWaitingSeat()
+				) {
+					this.addCustomer();
+				}
+			},
+			loop: true,
+		});
+
+		// this.setState(GameState.Shopping);
+		this.loadLevel(LevelId.Level1);
 		this.startDay();
 	}
 
@@ -89,14 +154,91 @@ export class GameScene extends BaseScene {
 		}
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
-		this.customers.forEach((c) => c.update(time, delta));
+		this.customers.forEach((x) => x.update(time, delta));
 
 		this.ui.update(time, delta);
-		this.overlay.update(time, delta);
+		this.summaryOverlay.update(time, delta);
+		this.activeItem.update(time,delta);
+		if(this.activeItem.state == 3){
+			this.snapItem();
+		}
+		this.upgradeOverlay.update(time, delta);
+
+		// Depth sorting hack
+		if (this.state === GameState.Day) {
+			this.stations.forEach((s) => s.setDepth(s.y / 100 + 0));
+			this.employees.forEach((e) => e.setDepth(e.y / 100 + 1));
+			this.customers.forEach((c) =>
+				c.setDepth(c.y / 100 + (c.dragged ? 100 : 1))
+			);
+		}
+	}
+
+	// Set game state
+	setState(state: GameState) {
+		this.state = state;
+
+		const isShopping = state === GameState.Shopping;
+
+		this.stations.forEach((s) => s.setClickable(isShopping));
+		this.employees.forEach((e) => e.setClickable(isShopping));
+		this.ui.setShoppingMode(isShopping);
+		if (isShopping) this.summaryOverlay.open();
+	}
+
+	// Load level data
+	loadLevel(id: LevelId) {
+		const level = LevelData[id];
+
+		this.background.setTexture(level.background);
+		this.board.resize(level.width, level.height);
+
+		// Clear all stations, employees, and customers
+		this.stations.forEach((s) => s.destroy());
+		this.employees.forEach((e) => e.destroy());
+		this.customers.forEach((c) => c.destroy());
+		this.stations = [];
+		this.employees = [];
+		this.customers = [];
+
+		// Load level data items
+		for (let y = 0; y < level.height; y++) {
+			for (let x = 0; x < level.width; x++) {
+				const gridX = x;
+				const gridY = y;
+				const block = level.grid[y][x];
+
+				switch (block) {
+					case BlockType.Empty:
+						break;
+					case BlockType.Wall:
+						break;
+					case BlockType.WaitingSeat:
+						this.addStation(gridX, gridY, StationId.WaitingSeatTier1);
+						break;
+					case BlockType.HornAndNails:
+						this.addStation(gridX, gridY, StationId.HornAndNailsTier1);
+						break;
+					case BlockType.ScalePolish:
+						this.addStation(gridX, gridY, StationId.ScalePolishTier1);
+						break;
+					case BlockType.GoldBath:
+						this.addStation(gridX, gridY, StationId.GoldBathTier1);
+						break;
+					case BlockType.CashRegister:
+						this.addStation(gridX, gridY, StationId.CashRegister);
+						break;
+					case BlockType.Employee:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonTier1);
+						break;
+				}
+			}
+		}
 	}
 
 	// Start a new day
 	startDay() {
+		this.setState(GameState.Day);
 		this.day += 1;
 		this.ui.setDay(this.day);
 
@@ -113,17 +255,11 @@ export class GameScene extends BaseScene {
 			},
 		});
 
-		// Spawn customers every 3 seconds
-		this.time.addEvent({
-			delay: 3000,
-			callback: () => {
-				// Spawn new customer if shop is still open
-				if (this.timeOfDay > 0 && this.getAvailableWaitingSeat()) {
-					this.addCustomer();
-				}
-			},
-			loop: true,
-		});
+		// Reset depth
+		this.stations.forEach((s) => s.setDepth(0));
+		this.employees.forEach((e) => e.setDepth(0));
+
+		this.addCustomer();
 	}
 
 	endDay() {}
@@ -149,6 +285,16 @@ export class GameScene extends BaseScene {
 				customer.nextActivity();
 			}
 		});
+
+		// Station clicked during shopping
+		station.on("click", () => {
+			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
+				this.upgradeOverlay.selectStation(station);
+
+				this.stations.forEach((s) => s.setDepth(0));
+				station.setDepth(2000);
+			}
+		});
 	}
 
 	openInventory() {
@@ -156,9 +302,9 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new employee
-	addEmployee(gridX: number, gridY: number) {
+	addEmployee(gridX: number, gridY: number, id: EmployeeId) {
 		const coord = this.board.gridToCoord(gridX, gridY);
-		const employee = new Employee(this, coord.x, coord.y);
+		const employee = new Employee(this, coord.x, coord.y, id);
 		this.employees.push(employee);
 
 		// Employee reached the destination
@@ -173,6 +319,16 @@ export class GameScene extends BaseScene {
 				customer.currentStation.startTask();
 			} else {
 				employee.setCustomer(null);
+			}
+		});
+
+		// Employee clicked during shopping
+		employee.on("click", () => {
+			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
+				this.upgradeOverlay.selectEmployee(employee);
+
+				this.employees.forEach((e) => e.setDepth(0));
+				employee.setDepth(2000);
 			}
 		});
 	}
@@ -245,7 +401,7 @@ export class GameScene extends BaseScene {
 
 			// Open overlay if no more customers
 			if (this.customers.length === 0) {
-				this.overlay.setVisible(true);
+				this.setState(GameState.Shopping);
 			}
 		});
 
@@ -317,8 +473,8 @@ export class GameScene extends BaseScene {
 			const { gridX, gridY } = this.board.coordToGrid(station.x, station.y);
 			const { x, y } = this.board.gridToCoord(gridX, gridY - 1);
 
-			customer.setEmployee(closestEmployee);
 			customer.setRequest(null);
+			customer.setEmployee(closestEmployee);
 
 			closestEmployee.setCustomer(customer);
 			closestEmployee.walkTo(x, y);
@@ -351,5 +507,76 @@ export class GameScene extends BaseScene {
 		customer.itinerary = activities;
 		customer.requestedStation = activities[0];
 		customer.nextActivity();
+	}
+
+	toggleInventory(){
+		this.inventory.toggle();
+		if(this.inventory.isOpen) {
+			this.invButton.setPosition(714,540);
+			this.invButton.toggleForward();
+		} else {
+			this.invButton.setPosition(64,540);
+			this.invButton.toggleBackward();
+		}
+	}
+
+	setActiveItem(i: ItemButton){
+		this.activeItem.destroy();
+		this.activeItem = i;
+		this.activeItem.on("itemdrop", () => {
+			this.cleanUpItem();
+		});
+
+		this.add.existing(this.activeItem);
+		//new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+	}
+
+	parseItems(i: number, st: Station, c: Customer){
+		this.iHandler.process(this.inventory.itemList[i], st,c);
+	}
+
+	snapItem() {
+		let s = this.getClosestStationToItem(this.activeItem);
+		if(s) {
+			this.activeItem.snapTo(s.x,s.y);
+		}
+	}
+
+	cleanUpItem(){
+		let s = this.getClosestStationToItem(this.activeItem);
+		if(s) {
+			s.applyItem(this.activeItem.id,this.activeItem.sprname);
+			this.sound.play("place");
+		} else {
+			this.inventory.returnItem(this.activeItem.id);
+			this.sound.play("return");
+		}
+		this.activeItem.destroy();
+		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+	}
+
+	getClosestStationToItem(item: ItemButton): Station | null {
+		let closestStation = null;
+		let closestDistance = Infinity;
+		const maxDistance = 75;
+
+		this.stations.forEach((station) => {
+			const distance = Phaser.Math.Distance.Between(
+				item.dragX,
+				item.dragY,
+				station.x,
+				station.y
+			);
+			if (
+				!station.currentCustomer &&
+				distance < closestDistance &&
+				distance < maxDistance &&
+				station.appliedItems.length < 3
+			) {
+				closestStation = station;
+				closestDistance = distance;
+			}
+		});
+		return closestStation;
 	}
 }
