@@ -6,7 +6,7 @@ export class Board extends Phaser.GameObjects.Container {
 	private grid: Phaser.GameObjects.Grid;
 	private things: any[];
 
-	constructor(scene: GameScene, x: number, y: number) {
+	constructor(scene: GameScene, x: number, y: number, width: number, height: number) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
@@ -15,8 +15,8 @@ export class Board extends Phaser.GameObjects.Container {
 		this.grid = this.scene.add.grid(
 			0,
 			0,
-			8 * this.size,
-			6 * this.size,
+			width * this.size,
+			height * this.size,
 			this.size,
 			this.size,
 			0xffffff,

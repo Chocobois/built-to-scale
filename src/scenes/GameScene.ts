@@ -48,7 +48,7 @@ export class GameScene extends BaseScene {
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.board = new Board(this, 930, 550);
+		this.board = new Board(this, 930, 550, 8, 6);
 
 		this.stations = [];
 		this.addStation(0, 0, StationId.WaitingSeatTier1);
