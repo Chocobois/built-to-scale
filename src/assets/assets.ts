@@ -6,6 +6,10 @@ const images: Image[] = [
 	// Backgrounds
 	image('backgrounds/background', 'background'),
 	image('backgrounds/playarea-base', 'playArea_base'),
+	image('backgrounds/grid1', 'grid1'),
+	image('backgrounds/grid2', 'grid2'),
+	image('backgrounds/grid3', 'grid3'),
+	image('backgrounds/grid4', 'grid4'),
 
 	// Characters
 	image('characters/player', 'player'),
@@ -31,9 +35,14 @@ const images: Image[] = [
 	image('items/checkout', 'checkout'),
 
 	// UI
-	image('ui/hud', 'hud'),
+	image('ui/angyv', 'angyv'),
 	image('ui/bubble', 'bubble'),
 	image('ui/exclamation', 'exclamation'),
+	image('ui/happy', 'happy'),
+	image('ui/love', 'love'),
+	image('ui/money', 'money'),
+	image('ui/question', 'question'),
+	image('ui/sad', 'sad'),
 	image('ui/timer', 'timer'),
 
 	// Titlescreen
