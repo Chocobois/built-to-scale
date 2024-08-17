@@ -52,8 +52,8 @@ export class Customer extends Button {
 		this.happiness = 1;
 
 		/* Sprite */
-		const size = 150;
-		this.sprite = this.scene.add.sprite(0, 0, "player");
+		const size = 120;
+		this.sprite = this.scene.add.sprite(0, 0, "small_customer_walk1");
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.y += size / 2;
 		this.sprite.setScale(size / this.sprite.width);
