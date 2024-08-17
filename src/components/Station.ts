@@ -2,57 +2,36 @@ import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
 import { Customer } from "./Customer";
 import { Timer } from "./Timer";
-
-export enum StationType {
-	WaitingSeat,
-	HornAndNails,
-	ScalePolish,
-	GoldBath,
-	CashRegister,
-}
-
-export const StationTypeColors: { [key in StationType]: number } = {
-	[StationType.WaitingSeat]: 0x777777,
-	[StationType.HornAndNails]: 0xff0000,
-	[StationType.ScalePolish]: 0x00ff00,
-	[StationType.GoldBath]: 0x0000ff,
-	[StationType.CashRegister]: 0xffff00,
-};
-
-export const StationDuration: { [key in StationType]: number } = {
-	[StationType.WaitingSeat]: 0,
-	[StationType.HornAndNails]: 3000,
-	[StationType.ScalePolish]: 2000,
-	[StationType.GoldBath]: 4000,
-	[StationType.CashRegister]: 500,
-};
+import {
+	StationData,
+	StationId,
+	StationType,
+	StationTypeData,
+} from "./StationData";
+import { interpolateColor } from "@/functions";
 
 export class Station extends Button {
-	public stationType: StationType;
+	public stationId: StationId;
 	public currentCustomer: Customer | null; // The customer using the station
-	public taskDuration: number; // Time it takes to complete a task
-	public admissionFee: number; // Cost to use the station
 
-	private sprite: Phaser.GameObjects.Rectangle;
+	private sprite: Phaser.GameObjects.Image;
 	private text: Phaser.GameObjects.Text;
 
 	private progressTimer: Timer;
 
-	constructor(scene: GameScene, x: number, y: number, type: StationType) {
+	constructor(scene: GameScene, x: number, y: number, id: StationId) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
-		this.stationType = type;
+		this.stationId = id;
 
 		this.currentCustomer = null;
-		this.taskDuration = StationDuration[type];
-		this.admissionFee = 10;
 
 		/* Sprite */
 		const size = 150;
-		const color = StationTypeColors[type];
-		this.sprite = this.scene.add.rectangle(0, 0, size, size, color);
-		this.sprite.alpha = 0.5;
+		this.sprite = this.scene.add.image(0, 0, this.spriteKey);
+		this.sprite.setScale(size / this.sprite.width);
+		this.sprite.setTint(interpolateColor(0xffffff, this.stationTypeColor, 0.5));
 		this.add(this.sprite);
 
 		this.text = this.scene.addText({
@@ -85,12 +64,10 @@ export class Station extends Button {
 	setCustomer(customer: Customer | null) {
 		this.currentCustomer = customer;
 
-		this.sprite.alpha = customer ? 0.75 : 0.5;
 		this.text.setText(customer ? "Click me!" : "Available");
 	}
 
 	startTask() {
-		this.sprite.alpha = 1.0;
 		this.text.setText("Working");
 
 		this.scene.tweens.addCounter({
@@ -106,9 +83,42 @@ export class Station extends Button {
 			onComplete: () => {
 				this.emit("taskend");
 				this.progressTimer.setVisible(false);
-				this.sprite.alpha = this.currentCustomer ? 0.75 : 0.5;
 				this.text.setText("Click me!");
 			},
 		});
+	}
+
+	/* Getters */
+
+	get stationType(): StationType {
+		return StationData[this.stationId].type;
+	}
+
+	get spriteKey(): string {
+		return StationData[this.stationId].spriteKey;
+	}
+
+	get taskDuration(): number {
+		return StationData[this.stationId].taskDuration ?? 0;
+	}
+
+	get admissionFee(): number {
+		return StationData[this.stationId].admissionFee ?? 0;
+	}
+
+	get upgradeCost(): number {
+		return StationData[this.stationId].upgradeCost ?? 0;
+	}
+
+	get upgradeTo(): StationId | undefined {
+		return StationData[this.stationId].upgradeTo;
+	}
+
+	get stationTypeSymbolKey(): string {
+		return StationTypeData[this.stationType].symbolKey;
+	}
+
+	get stationTypeColor(): number {
+		return StationTypeData[this.stationType].color;
 	}
 }

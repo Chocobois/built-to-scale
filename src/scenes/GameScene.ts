@@ -2,9 +2,10 @@ import { BaseScene } from "@/scenes/BaseScene";
 import { Board } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
-import { Station, StationType } from "@/components/Station";
+import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
 import { Overlay } from "@/components/Overlay";
+import { StationId, StationType } from "@/components/StationData";
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -40,23 +41,22 @@ export class GameScene extends BaseScene {
 		this.board = new Board(this, 930, 550);
 
 		this.stations = [];
-		this.addStation(0, 0, StationType.WaitingSeat);
-		this.addStation(0, 1, StationType.WaitingSeat);
-		this.addStation(0, 2, StationType.WaitingSeat);
-		this.addStation(0, 3, StationType.WaitingSeat);
-		this.addStation(2, 2, StationType.HornAndNails);
-		this.addStation(3, 2, StationType.HornAndNails);
-		this.addStation(4, 2, StationType.HornAndNails);
-		this.addStation(2, 0, StationType.HornAndNails);
-		this.addStation(3, 0, StationType.HornAndNails);
-		this.addStation(4, 0, StationType.HornAndNails);
-		this.addStation(6, 1, StationType.ScalePolish);
-		this.addStation(7, 1, StationType.ScalePolish);
-		this.addStation(6, 3, StationType.GoldBath);
-		this.addStation(7, 3, StationType.GoldBath);
-		this.addStation(2, 4, StationType.GoldBath);
-		this.addStation(3, 4, StationType.GoldBath);
-		this.addStation(5, 5, StationType.CashRegister);
+		this.addStation(0, 0, StationId.WaitingSeatTier1);
+		this.addStation(0, 1, StationId.WaitingSeatTier2);
+		this.addStation(0, 2, StationId.WaitingSeatTier3);
+		this.addStation(2, 2, StationId.HornAndNailsTier1);
+		this.addStation(3, 2, StationId.HornAndNailsTier2);
+		this.addStation(4, 2, StationId.HornAndNailsTier3);
+		this.addStation(2, 0, StationId.HornAndNailsTier1);
+		this.addStation(3, 0, StationId.HornAndNailsTier2);
+		this.addStation(4, 0, StationId.HornAndNailsTier3);
+		this.addStation(5, 1, StationId.ScalePolishTier1);
+		this.addStation(6, 1, StationId.ScalePolishTier2);
+		this.addStation(7, 1, StationId.ScalePolishTier3);
+		this.addStation(5, 3, StationId.GoldBathTier1);
+		this.addStation(6, 3, StationId.GoldBathTier2);
+		this.addStation(7, 3, StationId.GoldBathTier3);
+		this.addStation(5, 5, StationId.CashRegister);
 
 		this.employees = [];
 		this.addEmployee(0, 5);
@@ -129,9 +129,9 @@ export class GameScene extends BaseScene {
 	endDay() {}
 
 	// Add new station
-	addStation(gridX: number, gridY: number, type: StationType) {
+	addStation(gridX: number, gridY: number, id: StationId) {
 		const coord = this.board.gridToCoord(gridX, gridY);
-		const station = new Station(this, coord.x, coord.y, type);
+		const station = new Station(this, coord.x, coord.y, id);
 		this.stations.push(station);
 
 		// Station task completed

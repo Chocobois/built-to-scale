@@ -1,5 +1,5 @@
 import { GameScene } from "@/scenes/GameScene";
-import { StationType, StationTypeColors } from "./Station";
+import { StationType, StationTypeData } from "./StationData";
 
 export class ThoughtBubble extends Phaser.GameObjects.Container {
 	private background: Phaser.GameObjects.Image;
@@ -32,7 +32,7 @@ export class ThoughtBubble extends Phaser.GameObjects.Container {
 		this.exclamation.setVisible(false);
 
 		if (type !== null) {
-			this.image.fillColor = StationTypeColors[type];
+			this.image.fillColor = StationTypeData[type].color;
 		}
 	}
 

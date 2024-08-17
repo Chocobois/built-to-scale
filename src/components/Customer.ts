@@ -1,10 +1,11 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
-import { Station, StationType, StationTypeColors } from "./Station";
+import { Station } from "./Station";
 import { Employee } from "./Employee";
 import { Timer } from "./Timer";
 import { interpolateColor } from "@/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
+import { StationType } from "./StationData";
 
 export class Customer extends Button {
 	// Movement
