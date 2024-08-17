@@ -4,7 +4,7 @@ import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { Station, StationType } from "@/components/Station";
 import { UI } from "@/components/UI";
-import { custom } from "@neutralinojs/lib";
+import { Overlay } from "@/components/Overlay";
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -13,6 +13,7 @@ export class GameScene extends BaseScene {
 	private employees: Employee[];
 	private customers: Customer[];
 	private ui: UI;
+	private overlay: Overlay;
 	private paused: boolean = false;
 	private browsing: boolean = false;
 
@@ -69,6 +70,15 @@ export class GameScene extends BaseScene {
 		this.addCustomer();
 
 		this.ui = new UI(this);
+		this.ui.setDepth(1000);
+
+		this.overlay = new Overlay(this);
+		this.overlay.setVisible(false);
+		this.overlay.setDepth(1001);
+		this.overlay.on("progress", () => {
+			this.overlay.setVisible(false);
+			this.startDay();
+		});
 
 		this.startDay();
 	}
@@ -80,6 +90,9 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
 		this.customers.forEach((c) => c.update(time, delta));
+
+		this.ui.update(time, delta);
+		this.overlay.update(time, delta);
 	}
 
 	// Start a new day
@@ -229,6 +242,11 @@ export class GameScene extends BaseScene {
 		customer.on("offscreen", () => {
 			this.customers = this.customers.filter((c) => c !== customer);
 			customer.destroy();
+
+			// Open overlay if no more customers
+			if (this.customers.length === 0) {
+				this.overlay.setVisible(true);
+			}
 		});
 
 		// Customer completing their itinerary and paying
