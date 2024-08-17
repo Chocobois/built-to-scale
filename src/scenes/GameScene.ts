@@ -78,6 +78,7 @@ export class GameScene extends BaseScene {
 
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
+		this.ui.setMoney(this.money);
 		this.ui.on("nextDay", () => {
 			this.startDay();
 		});
@@ -108,7 +109,11 @@ export class GameScene extends BaseScene {
 			delay: 5000,
 			callback: () => {
 				// Spawn new customer if shop is still open
-				if (this.state == GameState.Day && this.getAvailableWaitingSeat()) {
+				if (
+					this.state == GameState.Day &&
+					this.timeOfDay > 0 &&
+					this.getAvailableWaitingSeat()
+				) {
 					this.addCustomer();
 				}
 			},
