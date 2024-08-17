@@ -94,8 +94,8 @@ export class GameScene extends BaseScene {
 		this.invButton = new ToggleButton(this,64,540,"invbutton");
 		this.add.existing(this.invButton);
         this.invButton.on("click", ()=> {this.toggleInventory()});
-		this.inventory.setDepth(4);
-		this.invButton.setDepth(3);
+		this.inventory.setDepth(10);
+		this.invButton.setDepth(9);
 		this.invButton.setAlpha(0.75);
 		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
 		this.ui.setMoney(this.money);
