@@ -54,11 +54,15 @@ export class Station extends Button {
 		);
 		this.progressTimer.setVisible(false);
 		this.add(this.progressTimer);
+
+		// Make station clickable during shopping
+		this.bindInteractive(this.sprite);
+		this.sprite.input!.enabled = false;
 	}
 
 	update(time: number, delta: number) {
 		const squish = 1.0 + 0.02 * Math.sin((6 * time) / 1000);
-		this.setScale(1.0, squish);
+		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
 	}
 
 	setCustomer(customer: Customer | null) {
@@ -88,10 +92,30 @@ export class Station extends Button {
 		});
 	}
 
+	setClickable(value: boolean) {
+		this.sprite.input!.enabled = value;
+		console.log("SET CLICKABLE", value);
+	}
+
+	upgrade() {
+		if (this.upgradeTo) {
+			this.stationId = this.upgradeTo!;
+			this.sprite.setTexture(this.spriteKey);
+		}
+	}
+
 	/* Getters */
 
 	get stationType(): StationType {
 		return StationData[this.stationId].type;
+	}
+
+	get stationName(): string {
+		return StationData[this.stationId].name;
+	}
+
+	get stationTier(): number {
+		return StationData[this.stationId].tier;
 	}
 
 	get spriteKey(): string {

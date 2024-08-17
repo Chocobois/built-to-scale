@@ -4,8 +4,16 @@ import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
-import { Overlay } from "@/components/Overlay";
 import { StationId, StationType } from "@/components/StationData";
+import { UpgradeOverlay } from "@/components/UpgradeOverlay";
+import { SummaryOverlay } from "@/components/SummaryOverlay";
+import { EmployeeId } from "@/components/EmployeeData";
+
+enum GameState {
+	Cutscene,
+	Day,
+	Shopping,
+}
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -14,15 +22,17 @@ export class GameScene extends BaseScene {
 	private employees: Employee[];
 	private customers: Customer[];
 	private ui: UI;
-	private overlay: Overlay;
+	private upgradeOverlay: UpgradeOverlay;
+	private summaryOverlay: SummaryOverlay;
 	private paused: boolean = false;
 	private browsing: boolean = false;
 
 	// Game stats
-	private day: number = 0;
-	private dayDuration: number = 60000; // 1 minute
-	private timeOfDay: number = 0;
-	private money: number = 0;
+	public state: GameState = GameState.Cutscene;
+	public day: number = 0;
+	public dayDuration: number = 60000; // 1 minute
+	public timeOfDay: number = 0;
+	public money: number = 500;
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -59,28 +69,54 @@ export class GameScene extends BaseScene {
 		this.addStation(5, 5, StationId.CashRegister);
 
 		this.employees = [];
-		this.addEmployee(0, 5);
-		this.addEmployee(1, 5);
-		this.addEmployee(2, 5);
-		this.addEmployee(3, 5);
+		this.addEmployee(0, 5, EmployeeId.RaccoonTier1);
+		this.addEmployee(1, 5, EmployeeId.RaccoonTier1);
+		this.addEmployee(2, 5, EmployeeId.RaccoonTier1);
+		this.addEmployee(3, 5, EmployeeId.HumanTier1);
 
 		this.customers = [];
-		this.addCustomer();
-		this.addCustomer();
-		this.addCustomer();
 
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
-
-		this.overlay = new Overlay(this);
-		this.overlay.setVisible(false);
-		this.overlay.setDepth(1001);
-		this.overlay.on("progress", () => {
-			this.overlay.setVisible(false);
+		this.ui.on("nextDay", () => {
 			this.startDay();
 		});
 
-		this.startDay();
+		this.upgradeOverlay = new UpgradeOverlay(this);
+		this.upgradeOverlay.setDepth(1010);
+		this.upgradeOverlay.on("upgradeStation", (station: Station) => {
+			station.upgrade();
+			this.upgradeOverlay.selectStation(station);
+			this.money -= station.upgradeCost;
+		});
+		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
+			employee.upgrade();
+			this.upgradeOverlay.selectEmployee(employee);
+			this.money -= employee.upgradeCost;
+		});
+
+		this.summaryOverlay = new SummaryOverlay(this);
+		this.summaryOverlay.setDepth(1020);
+		this.summaryOverlay.on("progress", () => {
+			this.summaryOverlay.setVisible(false);
+		});
+
+		/* Init */
+
+		// TEMPORARY: Spawn customers every 5 seconds, if allowed
+		this.time.addEvent({
+			delay: 5000,
+			callback: () => {
+				// Spawn new customer if shop is still open
+				if (this.state == GameState.Day && this.getAvailableWaitingSeat()) {
+					this.addCustomer();
+				}
+			},
+			loop: true,
+		});
+
+		this.setState(GameState.Shopping);
+		// this.startDay();
 	}
 
 	update(time: number, delta: number) {
@@ -92,13 +128,27 @@ export class GameScene extends BaseScene {
 		this.customers.forEach((x) => x.update(time, delta));
 
 		this.ui.update(time, delta);
-		this.overlay.update(time, delta);
+		this.summaryOverlay.update(time, delta);
+		this.upgradeOverlay.update(time, delta);
+	}
+
+	// Set game state
+	setState(state: GameState) {
+		this.state = state;
+
+		const isShopping = state === GameState.Shopping;
+		this.stations.forEach((s) => s.setClickable(isShopping));
+		this.employees.forEach((e) => e.setClickable(isShopping));
+		this.ui.setShoppingMode(isShopping);
 	}
 
 	// Start a new day
 	startDay() {
+		this.setState(GameState.Day);
 		this.day += 1;
 		this.ui.setDay(this.day);
+
+		this.addCustomer();
 
 		this.tweens.add({
 			targets: this,
@@ -111,18 +161,6 @@ export class GameScene extends BaseScene {
 			onComplete: () => {
 				this.endDay();
 			},
-		});
-
-		// Spawn customers every 3 seconds
-		this.time.addEvent({
-			delay: 3000,
-			callback: () => {
-				// Spawn new customer if shop is still open
-				if (this.timeOfDay > 0 && this.getAvailableWaitingSeat()) {
-					this.addCustomer();
-				}
-			},
-			loop: true,
 		});
 	}
 
@@ -149,6 +187,16 @@ export class GameScene extends BaseScene {
 				customer.nextActivity();
 			}
 		});
+
+		// Station clicked during shopping
+		station.on("click", () => {
+			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
+				this.upgradeOverlay.selectStation(station);
+
+				this.stations.forEach((s) => s.setDepth(0));
+				station.setDepth(2000);
+			}
+		});
 	}
 
 	openInventory() {
@@ -156,9 +204,9 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new employee
-	addEmployee(gridX: number, gridY: number) {
+	addEmployee(gridX: number, gridY: number, id: EmployeeId) {
 		const coord = this.board.gridToCoord(gridX, gridY);
-		const employee = new Employee(this, coord.x, coord.y);
+		const employee = new Employee(this, coord.x, coord.y, id);
 		this.employees.push(employee);
 
 		// Employee reached the destination
@@ -173,6 +221,16 @@ export class GameScene extends BaseScene {
 				customer.currentStation.startTask();
 			} else {
 				employee.setCustomer(null);
+			}
+		});
+
+		// Employee clicked during shopping
+		employee.on("click", () => {
+			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
+				this.upgradeOverlay.selectEmployee(employee);
+
+				this.employees.forEach((e) => e.setDepth(0));
+				employee.setDepth(2000);
 			}
 		});
 	}
@@ -245,7 +303,8 @@ export class GameScene extends BaseScene {
 
 			// Open overlay if no more customers
 			if (this.customers.length === 0) {
-				this.overlay.setVisible(true);
+				this.summaryOverlay.setVisible(true);
+				this.state = GameState.Shopping;
 			}
 		});
 

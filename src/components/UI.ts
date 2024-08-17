@@ -1,5 +1,6 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Timer } from "./Timer";
+import { TextButton } from "./TextButton";
 
 export class UI extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -9,6 +10,7 @@ export class UI extends Phaser.GameObjects.Container {
 	private dayProgressTimer: Timer;
 	private dayText: Phaser.GameObjects.Text;
 	private moneyText: Phaser.GameObjects.Text;
+	private nextButton: TextButton;
 
 	constructor(scene: GameScene) {
 		super(scene, 0, 0);
@@ -16,11 +18,11 @@ export class UI extends Phaser.GameObjects.Container {
 		this.scene = scene;
 
 		const panelWidth = 300;
-		const panelHeight = 400;
+		const panelHeight = 600;
 
 		this.panel = this.scene.add.container(
-			scene.W - panelWidth / 2,
-			panelHeight / 2
+			scene.W - panelWidth / 2 - 50,
+			panelHeight / 2 + 50
 		);
 		this.add(this.panel);
 
@@ -60,7 +62,7 @@ export class UI extends Phaser.GameObjects.Container {
 
 		this.moneyText = this.scene.addText({
 			x: 0,
-			y: 0.3 * panelHeight,
+			y: 100,
 			size: 40,
 			color: "#FFFFFF",
 			text: "Money: $0",
@@ -68,6 +70,12 @@ export class UI extends Phaser.GameObjects.Container {
 		this.moneyText.setStroke("black", 4);
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
+
+		this.nextButton = new TextButton(scene, 0, 300, "Next day");
+		this.panel.add(this.nextButton);
+		this.nextButton.on("click", () => {
+			this.emit("nextDay");
+		});
 	}
 
 	update(time: number, delta: number) {}
@@ -82,5 +90,9 @@ export class UI extends Phaser.GameObjects.Container {
 
 	setMoney(money: number) {
 		this.moneyText.setText(`Money: $${money}`);
+	}
+
+	setShoppingMode(isShopping: boolean) {
+		this.nextButton.setVisible(isShopping);
 	}
 }

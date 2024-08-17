@@ -86,9 +86,8 @@ export class Customer extends Button {
 		this.y += (this.dragY - this.y) * 0.5;
 
 		const wobble = this.doingCuteThing ? 0.1 : 0.02;
-		const squish =
-			1.0 + wobble * Math.sin((6 * time) / 1000) - 0.2 * this.holdSmooth;
-		this.setScale(1.0, squish);
+		const squish = 1.0 + wobble * Math.sin((6 * time) / 1000);
+		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
 		this.sprite.setTint(
 			interpolateColor(0xffffff, 0xff0000, 1 - this.happiness)
 		);

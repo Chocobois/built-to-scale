@@ -57,7 +57,7 @@ const audios: Audio[] = [
 ];
 
 /* Fonts */
-await loadFont('Sketch', 'Game Font');
+await loadFont('DynaPuff-Medium', 'Game Font');
 
 export {
 	images,
