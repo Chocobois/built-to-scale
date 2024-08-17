@@ -23,7 +23,6 @@ export class Customer extends Button {
 	public doingCuteThing: boolean;
 	public tasksCompleted: number;
 	public moneySpent: number;
-	public maxHappiness: number;
 	public happiness: number;
 
 	// Graphics
@@ -49,8 +48,7 @@ export class Customer extends Button {
 		this.doingCuteThing = false;
 		this.tasksCompleted = 0;
 		this.moneySpent = 0;
-		this.maxHappiness = 100;
-		this.happiness = 100;
+		this.happiness = 1;
 
 		/* Sprite */
 		const size = 150;
@@ -60,7 +58,12 @@ export class Customer extends Button {
 		this.sprite.setScale(size / this.sprite.width);
 		this.add(this.sprite);
 
-		this.thoughtBubble = new ThoughtBubble(scene, 0.2 * size, -0.6 * size, size);
+		this.thoughtBubble = new ThoughtBubble(
+			scene,
+			0.2 * size,
+			-0.6 * size,
+			size
+		);
 		this.add(this.thoughtBubble);
 
 		this.happinessTimer = new Timer(
@@ -84,18 +87,21 @@ export class Customer extends Button {
 		const squish =
 			1.0 + wobble * Math.sin((6 * time) / 1000) - 0.2 * this.holdSmooth;
 		this.setScale(1.0, squish);
+		this.sprite.setTint(
+			interpolateColor(0xffffff, 0xff0000, 1 - this.happiness)
+		);
 
 		if (this.isWaiting) {
 			this.happinessTimer.setVisible(true);
 			if (!this.dragged) {
-				this.happiness -= (100 / 20) * (delta / 1000);
+				// 20 seconds
+				this.happiness -= (1 / 20) * (delta / 1000);
 			}
 
-			const factor = this.happiness / this.maxHappiness;
 			this.happinessTimer.setColor(
-				interpolateColor(0xff0000, 0x00ff00, factor)
+				interpolateColor(0xff0000, 0x00ff00, this.happiness)
 			);
-			this.happinessTimer.redraw(factor);
+			this.happinessTimer.redraw(this.happiness);
 
 			if (this.happiness <= 0) {
 				this.leave();

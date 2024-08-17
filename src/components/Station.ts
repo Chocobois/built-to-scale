@@ -22,8 +22,8 @@ export const StationTypeColors: { [key in StationType]: number } = {
 export const StationDuration: { [key in StationType]: number } = {
 	[StationType.WaitingSeat]: 0,
 	[StationType.HornAndNails]: 3000,
-	[StationType.ScalePolish]: 4000,
-	[StationType.GoldBath]: 2000,
+	[StationType.ScalePolish]: 2000,
+	[StationType.GoldBath]: 4000,
 	[StationType.CashRegister]: 500,
 };
 
