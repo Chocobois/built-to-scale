@@ -26,7 +26,7 @@ export class ItemButton extends Button {
         this.spr.setOrigin(0.5,0.5);
         this.bindInteractive(this.spr, true);
         this.add(this.spr);
-        this.scene.add.existing(this);
+        this.parent.add(this);
         this.setDepth(4);
 
     }

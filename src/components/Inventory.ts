@@ -44,6 +44,7 @@ export class Inventory extends Phaser.GameObjects.Container {
         //this.window.setVisible(false);
         this.window.setOrigin(-1,0);
         this.add(this.window);
+        this.window.setDepth(1);
         this.title = this.scene.addText({
 			x: 75,
 			y: 760,
