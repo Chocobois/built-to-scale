@@ -73,6 +73,7 @@ export class Customer extends Button {
 			0.6 * size,
 			0xfa9425
 		);
+		this.happinessTimer.setAlpha(0);
 		this.add(this.happinessTimer);
 
 		this.bindInteractive(this.sprite, true);
