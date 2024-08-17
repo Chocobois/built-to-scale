@@ -4,6 +4,7 @@ import { Station, StationType, StationTypeColors } from "./Station";
 import { Employee } from "./Employee";
 import { Timer } from "./Timer";
 import { interpolateColor } from "@/functions";
+import { ThoughtBubble } from "./ThoughtBubble";
 
 export class Customer extends Button {
 	// Movement
@@ -27,8 +28,7 @@ export class Customer extends Button {
 
 	// Graphics
 	private sprite: Phaser.GameObjects.Sprite;
-	private bubble: Phaser.GameObjects.Sprite;
-	private bubbleImage: Phaser.GameObjects.Ellipse;
+	private thoughtBubble: ThoughtBubble;
 	private happinessTimer: Timer;
 
 	constructor(scene: GameScene, x: number, y: number) {
@@ -60,14 +60,8 @@ export class Customer extends Button {
 		this.sprite.setScale(size / this.sprite.width);
 		this.add(this.sprite);
 
-		this.bubble = this.scene.add.sprite(0, -0.75 * size, "bubble");
-		this.bubble.setScale(0.5);
-		this.bubble.setVisible(false);
-		this.add(this.bubble);
-
-		this.bubbleImage = this.scene.add.ellipse(0, -0.82 * size, 40, 40, 0);
-		this.bubbleImage.setVisible(false);
-		this.add(this.bubbleImage);
+		this.thoughtBubble = new ThoughtBubble(scene, 0, -0.75 * size, size);
+		this.add(this.thoughtBubble);
 
 		this.happinessTimer = new Timer(
 			scene,
@@ -87,7 +81,8 @@ export class Customer extends Button {
 		this.y += (this.dragY - this.y) * 0.5;
 
 		const wobble = this.doingCuteThing ? 0.1 : 0.02;
-		const squish = 1.0 + wobble * Math.sin((6 * time) / 1000);
+		const squish =
+			1.0 + wobble * Math.sin((6 * time) / 1000) - 0.2 * this.holdSmooth;
 		this.setScale(1.0, squish);
 
 		if (this.isWaiting) {
@@ -139,6 +134,10 @@ export class Customer extends Button {
 			this.lastX = station.x;
 			this.lastY = station.y;
 			this.happiness = 100;
+
+			if (this.requestedStation === station.stationType) {
+				this.thoughtBubble.markAsReady();
+			}
 		}
 	}
 
@@ -155,13 +154,9 @@ export class Customer extends Button {
 	setRequest(type: StationType | null) {
 		if (type !== null) {
 			this.requestedStation = type;
-
-			this.bubble.setVisible(true);
-			this.bubbleImage.setVisible(true);
-			this.bubbleImage.fillColor = StationTypeColors[type];
+			this.thoughtBubble.setRequest(type);
 		} else {
-			this.bubble.setVisible(false);
-			this.bubbleImage.setVisible(false);
+			this.thoughtBubble.setRequest(null);
 		}
 	}
 
