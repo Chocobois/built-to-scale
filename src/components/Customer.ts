@@ -139,7 +139,7 @@ export class Customer extends Button {
 		if (station) {
 			this.lastX = station.x;
 			this.lastY = station.y;
-			this.happiness = 100;
+			this.happiness = 1;
 
 			if (this.requestedStation === station.stationType) {
 				this.thoughtBubble.markAsReady();
