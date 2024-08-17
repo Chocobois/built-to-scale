@@ -1,11 +1,11 @@
 {
 	"team": "Chocobois",
-	"title": "Game Jam Template",
-	"description": "We make game, but faster!",
+	"title": "Scalie Saloon",
+	"description": "Give your scalies a propper spa treatment, build and expand your business!",
 	"itch": {
-		"upload": false,
-		"username": "username",
-		"game": "game-name"
+		"upload": true,
+		"username": "golen",
+		"game": "scale"
 	},
 	"neutralino": {
 		"allow": ["app.exit", "window.center"]
