@@ -130,6 +130,15 @@ export class GameScene extends BaseScene {
 		this.ui.update(time, delta);
 		this.summaryOverlay.update(time, delta);
 		this.upgradeOverlay.update(time, delta);
+
+		// Depth sorting hack
+		if (this.state === GameState.Day) {
+			this.stations.forEach((s) => s.setDepth(s.y / 100 + 0));
+			this.employees.forEach((e) => e.setDepth(e.y / 100 + 1));
+			this.customers.forEach((c) =>
+				c.setDepth(c.y / 100 + (c.dragged ? 100 : 1))
+			);
+		}
 	}
 
 	// Set game state
@@ -162,6 +171,10 @@ export class GameScene extends BaseScene {
 				this.endDay();
 			},
 		});
+
+		// Reset depth
+		this.stations.forEach((s) => s.setDepth(0));
+		this.employees.forEach((e) => e.setDepth(0));
 	}
 
 	endDay() {}
