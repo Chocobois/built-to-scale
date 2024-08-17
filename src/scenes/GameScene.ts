@@ -106,14 +106,16 @@ export class GameScene extends BaseScene {
 		this.upgradeOverlay = new UpgradeOverlay(this);
 		this.upgradeOverlay.setDepth(1010);
 		this.upgradeOverlay.on("upgradeStation", (station: Station) => {
+			this.money -= station.upgradeCost;
+			this.ui.setMoney(this.money);
 			station.upgrade();
 			this.upgradeOverlay.selectStation(station);
-			this.money -= station.upgradeCost;
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
+			this.money -= employee.upgradeCost;
+			this.ui.setMoney(this.money);
 			employee.upgrade();
 			this.upgradeOverlay.selectEmployee(employee);
-			this.money -= employee.upgradeCost;
 		});
 
 		this.summaryOverlay = new SummaryOverlay(this);
