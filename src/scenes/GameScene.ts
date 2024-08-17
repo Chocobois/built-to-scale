@@ -89,7 +89,7 @@ export class GameScene extends BaseScene {
 		}
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
-		this.customers.forEach((c) => c.update(time, delta));
+		this.customers.forEach((x) => x.update(time, delta));
 
 		this.ui.update(time, delta);
 		this.overlay.update(time, delta);
