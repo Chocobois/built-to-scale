@@ -16,7 +16,7 @@ const images: Image[] = [
 	image('characters/worker', 'worker'),
 	// Small size customers
 	image('characters/smallCWalk1', 'small_customer_walk1'),
-	image('characters/smallCsit1', 'small_customer_sit1'),
+	image('characters/smallCSit1', 'small_customer_sit1'),
 	// Medium size customers
 	image('characters/medCWalk1', 'medium_customer_walk1'),
 	image('characters/medCSit1', 'medium_customer_sit1'),

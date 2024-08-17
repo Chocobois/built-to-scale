@@ -2,6 +2,7 @@ import { BaseScene } from "@/scenes/BaseScene";
 import { Board } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
+import { CustomerId } from "@/components/CustomerData";
 import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
 import { StationId, StationType } from "@/components/StationData";
@@ -145,7 +146,12 @@ export class GameScene extends BaseScene {
 					this.timeOfDay > 0 &&
 					this.getAvailableWaitingSeat()
 				) {
-					this.addCustomer();
+					const type = Phaser.Math.RND.pick([
+						CustomerId.Small,
+						CustomerId.Medium,
+						CustomerId.Large,
+					]);
+					this.addCustomer(type);
 				}
 			},
 			loop: true,
@@ -187,7 +193,7 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setClickable(isShopping));
 		this.employees.forEach((e) => e.setClickable(isShopping));
 		this.ui.setShoppingMode(isShopping);
-		if (isShopping) this.summaryOverlay.open();
+		if (isShopping) this.summaryOverlay.open(this.dailyStats);
 	}
 
 	// Load level data
@@ -254,7 +260,7 @@ export class GameScene extends BaseScene {
 		this.employees.forEach((e) => e.setDepth(0));
 
 		// TEMP: Add first customer
-		this.addCustomer();
+		this.addCustomer(CustomerId.Small);
 
 		// Setup daytime tween
 		this.tweens.add({
@@ -344,9 +350,9 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new customer
-	addCustomer() {
+	addCustomer(type: CustomerId) {
 		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(this, coord.x, coord.y);
+		const customer = new Customer(this, coord.x, coord.y, type);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
@@ -418,7 +424,14 @@ export class GameScene extends BaseScene {
 		// Customer completing their itinerary and paying
 		customer.on("pay", (money: number) => {
 			this.money += money;
+			this.dailyStats.money += money;
+			this.dailyStats.happyCustomers += 1;
 			this.ui.setMoney(this.money);
+		});
+
+		// Customer leaving angry
+		customer.on("angry", () => {
+			this.dailyStats.angryCustomers += 1;
 		});
 	}
 

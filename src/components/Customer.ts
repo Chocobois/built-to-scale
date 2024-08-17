@@ -6,16 +6,18 @@ import { Timer } from "./Timer";
 import { interpolateColor } from "@/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
 import { StationType } from "./StationData";
+import { CustomerData, CustomerId } from "./CustomerData";
 
 export interface CustomerType {
 	spr: string;
 	tags: string[];
 	antitags: string[];
 	budget: number;
-	
 }
 
 export class Customer extends Button {
+	public customerId: CustomerId;
+
 	// Movement
 	public lastX: number; // Last position on the grid
 	public lastY: number;
@@ -53,10 +55,11 @@ export class Customer extends Button {
 	private angryImage: Phaser.GameObjects.Image;
 	private happinessTimer: Timer;
 
-	constructor(scene: GameScene, x: number, y: number) {
+	constructor(scene: GameScene, x: number, y: number, id: CustomerId) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
+		this.customerId = id;
 
 		this.lastX = x;
 		this.lastY = y;
@@ -75,7 +78,7 @@ export class Customer extends Button {
 
 		/* Sprite */
 		const size = 120;
-		this.sprite = this.scene.add.sprite(0, 0, "small_customer_walk1");
+		this.sprite = this.scene.add.sprite(0, 0, this.spriteKeys.sit);
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.y += size / 2;
 		this.sprite.setScale(size / this.sprite.width);
@@ -135,6 +138,7 @@ export class Customer extends Button {
 			if (this.happiness <= 0) {
 				this.leave();
 				this.thoughtBubble.showSymbol("sad");
+				this.emit("angry");
 			}
 		} else {
 			this.happinessTimer.setVisible(false);
@@ -145,6 +149,7 @@ export class Customer extends Button {
 	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
 		this.emit("pickup");
 		this.dragged = true;
+		this.sprite.setTexture(this.spriteKeys.walk);
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -157,6 +162,8 @@ export class Customer extends Button {
 	onDragEnd(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
 		this.dragged = false;
 		this.emit("drop");
+		this.sprite.setTexture(this.spriteKeys.sit);
+
 	}
 
 	snapTo(x: number, y: number) {
@@ -237,7 +244,21 @@ export class Customer extends Button {
 		});
 	}
 
+	/* Getters */
+
 	get isWaiting(): boolean {
 		return this.currentStation !== null && this.currentEmployee === null;
+	}
+
+	get spriteKeys() {
+		return CustomerData[this.customerId].spriteKeys;
+	}
+
+	get walkSpeed(): number {
+		return CustomerData[this.customerId].walkSpeed;
+	}
+
+	get workMultiplier(): number {
+		return CustomerData[this.customerId].workMultiplier;
 	}
 }
