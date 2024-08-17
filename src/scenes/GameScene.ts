@@ -8,6 +8,7 @@ import { StationId, StationType } from "@/components/StationData";
 import { UpgradeOverlay } from "@/components/UpgradeOverlay";
 import { SummaryOverlay } from "@/components/SummaryOverlay";
 import { EmployeeId } from "@/components/EmployeeData";
+import { BlockType, LevelData, LevelId } from "@/components/Levels";
 
 enum GameState {
 	Cutscene,
@@ -44,35 +45,35 @@ export class GameScene extends BaseScene {
 		this.input.addPointer(2);
 		this.input.dragDistanceThreshold = 10;
 
-		this.background = this.add.image(0, 0, "background");
+		this.background = this.add.image(0, 0, "grid1");
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.board = new Board(this, 930, 550, 8, 6);
+		this.board = new Board(this, this.CX, this.CY, 6, 4);
 
 		this.stations = [];
-		this.addStation(0, 0, StationId.WaitingSeatTier1);
-		this.addStation(0, 1, StationId.WaitingSeatTier2);
-		this.addStation(0, 2, StationId.WaitingSeatTier3);
-		this.addStation(2, 2, StationId.HornAndNailsTier1);
-		this.addStation(3, 2, StationId.HornAndNailsTier2);
-		this.addStation(4, 2, StationId.HornAndNailsTier3);
-		this.addStation(2, 0, StationId.HornAndNailsTier1);
-		this.addStation(3, 0, StationId.HornAndNailsTier2);
-		this.addStation(4, 0, StationId.HornAndNailsTier3);
-		this.addStation(5, 1, StationId.ScalePolishTier1);
-		this.addStation(6, 1, StationId.ScalePolishTier2);
-		this.addStation(7, 1, StationId.ScalePolishTier3);
-		this.addStation(5, 3, StationId.GoldBathTier1);
-		this.addStation(6, 3, StationId.GoldBathTier2);
-		this.addStation(7, 3, StationId.GoldBathTier3);
-		this.addStation(5, 5, StationId.CashRegister);
+		// this.addStation(0, 0, StationId.WaitingSeatTier1);
+		// this.addStation(0, 1, StationId.WaitingSeatTier2);
+		// this.addStation(0, 2, StationId.WaitingSeatTier3);
+		// this.addStation(2, 2, StationId.HornAndNailsTier1);
+		// this.addStation(3, 2, StationId.HornAndNailsTier2);
+		// this.addStation(4, 2, StationId.HornAndNailsTier3);
+		// this.addStation(2, 0, StationId.HornAndNailsTier1);
+		// this.addStation(3, 0, StationId.HornAndNailsTier2);
+		// this.addStation(4, 0, StationId.HornAndNailsTier3);
+		// this.addStation(5, 1, StationId.ScalePolishTier1);
+		// this.addStation(6, 1, StationId.ScalePolishTier2);
+		// this.addStation(7, 1, StationId.ScalePolishTier3);
+		// this.addStation(5, 3, StationId.GoldBathTier1);
+		// this.addStation(6, 3, StationId.GoldBathTier2);
+		// this.addStation(7, 3, StationId.GoldBathTier3);
+		// this.addStation(5, 5, StationId.CashRegister);
 
 		this.employees = [];
-		this.addEmployee(0, 5, EmployeeId.RaccoonTier1);
-		this.addEmployee(1, 5, EmployeeId.RaccoonTier1);
-		this.addEmployee(2, 5, EmployeeId.RaccoonTier1);
-		this.addEmployee(3, 5, EmployeeId.HumanTier1);
+		// this.addEmployee(0, 5, EmployeeId.RaccoonTier1);
+		// this.addEmployee(1, 5, EmployeeId.RaccoonTier1);
+		// this.addEmployee(2, 5, EmployeeId.RaccoonTier1);
+		// this.addEmployee(3, 5, EmployeeId.HumanTier1);
 
 		this.customers = [];
 
@@ -122,6 +123,7 @@ export class GameScene extends BaseScene {
 		});
 
 		// this.setState(GameState.Shopping);
+		this.loadLevel(LevelId.Level1);
 		this.startDay();
 	}
 
@@ -159,13 +161,61 @@ export class GameScene extends BaseScene {
 		if (isShopping) this.summaryOverlay.open();
 	}
 
+	// Load level data
+	loadLevel(id: LevelId) {
+		const level = LevelData[id];
+
+		this.background.setTexture(level.background);
+		this.board.resize(level.width, level.height);
+
+		// Clear all stations, employees, and customers
+		this.stations.forEach((s) => s.destroy());
+		this.employees.forEach((e) => e.destroy());
+		this.customers.forEach((c) => c.destroy());
+		this.stations = [];
+		this.employees = [];
+		this.customers = [];
+
+		// Load level data items
+		for (let y = 0; y < level.height; y++) {
+			for (let x = 0; x < level.width; x++) {
+				const gridX = x;
+				const gridY = y;
+				const block = level.grid[y][x];
+
+				switch (block) {
+					case BlockType.Empty:
+						break;
+					case BlockType.Wall:
+						break;
+					case BlockType.WaitingSeat:
+						this.addStation(gridX, gridY, StationId.WaitingSeatTier1);
+						break;
+					case BlockType.HornAndNails:
+						this.addStation(gridX, gridY, StationId.HornAndNailsTier1);
+						break;
+					case BlockType.ScalePolish:
+						this.addStation(gridX, gridY, StationId.ScalePolishTier1);
+						break;
+					case BlockType.GoldBath:
+						this.addStation(gridX, gridY, StationId.GoldBathTier1);
+						break;
+					case BlockType.CashRegister:
+						this.addStation(gridX, gridY, StationId.CashRegister);
+						break;
+					case BlockType.Employee:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonTier1);
+						break;
+				}
+			}
+		}
+	}
+
 	// Start a new day
 	startDay() {
 		this.setState(GameState.Day);
 		this.day += 1;
 		this.ui.setDay(this.day);
-
-		this.addCustomer();
 
 		this.tweens.add({
 			targets: this,
@@ -183,6 +233,8 @@ export class GameScene extends BaseScene {
 		// Reset depth
 		this.stations.forEach((s) => s.setDepth(0));
 		this.employees.forEach((e) => e.setDepth(0));
+
+		this.addCustomer();
 	}
 
 	endDay() {}
@@ -396,8 +448,8 @@ export class GameScene extends BaseScene {
 			const { gridX, gridY } = this.board.coordToGrid(station.x, station.y);
 			const { x, y } = this.board.gridToCoord(gridX, gridY - 1);
 
-			customer.setEmployee(closestEmployee);
 			customer.setRequest(null);
+			customer.setEmployee(closestEmployee);
 
 			closestEmployee.setCustomer(customer);
 			closestEmployee.walkTo(x, y);

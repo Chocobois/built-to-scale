@@ -1,17 +1,24 @@
 import { GameScene } from "@/scenes/GameScene";
 
 export class Board extends Phaser.GameObjects.Container {
+	public scene: GameScene;
 	public size: number;
 
 	private grid: Phaser.GameObjects.Grid;
 	private things: any[];
 
-	constructor(scene: GameScene, x: number, y: number, width: number, height: number) {
+	constructor(
+		scene: GameScene,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
 
-		this.size = 130;
+		this.size = scene.H / (height + 2);
 		this.grid = this.scene.add.grid(
 			0,
 			0,
@@ -30,6 +37,26 @@ export class Board extends Phaser.GameObjects.Container {
 	}
 
 	update(time: number, delta: number) {}
+
+	// Resize the board to new level
+	resize(width: number, height: number) {
+		this.size = this.scene.H / height;
+
+		this.grid.destroy();
+		this.grid = this.scene.add.grid(
+			0,
+			0,
+			width * this.size,
+			height * this.size,
+			this.size,
+			this.size,
+			0xffffff,
+			0.1,
+			0xff0000,
+			0.2
+		);
+		this.add(this.grid);
+	}
 
 	// Return coordinates of the grid cell
 	gridToCoord(gridX: number, gridY: number) {
