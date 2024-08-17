@@ -7,18 +7,39 @@ import { interpolateColor } from "@/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
 import { StationType } from "./StationData";
 
+export interface CustomerType {
+	spr: string;
+	tags: string[];
+	antitags: string[];
+	budget: number;
+	
+}
+
 export class Customer extends Button {
 	// Movement
 	public lastX: number; // Last position on the grid
 	public lastY: number;
 	public dragX: number; // Current drag position
 	public dragY: number;
+	public tags: string[];
 	public currentStation: Station | null;
 	public currentEmployee: Employee | null;
-
+	public cdata: CustomerType;
 	// Requests
 	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
+
+	// Happiness variables
+	public baseTip: number;
+	public tipMultiplier: number;
+	public tipBonus: number;
+	public happinessStage: number; //0-6, rounds down
+	public minHappiness: number = 0; // bonuses
+	public maxHappiness: number = 6; // bonuses
+
+	public patience: number;
+	public minPatience: number; // bonuses
+	public lockPatience: boolean; // bonuses
 
 	// Stats
 	public doingCuteThing: boolean;

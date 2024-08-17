@@ -5,6 +5,11 @@ import { Customer } from "@/components/Customer";
 import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
 import { StationId, StationType } from "@/components/StationData";
+import { Inventory } from "@/components/Inventory";
+import { SimpleButton } from "@/components/elements/SimpleButton";
+import { ToggleButton } from "@/components/elements/ToggleButton";
+import { ItemButton } from "@/components/ItemButton";
+import { ItemHandler } from "@/components/ItemHandler";
 import { UpgradeOverlay } from "@/components/UpgradeOverlay";
 import { SummaryOverlay } from "@/components/SummaryOverlay";
 import { EmployeeId } from "@/components/EmployeeData";
@@ -27,6 +32,10 @@ export class GameScene extends BaseScene {
 	private summaryOverlay: SummaryOverlay;
 	private paused: boolean = false;
 	private browsing: boolean = false;
+	private inventory: Inventory;
+	private invButton: ToggleButton;
+	private iHandler: ItemHandler;
+	public activeItem: ItemButton;
 
 	// Game stats
 	public state: GameState = GameState.Cutscene;
@@ -79,6 +88,16 @@ export class GameScene extends BaseScene {
 
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
+		this.iHandler = new ItemHandler(this);
+
+		this.inventory = new Inventory(this,-650,0,[4,5,2,6,3,0,0,0,0,0,0,0,0]);
+		this.invButton = new ToggleButton(this,64,540,"invbutton");
+		this.add.existing(this.invButton);
+        this.invButton.on("click", ()=> {this.toggleInventory()});
+		this.inventory.setDepth(4);
+		this.invButton.setDepth(3);
+		this.invButton.setAlpha(0.75);
+		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
 		this.ui.setMoney(this.money);
 		this.ui.setDay(this.day);
 		this.ui.on("nextDay", () => {
@@ -88,14 +107,16 @@ export class GameScene extends BaseScene {
 		this.upgradeOverlay = new UpgradeOverlay(this);
 		this.upgradeOverlay.setDepth(1010);
 		this.upgradeOverlay.on("upgradeStation", (station: Station) => {
+			this.money -= station.upgradeCost;
+			this.ui.setMoney(this.money);
 			station.upgrade();
 			this.upgradeOverlay.selectStation(station);
-			this.money -= station.upgradeCost;
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
+			this.money -= employee.upgradeCost;
+			this.ui.setMoney(this.money);
 			employee.upgrade();
 			this.upgradeOverlay.selectEmployee(employee);
-			this.money -= employee.upgradeCost;
 		});
 
 		this.summaryOverlay = new SummaryOverlay(this);
@@ -137,6 +158,10 @@ export class GameScene extends BaseScene {
 
 		this.ui.update(time, delta);
 		this.summaryOverlay.update(time, delta);
+		this.activeItem.update(time,delta);
+		if(this.activeItem.state == 3){
+			this.snapItem();
+		}
 		this.upgradeOverlay.update(time, delta);
 
 		// Depth sorting hack
@@ -482,5 +507,76 @@ export class GameScene extends BaseScene {
 		customer.itinerary = activities;
 		customer.requestedStation = activities[0];
 		customer.nextActivity();
+	}
+
+	toggleInventory(){
+		this.inventory.toggle();
+		if(this.inventory.isOpen) {
+			this.invButton.setPosition(714,540);
+			this.invButton.toggleForward();
+		} else {
+			this.invButton.setPosition(64,540);
+			this.invButton.toggleBackward();
+		}
+	}
+
+	setActiveItem(i: ItemButton){
+		this.activeItem.destroy();
+		this.activeItem = i;
+		this.activeItem.on("itemdrop", () => {
+			this.cleanUpItem();
+		});
+
+		this.add.existing(this.activeItem);
+		//new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+	}
+
+	parseItems(i: number, st: Station, c: Customer){
+		this.iHandler.process(this.inventory.itemList[i], st,c);
+	}
+
+	snapItem() {
+		let s = this.getClosestStationToItem(this.activeItem);
+		if(s) {
+			this.activeItem.snapTo(s.x,s.y);
+		}
+	}
+
+	cleanUpItem(){
+		let s = this.getClosestStationToItem(this.activeItem);
+		if(s) {
+			s.applyItem(this.activeItem.id,this.activeItem.sprname);
+			this.sound.play("place");
+		} else {
+			this.inventory.returnItem(this.activeItem.id);
+			this.sound.play("return");
+		}
+		this.activeItem.destroy();
+		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+	}
+
+	getClosestStationToItem(item: ItemButton): Station | null {
+		let closestStation = null;
+		let closestDistance = Infinity;
+		const maxDistance = 75;
+
+		this.stations.forEach((station) => {
+			const distance = Phaser.Math.Distance.Between(
+				item.dragX,
+				item.dragY,
+				station.x,
+				station.y
+			);
+			if (
+				!station.currentCustomer &&
+				distance < closestDistance &&
+				distance < maxDistance &&
+				station.appliedItems.length < 3
+			) {
+				closestStation = station;
+				closestDistance = distance;
+			}
+		});
+		return closestStation;
 	}
 }

@@ -13,11 +13,23 @@ import { interpolateColor } from "@/functions";
 export class Station extends Button {
 	public stationId: StationId;
 	public currentCustomer: Customer | null; // The customer using the station
+	//public taskDuration: number; // Time it takes to complete a task
+	public taskSpeed: number = 1; // For permanent bonuses
+	public taskHaste: number = 1; // For temporary bonuses
+	
+	public taskTimer: number = 0;
+
+	public appliedItems: number[];
+	public appliedSprites: Phaser.GameObjects.Sprite[];
+	//public admissionFee: number; // Cost to use the station
 
 	private sprite: Phaser.GameObjects.Image;
 	private text: Phaser.GameObjects.Text;
 
 	private progressTimer: Timer;
+
+
+
 
 	constructor(scene: GameScene, x: number, y: number, id: StationId) {
 		super(scene, x, y);
@@ -58,6 +70,9 @@ export class Station extends Button {
 		// Make station clickable during shopping
 		this.bindInteractive(this.sprite);
 		this.sprite.input!.enabled = false;
+
+		this.appliedItems = [];
+		this.appliedSprites = [];
 	}
 
 	update(time: number, delta: number) {
@@ -73,7 +88,8 @@ export class Station extends Button {
 
 	startTask() {
 		this.text.setText("Working");
-
+		this.parseItems();
+		this.clearItems();
 		this.scene.tweens.addCounter({
 			from: 1,
 			to: 0,
@@ -101,6 +117,27 @@ export class Station extends Button {
 			this.stationId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
 		}
+	}
+
+	applyItem(id: number, sp: string){
+		this.appliedItems.push(id);
+		let st = new Phaser.GameObjects.Sprite(this.scene,-70+(35*this.appliedItems.length),40,sp);
+		st.setOrigin(0.5,0.5);
+		st.setScale(0.4);
+		st.setDepth(2);
+		st.setAlpha(0.85);
+		this.add(st);
+		this.appliedSprites.push(st);
+	}
+
+	clearItems(){
+		this.appliedItems = [];
+		this.appliedSprites.forEach((sp) => sp.destroy());
+		this.appliedSprites = [];
+	}
+
+	parseItems(){
+		
 	}
 
 	/* Getters */
