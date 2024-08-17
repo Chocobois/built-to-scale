@@ -42,14 +42,25 @@ export class GameScene extends BaseScene {
 		this.addStation(0, 0, StationType.WaitingSeat);
 		this.addStation(0, 1, StationType.WaitingSeat);
 		this.addStation(0, 2, StationType.WaitingSeat);
+		this.addStation(0, 3, StationType.WaitingSeat);
 		this.addStation(2, 2, StationType.HornAndNails);
+		this.addStation(3, 2, StationType.HornAndNails);
 		this.addStation(4, 2, StationType.HornAndNails);
+		this.addStation(2, 0, StationType.HornAndNails);
+		this.addStation(3, 0, StationType.HornAndNails);
+		this.addStation(4, 0, StationType.HornAndNails);
 		this.addStation(6, 1, StationType.ScalePolish);
+		this.addStation(7, 1, StationType.ScalePolish);
 		this.addStation(6, 3, StationType.GoldBath);
-		this.addStation(7, 5, StationType.CashRegister);
+		this.addStation(7, 3, StationType.GoldBath);
+		this.addStation(2, 4, StationType.GoldBath);
+		this.addStation(3, 4, StationType.GoldBath);
+		this.addStation(5, 5, StationType.CashRegister);
 
 		this.employees = [];
+		this.addEmployee(0, 5);
 		this.addEmployee(1, 5);
+		this.addEmployee(2, 5);
 		this.addEmployee(3, 5);
 
 		this.customers = [];
@@ -87,6 +98,18 @@ export class GameScene extends BaseScene {
 			onComplete: () => {
 				this.endDay();
 			},
+		});
+
+		// Spawn customers every 3 seconds
+		this.time.addEvent({
+			delay: 3000,
+			callback: () => {
+				// Spawn new customer if shop is still open
+				if (this.timeOfDay > 0 && this.getAvailableWaitingSeat()) {
+					this.addCustomer();
+				}
+			},
+			loop: true,
 		});
 	}
 
@@ -206,11 +229,6 @@ export class GameScene extends BaseScene {
 		customer.on("offscreen", () => {
 			this.customers = this.customers.filter((c) => c !== customer);
 			customer.destroy();
-
-			// Spawn new customer if shop is still open
-			if (this.timeOfDay > 0 && this.getAvailableWaitingSeat()) {
-				this.addCustomer();
-			}
 		});
 
 		// Customer completing their itinerary and paying

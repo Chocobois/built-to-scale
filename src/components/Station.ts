@@ -62,6 +62,7 @@ export class Station extends Button {
 			text: "Available",
 		});
 		this.text.setOrigin(0.5);
+		this.text.setVisible(false);
 		this.text.setStroke("#000000", 4);
 		this.add(this.text);
 
