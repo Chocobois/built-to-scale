@@ -43,6 +43,11 @@ export class GameScene extends BaseScene {
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
 	public money: number = 0;
+	public dailyStats: {
+		money: number;
+		happyCustomers: number;
+		angryCustomers: number;
+	};
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -118,6 +123,9 @@ export class GameScene extends BaseScene {
 			employee.upgrade();
 			this.upgradeOverlay.selectEmployee(employee);
 		});
+		this.upgradeOverlay.on("close", () => {
+			this.sortDepth();
+		});
 
 		this.summaryOverlay = new SummaryOverlay(this);
 		this.summaryOverlay.setDepth(1020);
@@ -166,11 +174,7 @@ export class GameScene extends BaseScene {
 
 		// Depth sorting hack
 		if (this.state === GameState.Day) {
-			this.stations.forEach((s) => s.setDepth(s.y / 100 + 0));
-			this.employees.forEach((e) => e.setDepth(e.y / 100 + 1));
-			this.customers.forEach((c) =>
-				c.setDepth(c.y / 100 + (c.dragged ? 100 : 1))
-			);
+			this.sortDepth();
 		}
 	}
 
@@ -242,6 +246,17 @@ export class GameScene extends BaseScene {
 		this.day += 1;
 		this.ui.setDay(this.day);
 
+		// Reset daily stats
+		this.dailyStats = { money: 0, happyCustomers: 0, angryCustomers: 0 };
+
+		// Reset depth
+		this.stations.forEach((s) => s.setDepth(0));
+		this.employees.forEach((e) => e.setDepth(0));
+
+		// TEMP: Add first customer
+		this.addCustomer();
+
+		// Setup daytime tween
 		this.tweens.add({
 			targets: this,
 			timeOfDay: { from: 1, to: 0 },
@@ -250,19 +265,14 @@ export class GameScene extends BaseScene {
 				this.timeOfDay = tween.getValue();
 				this.ui.setTimeOfDay(this.timeOfDay);
 			},
-			onComplete: () => {
-				this.endDay();
-			},
 		});
-
-		// Reset depth
-		this.stations.forEach((s) => s.setDepth(0));
-		this.employees.forEach((e) => e.setDepth(0));
-
-		this.addCustomer();
 	}
 
-	endDay() {}
+	endDay() {
+		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
+
+		this.setState(GameState.Shopping);
+	}
 
 	// Add new station
 	addStation(gridX: number, gridY: number, id: StationId) {
@@ -291,7 +301,7 @@ export class GameScene extends BaseScene {
 			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
 				this.upgradeOverlay.selectStation(station);
 
-				this.stations.forEach((s) => s.setDepth(0));
+				this.sortDepth();
 				station.setDepth(2000);
 			}
 		});
@@ -327,7 +337,7 @@ export class GameScene extends BaseScene {
 			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
 				this.upgradeOverlay.selectEmployee(employee);
 
-				this.employees.forEach((e) => e.setDepth(0));
+				this.sortDepth();
 				employee.setDepth(2000);
 			}
 		});
@@ -401,7 +411,7 @@ export class GameScene extends BaseScene {
 
 			// Open overlay if no more customers
 			if (this.customers.length === 0) {
-				this.setState(GameState.Shopping);
+				this.endDay();
 			}
 		});
 
@@ -578,5 +588,13 @@ export class GameScene extends BaseScene {
 			}
 		});
 		return closestStation;
+	}
+
+	sortDepth() {
+		this.stations.forEach((s) => s.setDepth(s.y / 100 + 0));
+		this.employees.forEach((e) => e.setDepth(e.y / 100 + 1));
+		this.customers.forEach((c) =>
+			c.setDepth(c.y / 100 + (c.dragged ? 100 : 1))
+		);
 	}
 }
