@@ -14,10 +14,15 @@ const images: Image[] = [
 	// Characters
 	image('characters/player', 'player'),
 	image('characters/worker', 'worker'),
+	// Small size customers
 	image('characters/smallCWalk1', 'small_customer_walk1'),
 	image('characters/smallCsit1', 'small_customer_sit1'),
+	// Medium size customers
 	image('characters/medCWalk1', 'medium_customer_walk1'),
+	image('characters/medCSit1', 'medium_customer_sit1'),
+	// Large size customers
 	image('characters/largeCWalk1', 'large_customer_walk1'),
+	image('characters/largeCSit1', 'large_customer_sit1'),
 
 	// Items
 	image('items/coin', 'coin'),
