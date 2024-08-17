@@ -20,9 +20,9 @@ export class Board extends Phaser.GameObjects.Container {
 			this.size,
 			this.size,
 			0xffffff,
-			0.2,
+			0.1,
 			0x000000,
-			0.5
+			0.2
 		);
 		this.add(this.grid);
 
