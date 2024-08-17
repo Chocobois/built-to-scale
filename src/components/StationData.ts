@@ -24,7 +24,7 @@ export const StationTypeData: { [key in StationType]: StationTypeInterface } = {
 	},
 	[StationType.ScalePolish]: {
 		symbolKey: "wax",
-		color: 0x00ff00,
+		color: 0xffff00,
 	},
 	[StationType.GoldBath]: {
 		symbolKey: "gold",
@@ -32,7 +32,7 @@ export const StationTypeData: { [key in StationType]: StationTypeInterface } = {
 	},
 	[StationType.CashRegister]: {
 		symbolKey: "cash",
-		color: 0xffff00,
+		color: 0x00ff00,
 	},
 };
 
