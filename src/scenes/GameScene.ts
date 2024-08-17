@@ -18,6 +18,7 @@ export class GameScene extends BaseScene {
 
 	// Game stats
 	private day: number = 0;
+	private dayDuration: number = 60000; // 1 minute
 	private timeOfDay: number = 0;
 	private money: number = 0;
 
@@ -35,16 +36,16 @@ export class GameScene extends BaseScene {
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.board = new Board(this, 900, 500);
+		this.board = new Board(this, 930, 550);
 
 		this.stations = [];
 		this.addStation(0, 0, StationType.WaitingSeat);
-		this.addStation(1, 0, StationType.WaitingSeat);
-		this.addStation(2, 0, StationType.WaitingSeat);
-		this.addStation(1, 2, StationType.HornAndNails);
-		this.addStation(3, 2, StationType.HornAndNails);
-		this.addStation(5, 1, StationType.ScalePolish);
-		this.addStation(5, 3, StationType.GoldBath);
+		this.addStation(0, 1, StationType.WaitingSeat);
+		this.addStation(0, 2, StationType.WaitingSeat);
+		this.addStation(2, 2, StationType.HornAndNails);
+		this.addStation(4, 2, StationType.HornAndNails);
+		this.addStation(6, 1, StationType.ScalePolish);
+		this.addStation(6, 3, StationType.GoldBath);
 		this.addStation(7, 5, StationType.CashRegister);
 
 		this.employees = [];
@@ -78,7 +79,7 @@ export class GameScene extends BaseScene {
 		this.tweens.add({
 			targets: this,
 			timeOfDay: { from: 1, to: 0 },
-			duration: 3 * 60 * 1000,
+			duration: this.dayDuration,
 			onUpdate: (tween) => {
 				this.timeOfDay = tween.getValue();
 				this.ui.setTimeOfDay(this.timeOfDay);

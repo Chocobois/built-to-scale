@@ -60,13 +60,13 @@ export class Customer extends Button {
 		this.sprite.setScale(size / this.sprite.width);
 		this.add(this.sprite);
 
-		this.thoughtBubble = new ThoughtBubble(scene, 0, -0.75 * size, size);
+		this.thoughtBubble = new ThoughtBubble(scene, 0.2 * size, -0.6 * size, size);
 		this.add(this.thoughtBubble);
 
 		this.happinessTimer = new Timer(
 			scene,
-			0.3 * size,
-			-0.4 * size,
+			-0.3 * size,
+			-0.3 * size,
 			0.6 * size,
 			0xfa9425
 		);
