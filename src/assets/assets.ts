@@ -11,6 +11,7 @@ const images: Image[] = [
 	image('characters/player', 'player'),
 	image('characters/worker', 'worker'),
 	image('characters/smallCWalk1', 'small_customer_walk1'),
+	image('characters/smallCsit1', 'small_customer_sit1'),
 	image('characters/medCWalk1', 'medium_customer_walk1'),
 	image('characters/largeCWalk1', 'large_customer_walk1'),
 
