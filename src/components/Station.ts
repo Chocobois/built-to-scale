@@ -94,7 +94,6 @@ export class Station extends Button {
 
 	setClickable(value: boolean) {
 		this.sprite.input!.enabled = value;
-		console.log("SET CLICKABLE", value);
 	}
 
 	upgrade() {

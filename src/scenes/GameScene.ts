@@ -32,7 +32,7 @@ export class GameScene extends BaseScene {
 	public day: number = 0;
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
-	public money: number = 500;
+	public money: number = 0;
 
 	constructor() {
 		super({ key: "GameScene" });
@@ -79,6 +79,7 @@ export class GameScene extends BaseScene {
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
 		this.ui.setMoney(this.money);
+		this.ui.setDay(this.day);
 		this.ui.on("nextDay", () => {
 			this.startDay();
 		});
@@ -120,8 +121,8 @@ export class GameScene extends BaseScene {
 			loop: true,
 		});
 
-		this.setState(GameState.Shopping);
-		// this.startDay();
+		// this.setState(GameState.Shopping);
+		this.startDay();
 	}
 
 	update(time: number, delta: number) {
@@ -151,9 +152,11 @@ export class GameScene extends BaseScene {
 		this.state = state;
 
 		const isShopping = state === GameState.Shopping;
+
 		this.stations.forEach((s) => s.setClickable(isShopping));
 		this.employees.forEach((e) => e.setClickable(isShopping));
 		this.ui.setShoppingMode(isShopping);
+		if (isShopping) this.summaryOverlay.open();
 	}
 
 	// Start a new day
@@ -321,8 +324,7 @@ export class GameScene extends BaseScene {
 
 			// Open overlay if no more customers
 			if (this.customers.length === 0) {
-				this.summaryOverlay.setVisible(true);
-				this.state = GameState.Shopping;
+				this.setState(GameState.Shopping);
 			}
 		});
 
