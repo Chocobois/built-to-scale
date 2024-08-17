@@ -17,6 +17,8 @@ export class GameScene extends BaseScene {
 	private browsing: boolean = false;
 
 	// Game stats
+	private day: number = 0;
+	private timeOfDay: number = 0;
 	private money: number = 0;
 
 	constructor() {
@@ -55,6 +57,8 @@ export class GameScene extends BaseScene {
 		this.addCustomer();
 
 		this.ui = new UI(this);
+
+		this.startDay();
 	}
 
 	update(time: number, delta: number) {
@@ -65,6 +69,27 @@ export class GameScene extends BaseScene {
 		this.employees.forEach((e) => e.update(time, delta));
 		this.customers.forEach((c) => c.update(time, delta));
 	}
+
+	// Start a new day
+	startDay() {
+		this.day += 1;
+		this.ui.setDay(this.day);
+
+		this.tweens.add({
+			targets: this,
+			timeOfDay: { from: 1, to: 0 },
+			duration: 3 * 60 * 1000,
+			onUpdate: (tween) => {
+				this.timeOfDay = tween.getValue();
+				this.ui.setTimeOfDay(this.timeOfDay);
+			},
+			onComplete: () => {
+				this.endDay();
+			},
+		});
+	}
+
+	endDay() {}
 
 	// Add new station
 	addStation(gridX: number, gridY: number, type: StationType) {
@@ -122,9 +147,7 @@ export class GameScene extends BaseScene {
 		this.customers.push(customer);
 
 		// Place in available waiting seat
-		const seat = this.stations.find(
-			(s) => s.stationType === StationType.WaitingSeat && !s.currentCustomer
-		);
+		const seat = this.getAvailableWaitingSeat();
 		if (seat) {
 			seat.setCustomer(customer);
 			customer.setStation(seat);
@@ -183,8 +206,10 @@ export class GameScene extends BaseScene {
 			this.customers = this.customers.filter((c) => c !== customer);
 			customer.destroy();
 
-			// Spawn new customer
-			this.addCustomer();
+			// Spawn new customer if shop is still open
+			if (this.timeOfDay > 0 && this.getAvailableWaitingSeat()) {
+				this.addCustomer();
+			}
 		});
 
 		// Customer completing their itinerary and paying
@@ -194,11 +219,18 @@ export class GameScene extends BaseScene {
 		});
 	}
 
+	// Get available seat for new customers to go to
+	getAvailableWaitingSeat() {
+		return this.stations.find(
+			(s) => s.stationType === StationType.WaitingSeat && !s.currentCustomer
+		);
+	}
+
 	// Find the closest station to the customer that is not occupied
 	getClosestStation(customer: Customer): Station | null {
 		let closestStation = null;
 		let closestDistance = Infinity;
-		const maxDistance = 100;
+		const maxDistance = 150;
 
 		this.stations.forEach((station) => {
 			const distance = Phaser.Math.Distance.Between(

@@ -177,6 +177,9 @@ export class Customer extends Button {
 	leave() {
 		this.sprite.input!.enabled = false;
 
+		this.setRequest(null);
+		this.happinessTimer.setVisible(false);
+
 		if (this.currentStation) {
 			this.currentStation.setCustomer(null);
 			this.setStation(null);
