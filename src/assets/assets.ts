@@ -35,9 +35,14 @@ const images: Image[] = [
 	image('items/checkout', 'checkout'),
 
 	// UI
-	image('ui/hud', 'hud'),
+	image('ui/angyv', 'angyv'),
 	image('ui/bubble', 'bubble'),
 	image('ui/exclamation', 'exclamation'),
+	image('ui/happy', 'happy'),
+	image('ui/love', 'love'),
+	image('ui/money', 'money'),
+	image('ui/question', 'question'),
+	image('ui/sad', 'sad'),
 	image('ui/timer', 'timer'),
 
 	// Titlescreen

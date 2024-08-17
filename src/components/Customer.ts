@@ -29,6 +29,7 @@ export class Customer extends Button {
 	// Graphics
 	private sprite: Phaser.GameObjects.Sprite;
 	private thoughtBubble: ThoughtBubble;
+	private angryImage: Phaser.GameObjects.Image;
 	private happinessTimer: Timer;
 
 	constructor(scene: GameScene, x: number, y: number) {
@@ -59,9 +60,14 @@ export class Customer extends Button {
 		this.sprite.setScale(size / this.sprite.width);
 		this.add(this.sprite);
 
+		this.angryImage = this.scene.add.image(0, -0.3 * size, "angyv");
+		this.angryImage.setScale(0.25);
+		this.angryImage.setVisible(false);
+		this.add(this.angryImage);
+
 		this.thoughtBubble = new ThoughtBubble(
 			scene,
-			0.2 * size,
+			0.4 * size,
 			-0.6 * size,
 			size
 		);
@@ -103,12 +109,15 @@ export class Customer extends Button {
 				interpolateColor(0xff0000, 0x00ff00, this.happiness)
 			);
 			this.happinessTimer.redraw(this.happiness);
+			this.angryImage.setVisible(this.happiness <= 0.5);
 
 			if (this.happiness <= 0) {
 				this.leave();
+				this.thoughtBubble.showSymbol("sad");
 			}
 		} else {
 			this.happinessTimer.setVisible(false);
+			this.angryImage.setVisible(false);
 		}
 	}
 
@@ -143,7 +152,7 @@ export class Customer extends Button {
 			this.happiness = 1;
 
 			if (this.requestedStation === station.stationType) {
-				this.thoughtBubble.markAsReady();
+				this.thoughtBubble.showSymbol("exclamation");
 			}
 		}
 	}
@@ -152,10 +161,13 @@ export class Customer extends Button {
 		this.currentEmployee = employee;
 
 		this.sprite.input!.enabled = !employee;
+
+		this.thoughtBubble.showSymbol(Phaser.Math.RND.pick(["happy", "love"]));
 	}
 
 	setAction(temp: boolean) {
 		this.doingCuteThing = temp;
+		this.thoughtBubble.hide();
 	}
 
 	setRequest(type: StationType | null) {
