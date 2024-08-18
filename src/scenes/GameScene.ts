@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Board } from "@/components/Board";
+import { Board, GridPoint } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { CustomerId } from "@/components/CustomerData";
@@ -20,12 +20,16 @@ import { TextEffect } from "@/components/TextEffect";
 import { BasicEffect } from "@/components/BasicEffect";
 import { Intermission, Mode } from "@/components/Intermission";
 
+import { NavMesh } from "navmesh";
+import { centerOnSubdividedCoord, GenerateNavMesh } from "@/utils/NavMeshHelper";
+
 enum GameState {
 	Cutscene,
 	Day,
 	Shopping,
 	Intermission,
 }
+
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -45,6 +49,7 @@ export class GameScene extends BaseScene {
 	public activeItem: ItemButton;
 
 	public effects: Effect[];
+	private navmesh: NavMesh;
 
 	// Game stats
 	public state: GameState = GameState.Cutscene;
@@ -57,6 +62,12 @@ export class GameScene extends BaseScene {
 		money: number;
 		happyCustomers: number;
 		angryCustomers: number;
+	};
+
+	// Keeps track of made purchases when starting a level
+	public savedPurchases: {
+		stations: StationId[];
+		employees: EmployeeId[];
 	};
 
 	constructor() {
@@ -72,6 +83,14 @@ export class GameScene extends BaseScene {
 
 		// Reset daily stats
 		this.dailyStats = { money: 0, happyCustomers: 0, angryCustomers: 0 };
+		this.savedPurchases = {
+			stations: [
+				StationId.WaitingSeatTier1,
+				StationId.HornAndNailsTier1,
+				StationId.CashRegister,
+			],
+			employees: [EmployeeId.RaccoonTier1],
+		};
 
 		// Background
 		this.background = this.add.image(0, 0, "grid1");
@@ -92,7 +111,6 @@ export class GameScene extends BaseScene {
 		this.intermission.setDepth(10000);
 		this.intermission.on("close", () => {
 			this.intermission.fadeToGame();
-			// this.startLevel(levels[this.levelIndex]);
 		});
 		this.intermission.on("nextLevel", () => {
 			const nextLevel = {
@@ -148,13 +166,15 @@ export class GameScene extends BaseScene {
 			this.money -= station.upgradeCost;
 			this.ui.setMoney(this.money);
 			station.upgrade();
-			this.upgradeOverlay.selectStation(station);
+			this.upgradeOverlay.close();
+			// this.upgradeOverlay.selectStation(station);
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
 			this.money -= employee.upgradeCost;
 			this.ui.setMoney(this.money);
 			employee.upgrade();
-			this.upgradeOverlay.selectEmployee(employee);
+			// this.upgradeOverlay.selectEmployee(employee);
+			this.upgradeOverlay.close();
 		});
 		this.upgradeOverlay.on("close", () => {
 			this.sortDepth();
@@ -247,11 +267,22 @@ export class GameScene extends BaseScene {
 		this.state = state;
 
 		const isShopping = state === GameState.Shopping;
-
-		this.stations.forEach((s) => s.setClickable(isShopping));
-		this.employees.forEach((e) => e.setClickable(isShopping));
 		this.ui.setShoppingMode(isShopping);
-		if (isShopping && this.day > 0) this.summaryOverlay.open(this.dailyStats);
+
+		// Make unpurchased objects are visible only during shopping
+		const unpurchasedAlpha = 0.2;
+		this.stations.forEach((s) => {
+			s.setClickable(isShopping);
+			s.setAlpha(s.hasBeenPurchased ? 1 : isShopping ? unpurchasedAlpha : 0);
+		});
+		this.employees.forEach((e) => {
+			e.setClickable(isShopping);
+			e.setAlpha(e.hasBeenPurchased ? 1 : isShopping ? unpurchasedAlpha : 0);
+		});
+
+		if (isShopping && this.day > 0) {
+			this.summaryOverlay.open(this.dailyStats);
+		}
 	}
 
 	// Load level data
@@ -303,6 +334,23 @@ export class GameScene extends BaseScene {
 				}
 			}
 		}
+
+		// Load saved purchases
+		this.savedPurchases.stations.forEach((id) => {
+			const station = this.stations.find((s) => s.stationId === id);
+			if (station) {
+				station.upgrade();
+			}
+		});
+		this.savedPurchases.employees.forEach((id) => {
+			const employee = this.employees.find((e) => e.employeeId === id);
+			if (employee) {
+				employee.upgrade();
+			}
+		});
+		
+		// Generate navmesh
+		this.navmesh = GenerateNavMesh(this.board, LevelData[id])
 	}
 
 	// Start a new day
@@ -496,8 +544,6 @@ export class GameScene extends BaseScene {
 		});
 		*/
 
-
-
 		// Customer leaving the game
 		customer.on("offscreen", () => {
 			this.customers = this.customers.filter((c) => c !== customer);
@@ -532,7 +578,10 @@ export class GameScene extends BaseScene {
 	// Get available seat for new customers to go to
 	getAvailableWaitingSeat() {
 		return this.stations.find(
-			(s) => s.stationType === StationType.WaitingSeat && !s.currentCustomer
+			(s) =>
+				s.stationType === StationType.WaitingSeat &&
+				s.hasBeenPurchased &&
+				!s.currentCustomer
 		);
 	}
 
@@ -550,6 +599,7 @@ export class GameScene extends BaseScene {
 				station.y
 			);
 			if (
+				station.hasBeenPurchased &&
 				!station.currentCustomer &&
 				distance < closestDistance &&
 				distance < maxDistance &&
@@ -569,7 +619,7 @@ export class GameScene extends BaseScene {
 			return;
 		}
 
-		let closestEmployee: any = null;
+		let closestEmployee: Employee = null as unknown as Employee;
 		let closestDistance = Infinity;
 
 		this.employees.forEach((employee) => {
@@ -579,7 +629,11 @@ export class GameScene extends BaseScene {
 				employee.x,
 				employee.y
 			);
-			if (!employee.currentCustomer && distance < closestDistance) {
+			if (
+				employee.hasBeenPurchased &&
+				!employee.currentCustomer &&
+				distance < closestDistance
+			) {
 				closestEmployee = employee;
 				closestDistance = distance;
 			}
@@ -595,29 +649,58 @@ export class GameScene extends BaseScene {
 
 			closestEmployee.setCustomer(customer);
 			closestEmployee.walkTo(x, y);
+			
+			const [cx, cy] = centerOnSubdividedCoord(this.board, station, 7);
+			const posEmp = this.board.coordToGrid(closestEmployee.x, closestEmployee.y);
+			const posSta = this.board.coordToGrid(station.x, station.y);
+
+
+			const scale = ({gridX, gridY}: GridPoint) => {
+				return {x: gridX*7, y: gridY*7}
+			}
+
+			//this.navmesh.findPath({})
+		
+			console.log(scale(posEmp))
+			
+			const path = this.navmesh.findPath(scale(posEmp), scale(posSta));
+
+
+
+			console.log("path", path)
+
 			// Wait for employee.on("walkend")
 		}
 	}
 
 	// Generate a list of requests for the customer
 	setCustomerItinerary(customer: Customer) {
+		// Check availibility of stations
+		const check = (type: StationType) => {
+			return this.stations.some(
+				(s) => s.stationType === type && s.hasBeenPurchased
+			);
+		};
+		const hornNailsAvailable = check(StationType.HornAndNails);
+		const scalePolishAvailable = check(StationType.ScalePolish);
+		const goldBathAvailable = check(StationType.GoldBath);
+
 		function getActivities() {
 			let activities = [];
-			if (Math.random() < 0.5) {
+			if (hornNailsAvailable && Math.random() < 0.6) {
 				activities.push(StationType.HornAndNails);
 			}
-			if (Math.random() < 0.5) {
+			if (scalePolishAvailable && Math.random() < 0.6) {
 				activities.push(StationType.ScalePolish);
 			}
-			if (Math.random() < 0.5) {
+			if (goldBathAvailable && Math.random() < 0.6) {
 				activities.push(StationType.GoldBath);
 			}
-			//activities.push(StationType.CashRegister);
 			return activities;
 		}
 
 		let activities: StationType[] = [];
-		while (activities.length < 2) {
+		while (activities.length < 1) {
 			activities = getActivities();
 		}
 

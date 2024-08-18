@@ -1,8 +1,15 @@
 import { GameScene } from "@/scenes/GameScene";
 
+export type GridPoint = {
+	gridX: number,
+	gridY: number
+};
+
 export class Board extends Phaser.GameObjects.Container {
 	public scene: GameScene;
 	public size: number;
+	public width: number;
+	public height: number;
 
 	private grid: Phaser.GameObjects.Grid;
 	private things: any[];
@@ -21,6 +28,9 @@ export class Board extends Phaser.GameObjects.Container {
 
 		// this.size = scene.H / (height + 2);
 		this.size = cellSize;
+		this.width = width;
+		this.height = height
+
 		this.grid = this.scene.add.grid(
 			0,
 			0,
@@ -44,6 +54,8 @@ export class Board extends Phaser.GameObjects.Container {
 	resize(width: number, height: number, cellSize: number) {
 		// this.size = this.scene.H / height;
 		this.size = cellSize;
+		this.width = width;
+		this.height = height
 
 		this.grid.destroy();
 		this.grid = this.scene.add.grid(
@@ -70,7 +82,7 @@ export class Board extends Phaser.GameObjects.Container {
 	}
 
 	// Return grid cell of the coordinates
-	coordToGrid(x: number, y: number) {
+	coordToGrid(x: number, y: number): GridPoint {
 		const gridX = Math.floor((x - this.x + this.grid.width / 2) / this.size);
 		const gridY = Math.floor((y - this.y + this.grid.height / 2) / this.size);
 		return { gridX, gridY };
