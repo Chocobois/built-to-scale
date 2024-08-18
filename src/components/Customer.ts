@@ -276,6 +276,9 @@ export class Customer extends Button {
 		});
 	}
 	recheckHappiness(){
+		if(this.hasCompleted){
+			return;
+		}
 		let tempeh = this.happiness;
 		//console.log("Base Happiness " + tempeh);
 		(this.patience > 0.5) ? (tempeh += 2) : (tempeh += (4*this.patience/this.maxPatience));
@@ -346,33 +349,33 @@ export class Customer extends Button {
 			yiff = this.maxHappiness;
 		}
 		
-		this.tips = this.baseTips;
+		this.tips = (this.baseTips*(1+this.tipBonus));
 
 		let bleistiftspitzer = Math.trunc(yiff);
 		switch(bleistiftspitzer) {
 			case 1: {
 				this.thoughtBubble.showSymbol("h1");
-				this.tips += 0*this.moneySpent;
+				this.tips += (0+this.tipBonus)*this.moneySpent;
 				break;
 			} case 2: {
 				this.thoughtBubble.showSymbol("h2");
-				this.tips += 0.05*this.moneySpent;
+				this.tips += (0.05+this.tipBonus)*this.moneySpent;
 				break;
 			} case 3: {
 				this.thoughtBubble.showSymbol("h3");
-				this.tips += 0.10*this.moneySpent;
+				this.tips += (0.10+this.tipBonus)*this.moneySpent;
 				break;
 			} case 4: {
 				this.thoughtBubble.showSymbol("h4");
-				this.tips += 0.25*this.moneySpent;
+				this.tips += (0.25+this.tipBonus)*this.moneySpent;
 				break;
 			} case 5: {
 				this.thoughtBubble.showSymbol("h5");
-				this.tips += 0.50*this.moneySpent;
+				this.tips += (0.50+this.tipBonus)*this.moneySpent;
 				break;
 			} case 6: {
 				this.thoughtBubble.showSymbol("h6");
-				this.tips += 1*this.moneySpent;
+				this.tips += (1+this.tipBonus)*this.moneySpent;
 				break;
 			}
 		}

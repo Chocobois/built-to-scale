@@ -110,10 +110,12 @@ export class ItemHandler {
 
         if(state == 1) {
             ct.happinessBonus += 2;
+            ct.tipBonus+=0.25;
             return;
         } else if (state == -1) {
             ct.happinessBonus -= 2.125;
             ct.maxHappiness = 4.01;
+            ct.tipMultiplier*=0.25;
             st.queueFail = true;
             return;
         } else {
