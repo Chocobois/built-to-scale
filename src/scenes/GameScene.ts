@@ -325,6 +325,7 @@ export class GameScene extends BaseScene {
 			if (customer && employee) {
 				customer.setAction(false);
 				customer.setEmployee(null);
+				customer.unlockTimer();
 				employee.setAction(false);
 				employee.setCustomer(null);
 
@@ -452,6 +453,20 @@ export class GameScene extends BaseScene {
 				this.callEmployee(customer);
 			}
 		});
+
+		/*
+
+		customer.on("over", () => {
+			customer.toggleTimer();
+			this.sound.play("meme_explosion_sound");
+		});
+
+		customer.on("out", () => {
+			customer.untoggleTimer();
+		});
+		*/
+
+
 
 		// Customer leaving the game
 		customer.on("offscreen", () => {

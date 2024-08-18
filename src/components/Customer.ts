@@ -9,6 +9,7 @@ import { StationType } from "./StationData";
 import { CustomerData, CustomerId } from "./CustomerData";
 import { Effect } from "./Effect";
 import { TextEffect } from "./TextEffect";
+import { PatienceTimer } from "./PatienceTimer";
 
 export interface CustomerType {
 	spr: string;
@@ -63,6 +64,9 @@ export class Customer extends Button {
 	private angryImage: Phaser.GameObjects.Image;
 	private patienceTimer: Timer;
 
+	private testTimer:PatienceTimer;
+
+	//testing stuff
 	constructor(
 		scene: GameScene,
 		x: number,
@@ -105,6 +109,8 @@ export class Customer extends Button {
 		this.angryImage.setVisible(false);
 		this.add(this.angryImage);
 
+		this.testTimer = new PatienceTimer(this.scene,-80,-40,1,0xff0000);
+		this.add(this.testTimer);
 		this.thoughtBubble = new ThoughtBubble(
 			scene,
 			0.4 * cellSize,
@@ -151,8 +157,9 @@ export class Customer extends Button {
 				interpolateColor(0xff0000, 0x00ff00, this.patience)
 			);
 			this.patienceTimer.redraw(this.patience / this.maxPatience);
+			this.testTimer.redraw(((this.patience / this.maxPatience) > 1) ? 1 : (this.patience / this.maxPatience));
 			this.angryImage.setVisible(this.patience <= 0.5);
-
+			this.testTimer.update(time,delta);
 			if (this.patience <= 0) {
 				if(this.hasCompleted){
 					if(Math.random()>0.2){
@@ -160,19 +167,33 @@ export class Customer extends Button {
 						this.scene.addEffect(new TextEffect(this.scene, this.x-70+(Math.random()*80), this.y-80, "+" + this.moneySpent +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
 						this.emit("pay", this.moneySpent);
 					} else {
-						this.scene.sound.play("fail");
+						this.scene.sound.play("rip");
 					}
 				} else {
-					this.scene.sound.play("fail");
+					this.scene.sound.play("rip");
 				}
 				this.leave();
 				this.thoughtBubble.showSymbol("sad");
 				this.emit("angry");
 			}
 		} else {
+			this.testTimer.update(time,delta);
 			this.patienceTimer.setVisible(false);
 			this.angryImage.setVisible(false);
 		}
+	}
+
+	onOver(	pointer: Phaser.Input.Pointer,
+		localX: number,
+		localY: number,
+		event: Phaser.Types.Input.EventData){
+			super.onOver(pointer,localX,localY,event);
+			this.toggleTimer();
+	}
+
+	onOut(pointer: Phaser.Input.Pointer, event: Phaser.Types.Input.EventData) {
+		super.onOut(pointer,event);
+		this.untoggleTimer();
 	}
 
 	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -207,6 +228,22 @@ export class Customer extends Button {
 		}
 	}
 
+	toggleTimer(){
+		this.testTimer.unveil();
+	}
+
+	untoggleTimer(){
+		this.testTimer.veil();
+	}
+
+	lockTimer(){
+		this.testTimer.lockTimer();
+	}
+
+	unlockTimer(){
+		this.testTimer.unlockTimer();
+	}
+
 	snapTo(x: number, y: number) {
 		this.dragX = x;
 		this.dragY = y;
@@ -231,6 +268,10 @@ export class Customer extends Button {
 
 		this.sprite.input!.enabled = !employee;
 
+		if(employee){
+			this.untoggleTimer();
+			this.lockTimer();
+		}
 		this.thoughtBubble.showSymbol(Phaser.Math.RND.pick(["happy", "love"]));
 	}
 
@@ -297,7 +338,7 @@ export class Customer extends Button {
 
 	leave() {
 		this.sprite.input!.enabled = false;
-
+		this.testTimer.setVisible(false);
 		this.setRequest(null);
 		this.patienceTimer.setVisible(false);
 
