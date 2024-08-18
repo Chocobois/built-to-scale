@@ -108,7 +108,11 @@ const spritesheets: SpriteSheet[] = [
 	spritesheet('temp/pillowtalk', 'pillowtalk', 100, 100),
 	spritesheet('temp/shuriken', 'shuriken', 100, 100),
 	spritesheet('temp/redx', 'redx', 64, 64),
-	
+	spritesheet('temp/anger', 'anger', 64, 64),
+	spritesheet('temp/ellipse', 'ellipse', 64, 64),
+	spritesheet('temp/redsparks', 'redspark', 64, 64),
+	spritesheet('temp/greensparks', 'greenspark', 64, 64),
+	spritesheet('temp/defaultsparks', 'defaultspark', 64, 64),
 	spritesheet('temp/blankspr', 'blankspr', 100, 100),
 ];
 
