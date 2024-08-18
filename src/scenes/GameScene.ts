@@ -306,8 +306,8 @@ export class GameScene extends BaseScene {
 	}
 
 	endDay() {
+		//this.stations.forEach((s) => s.returnItems());
 		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
-
 		this.setState(GameState.Shopping);
 	}
 
