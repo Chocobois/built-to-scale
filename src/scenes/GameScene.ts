@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Board } from "@/components/Board";
+import { Board, GridPoint } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { CustomerId } from "@/components/CustomerData";
@@ -20,12 +20,16 @@ import { TextEffect } from "@/components/TextEffect";
 import { BasicEffect } from "@/components/BasicEffect";
 import { Intermission, Mode } from "@/components/Intermission";
 
+import { NavMesh } from "navmesh";
+import { centerOnSubdividedCoord, GenerateNavMesh } from "@/utils/NavMeshHelper";
+
 enum GameState {
 	Cutscene,
 	Day,
 	Shopping,
 	Intermission,
 }
+
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -45,6 +49,7 @@ export class GameScene extends BaseScene {
 	public activeItem: ItemButton;
 
 	public effects: Effect[];
+	private navmesh: NavMesh;
 
 	// Game stats
 	public state: GameState = GameState.Cutscene;
@@ -342,6 +347,8 @@ export class GameScene extends BaseScene {
 				employee.upgrade();
 			}
 		});
+		
+		this.navmesh = GenerateNavMesh(this.board, LevelData[id])
 	}
 
 	// Start a new day
@@ -610,7 +617,7 @@ export class GameScene extends BaseScene {
 			return;
 		}
 
-		let closestEmployee: any = null;
+		let closestEmployee: Employee = null as unknown as Employee;
 		let closestDistance = Infinity;
 
 		this.employees.forEach((employee) => {
@@ -640,6 +647,26 @@ export class GameScene extends BaseScene {
 
 			closestEmployee.setCustomer(customer);
 			closestEmployee.walkTo(x, y);
+			
+			const [cx, cy] = centerOnSubdividedCoord(this.board, station, 7);
+			const posEmp = this.board.coordToGrid(closestEmployee.x, closestEmployee.y);
+			const posSta = this.board.coordToGrid(station.x, station.y);
+
+
+			const scale = ({gridX, gridY}: GridPoint) => {
+				return {x: gridX*7, y: gridY*7}
+			}
+
+			//this.navmesh.findPath({})
+		
+			console.log(scale(posEmp))
+			
+			const path = this.navmesh.findPath(scale(posEmp), scale(posSta));
+
+
+
+			console.log("path", path)
+
 			// Wait for employee.on("walkend")
 		}
 	}
