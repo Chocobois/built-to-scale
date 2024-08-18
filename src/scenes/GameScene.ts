@@ -58,6 +58,7 @@ export class GameScene extends BaseScene {
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
 	public customerSpawnTimer: Phaser.Time.TimerEvent;
+	public customerSpawnPool: CustomerId[] = [];
 	public money: number = 0;
 	public dailyStats: {
 		money: number;
@@ -340,6 +341,10 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setDepth(0));
 		this.employees.forEach((e) => e.setDepth(0));
 
+		// Reset customer spawning
+		if (this.customerSpawnTimer) this.customerSpawnTimer.destroy();
+		this.updateSpawnPool();
+
 		// Setup daytime tween
 		this.tweens.add({
 			targets: this,
@@ -381,11 +386,7 @@ export class GameScene extends BaseScene {
 		let delay = 1000;
 
 		// Randomly select customer type
-		const id = Phaser.Math.RND.pick([
-			CustomerId.Small,
-			CustomerId.Medium,
-			CustomerId.Large,
-		]);
+		const id = Phaser.Math.RND.pick(this.customerSpawnPool);
 
 		if (this.canSpawnCustomer(id)) {
 			this.addCustomer(id);
@@ -406,6 +407,22 @@ export class GameScene extends BaseScene {
 			callback: this.attemptSpawnCustomer,
 			callbackScope: this,
 		});
+	}
+
+	// Update customer spawn pool based on available stations
+	updateSpawnPool() {
+		this.customerSpawnPool = [];
+
+		const anyTier2Stations = this.stations.some(
+			(s) => s.stationTier >= 2 && s.hasBeenPurchased
+		);
+		const anyTier3Stations = this.stations.some(
+			(s) => s.stationTier >= 3 && s.hasBeenPurchased
+		);
+
+		this.customerSpawnPool.push(CustomerId.Small);
+		if (anyTier2Stations) this.customerSpawnPool.push(CustomerId.Medium);
+		if (anyTier3Stations) this.customerSpawnPool.push(CustomerId.Large);
 	}
 
 	// Add new station
