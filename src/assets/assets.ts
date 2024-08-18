@@ -118,6 +118,12 @@ const audios: Audio[] = [
 	sound('tree/rustle', 't_rustle', 0.5),
 	sound('tree/escape', 'fail', 0.5),
 	sound('crit', 'crit', 0.5),
+	sound('sparkle', 'sparkle', 0.5),
+	sound('polish', 'polish', 0.5),
+	sound('snip', 'snip', 0.5),
+	sound('goldbath', 'goldbath', 0.5),
+	sound('fail', 'rip', 0.5),
+	sound('sqk', 'sqk', 0.5),
 	sound('tree/meme_explosion_sound', 'meme_explosion_sound', 0.5),
 ];
 

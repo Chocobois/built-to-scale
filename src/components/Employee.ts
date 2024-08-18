@@ -54,6 +54,10 @@ export class Employee extends Button {
 	}
 
 	setCustomer(customer: Customer | null) {
+		if(customer){
+			this.scene.sound.play("sqk");
+		}
+
 		this.currentCustomer = customer;
 	}
 

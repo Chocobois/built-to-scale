@@ -379,7 +379,7 @@ export class Customer extends Button {
 				break;
 			}
 		}
-		console.log("TIPS: " + this.tips);
+		//console.log("TIPS: " + this.tips);
 		this.tips *= this.tipMultiplier;
 		this.tips = Math.trunc(this.tips);
 	}
