@@ -3,7 +3,7 @@ import { Button } from "./elements/Button";
 import { Station } from "./Station";
 import { Employee } from "./Employee";
 import { Timer } from "./Timer";
-import { interpolateColor } from "@/functions";
+import { interpolateColor } from "@/utils/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
 import { StationType } from "./StationData";
 import { CustomerData, CustomerId } from "./CustomerData";

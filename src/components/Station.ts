@@ -8,7 +8,7 @@ import {
 	StationType,
 	StationTypeData,
 } from "./StationData";
-import { interpolateColor } from "@/functions";
+import { interpolateColor } from "@/utils/functions";
 import { SimpleButton } from "./elements/SimpleButton";
 import { TextEffect } from "./TextEffect";
 
