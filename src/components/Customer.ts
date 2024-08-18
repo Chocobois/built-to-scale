@@ -112,7 +112,7 @@ export class Customer extends Button {
 			0.6 * size,
 			0xfa9425
 		);
-		//this.patienceTimer.setAlpha(0);
+		this.patienceTimer.setAlpha(0);
 		this.add(this.patienceTimer);
 
 		this.bindInteractive(this.sprite, true);

@@ -8,17 +8,25 @@ export class Employee extends Button {
 	public currentCustomer: Customer | null;
 	public doingCuteThing: boolean;
 
-	private spriteSize: number;
+	private cellSize: number;
+	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
 
 	public startX: number;
 	public startY: number;
 
-	constructor(scene: GameScene, x: number, y: number, id: EmployeeId) {
+	constructor(
+		scene: GameScene,
+		x: number,
+		y: number,
+		id: EmployeeId,
+		cellSize: number
+	) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
 		this.employeeId = id;
+		this.cellSize = cellSize;
 		this.currentCustomer = null;
 		this.doingCuteThing = false;
 
@@ -26,12 +34,13 @@ export class Employee extends Button {
 		this.startY = y;
 
 		/* Sprite */
-		this.spriteSize = 200;
+		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
+		this.add(this.spriteCont);
+
 		this.sprite = this.scene.add.sprite(0, 0, this.spriteKey);
 		this.sprite.setOrigin(0.5, 1.0);
-		this.sprite.y += this.spriteSize / 2;
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
-		this.add(this.sprite);
+		this.spriteCont.add(this.sprite);
 
 		// Make employee clickable during shopping
 		this.bindInteractive(this.sprite);
@@ -41,7 +50,7 @@ export class Employee extends Button {
 	update(time: number, delta: number) {
 		const factor = this.doingCuteThing ? 0.1 : 0.02;
 		const squish = 1.0 + factor * Math.sin((6 * time) / 1000);
-		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
+		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
 	}
 
 	setCustomer(customer: Customer | null) {
@@ -105,6 +114,18 @@ export class Employee extends Button {
 
 	get spriteKey(): string {
 		return EmployeeData[this.employeeId].spriteKey;
+	}
+
+	get spriteScale(): number {
+		return 1.4;
+	}
+
+	get spriteSize(): number {
+		return this.spriteScale * this.cellSize;
+	}
+
+	get spriteOffset(): number {
+		return 0.3 * this.spriteSize;
 	}
 
 	get walkSpeed(): number {
