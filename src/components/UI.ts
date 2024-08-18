@@ -11,6 +11,7 @@ export class UI extends Phaser.GameObjects.Container {
 	private dayText: Phaser.GameObjects.Text;
 	private moneyText: Phaser.GameObjects.Text;
 	private nextButton: TextButton;
+	private newLocationButton: TextButton;
 
 	constructor(scene: GameScene) {
 		super(scene, 0, 0);
@@ -71,10 +72,16 @@ export class UI extends Phaser.GameObjects.Container {
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
 
-		this.nextButton = new TextButton(scene, 0, 300, "Next day");
+		this.nextButton = new TextButton(scene, 0, 300, 240, 80, "Next day");
 		this.panel.add(this.nextButton);
 		this.nextButton.on("click", () => {
 			this.emit("nextDay");
+		});
+
+		this.newLocationButton = new TextButton(scene, 0, 440, 240, 80, "Move");
+		this.panel.add(this.newLocationButton);
+		this.newLocationButton.on("click", () => {
+			this.emit("nextLevel");
 		});
 	}
 

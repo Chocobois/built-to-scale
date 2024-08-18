@@ -9,13 +9,10 @@ export class TextButton extends Button {
 	private background: RoundRectangle;
 	private text: Phaser.GameObjects.Text;
 
-	constructor(scene: GameScene, x: number, y: number, text: string) {
+	constructor(scene: GameScene, x: number, y: number, width: number, height: number, text: string) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
-
-		const width = 200;
-		const height = 80;
 
 		this.border = new RoundRectangle(scene, {
 			width: width + 20,
@@ -34,7 +31,7 @@ export class TextButton extends Button {
 		this.add(this.background);
 
 		this.text = this.scene.addText({
-			size: 40,
+			size: 50,
 			color: "#FFFFFF",
 			text,
 		});

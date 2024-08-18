@@ -108,7 +108,6 @@ export class Employee extends Button {
 	}
 
 	get employeeName(): string {
-		console.log(this.employeeId, EmployeeData[this.employeeId]);
 		return EmployeeData[this.employeeId].name;
 	}
 

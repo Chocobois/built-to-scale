@@ -18,11 +18,13 @@ import { BlockType, LevelData, LevelId } from "@/components/Levels";
 import { Effect } from "@/components/Effect";
 import { TextEffect } from "@/components/TextEffect";
 import { BasicEffect } from "@/components/BasicEffect";
+import { Intermission, Mode } from "@/components/Intermission";
 
 enum GameState {
 	Cutscene,
 	Day,
 	Shopping,
+	Intermission,
 }
 
 export class GameScene extends BaseScene {
@@ -32,6 +34,7 @@ export class GameScene extends BaseScene {
 	private employees: Employee[];
 	private customers: Customer[];
 	private ui: UI;
+	private intermission: Intermission;
 	private upgradeOverlay: UpgradeOverlay;
 	private summaryOverlay: SummaryOverlay;
 	private paused: boolean = false;
@@ -45,6 +48,7 @@ export class GameScene extends BaseScene {
 
 	// Game stats
 	public state: GameState = GameState.Cutscene;
+	public level: LevelId = LevelId.Level1;
 	public day: number = 0;
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
@@ -84,6 +88,23 @@ export class GameScene extends BaseScene {
 		this.ui.setDepth(1000);
 		this.iHandler = new ItemHandler(this);
 
+		this.intermission = new Intermission(this);
+		this.intermission.setDepth(10000);
+		this.intermission.on("close", () => {
+			this.intermission.fadeToGame();
+			// this.startLevel(levels[this.levelIndex]);
+		});
+		this.intermission.on("nextLevel", () => {
+			const nextLevel = {
+				[LevelId.Level1]: LevelId.Level2,
+				[LevelId.Level2]: LevelId.Level3,
+				[LevelId.Level3]: LevelId.Level1,
+			}[this.level];
+			this.loadLevel(nextLevel);
+
+			this.intermission.fadeToGame();
+		});
+
 		this.effects = [];
 
 		// Inventory
@@ -116,6 +137,9 @@ export class GameScene extends BaseScene {
 		this.ui.setDay(this.day);
 		this.ui.on("nextDay", () => {
 			this.startDay();
+		});
+		this.ui.on("nextLevel", () => {
+			this.intermission.fadeToIntermission(Mode.NextLevelCutscene);
 		});
 
 		this.upgradeOverlay = new UpgradeOverlay(this);
@@ -174,6 +198,7 @@ export class GameScene extends BaseScene {
 		this.loadLevel(LevelId.Level1);
 		this.setState(GameState.Shopping);
 		// this.startDay();
+		this.intermission.fadeToGame(); // Comment this out to see cutscenes
 	}
 
 	update(time: number, delta: number) {
@@ -189,6 +214,7 @@ export class GameScene extends BaseScene {
 		this.customers.forEach((x) => x.update(time, delta));
 		this.updateEffects(time, delta);
 		this.ui.update(time, delta);
+		this.intermission.update(time, delta);
 		this.summaryOverlay.update(time, delta);
 		this.activeItem.update(time, delta);
 		if (this.activeItem.state == 3) {
@@ -225,11 +251,12 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setClickable(isShopping));
 		this.employees.forEach((e) => e.setClickable(isShopping));
 		this.ui.setShoppingMode(isShopping);
-		if (isShopping) this.summaryOverlay.open(this.dailyStats);
+		if (isShopping && this.day > 0) this.summaryOverlay.open(this.dailyStats);
 	}
 
 	// Load level data
 	loadLevel(id: LevelId) {
+		this.level = id;
 		const level = LevelData[id];
 
 		this.background.setTexture(level.background);
@@ -303,6 +330,9 @@ export class GameScene extends BaseScene {
 				this.timeOfDay = tween.getValue();
 				this.ui.setTimeOfDay(this.timeOfDay);
 			},
+			onComplete: () => {
+				// Shop closed. Play sound.
+			},
 		});
 	}
 
@@ -325,6 +355,7 @@ export class GameScene extends BaseScene {
 			if (customer && employee) {
 				customer.setAction(false);
 				customer.setEmployee(null);
+				customer.unlockTimer();
 				employee.setAction(false);
 				employee.setCustomer(null);
 
@@ -452,6 +483,20 @@ export class GameScene extends BaseScene {
 				this.callEmployee(customer);
 			}
 		});
+
+		/*
+
+		customer.on("over", () => {
+			customer.toggleTimer();
+			this.sound.play("meme_explosion_sound");
+		});
+
+		customer.on("out", () => {
+			customer.untoggleTimer();
+		});
+		*/
+
+
 
 		// Customer leaving the game
 		customer.on("offscreen", () => {

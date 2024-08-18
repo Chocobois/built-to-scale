@@ -11,6 +11,12 @@ const images: Image[] = [
 	image('backgrounds/grid3', 'grid3'),
 	image('backgrounds/grid4', 'grid4'),
 
+	// Cutscenes
+	image('cutscenes/dummy1', 'cutscene_dummy1'),
+	image('cutscenes/dummy2', 'cutscene_dummy2'),
+	image('cutscenes/dummy3', 'cutscene_dummy3'),
+	image('cutscenes/dummy4', 'cutscene_dummy4'),
+
 	// Characters
 	image('characters/player', 'player'),
 	image('characters/worker', 'worker'),
@@ -105,7 +111,11 @@ const spritesheets: SpriteSheet[] = [
 	spritesheet('temp/pillowtalk', 'pillowtalk', 100, 100),
 	spritesheet('temp/shuriken', 'shuriken', 100, 100),
 	spritesheet('temp/redx', 'redx', 64, 64),
-	
+	spritesheet('temp/anger', 'anger', 64, 64),
+	spritesheet('temp/ellipse', 'ellipse', 64, 64),
+	spritesheet('temp/redsparks', 'redspark', 64, 64),
+	spritesheet('temp/greensparks', 'greenspark', 64, 64),
+	spritesheet('temp/defaultsparks', 'defaultspark', 64, 64),
 	spritesheet('temp/blankspr', 'blankspr', 100, 100),
 ];
 
