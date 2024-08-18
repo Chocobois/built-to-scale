@@ -69,7 +69,7 @@ export interface StationInterface {
 export const StationData: { [key in StationId]: StationInterface } = {
 	[StationId.WaitingSeatTier1]: {
 		type: StationType.WaitingSeat,
-		name: "WaitingSeat station",
+		name: "Waiting seat",
 		tier: 1,
 		spriteKey: "waitchair_1",
 		spriteScale: 1.0,
@@ -78,7 +78,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.WaitingSeatTier2]: {
 		type: StationType.WaitingSeat,
-		name: "WaitingSeat station",
+		name: "Waiting armchair",
 		tier: 2,
 		spriteKey: "waitchair_2",
 		spriteScale: 1.25,
@@ -87,7 +87,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.WaitingSeatTier3]: {
 		type: StationType.WaitingSeat,
-		name: "WaitingSeat station",
+		name: "Waiting throne",
 		tier: 3,
 		spriteKey: "waitchair_3",
 		spriteScale: 1.5,
@@ -96,7 +96,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.HornAndNailsTier1]: {
 		type: StationType.HornAndNails,
-		name: "HornAndNails station",
+		name: "Talonicure pillow",
 		tier: 1,
 		spriteKey: "nail_1",
 		spriteScale: 1.0,
@@ -107,7 +107,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.HornAndNailsTier2]: {
 		type: StationType.HornAndNails,
-		name: "HornAndNails station",
+		name: "Talonicure beanbag",
 		tier: 2,
 		spriteKey: "nail_2",
 		spriteScale: 1.25,
@@ -118,7 +118,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.HornAndNailsTier3]: {
 		type: StationType.HornAndNails,
-		name: "HornAndNails station",
+		name: "Talonicure bed",
 		tier: 3,
 		spriteKey: "nail_3",
 		spriteScale: 1.5,
@@ -129,7 +129,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.ScalePolishTier1]: {
 		type: StationType.ScalePolish,
-		name: "ScalePolish station",
+		name: "Scalicure chair",
 		tier: 1,
 		spriteKey: "wax_1",
 		spriteScale: 1.0,
@@ -140,7 +140,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.ScalePolishTier2]: {
 		type: StationType.ScalePolish,
-		name: "ScalePolish station",
+		name: "Scalicure station",
 		tier: 2,
 		spriteKey: "wax_2",
 		spriteScale: 1.25,
@@ -151,7 +151,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.ScalePolishTier3]: {
 		type: StationType.ScalePolish,
-		name: "ScalePolish station",
+		name: "Scalicure divan",
 		tier: 3,
 		spriteKey: "wax_3",
 		spriteScale: 1.5,
@@ -162,7 +162,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.GoldBathTier1]: {
 		type: StationType.GoldBath,
-		name: "GoldBath station",
+		name: "Draconic bath",
 		tier: 1,
 		spriteKey: "bath_1",
 		spriteScale: 1.0,
@@ -173,7 +173,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.GoldBathTier2]: {
 		type: StationType.GoldBath,
-		name: "GoldBath station",
+		name: "Draconic shower",
 		tier: 2,
 		spriteKey: "bath_2",
 		spriteScale: 1.25,
@@ -184,7 +184,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 	},
 	[StationId.GoldBathTier3]: {
 		type: StationType.GoldBath,
-		name: "GoldBath station",
+		name: "Dracuzzi",
 		tier: 3,
 		spriteKey: "bath_3",
 		spriteScale: 1.5,
@@ -195,7 +195,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 
 	[StationId.CashRegister]: {
 		type: StationType.CashRegister,
-		name: "CashRegister station",
+		name: "Cash register",
 		tier: 1,
 		spriteKey: "checkout",
 		spriteScale: 1.4,
