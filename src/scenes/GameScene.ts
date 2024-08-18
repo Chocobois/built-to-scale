@@ -335,6 +335,7 @@ export class GameScene extends BaseScene {
 			}
 		}
 
+		// Load saved purchases
 		this.savedPurchases.stations.forEach((id) => {
 			const station = this.stations.find((s) => s.stationId === id);
 			if (station) {
@@ -348,6 +349,7 @@ export class GameScene extends BaseScene {
 			}
 		});
 		
+		// Generate navmesh
 		this.navmesh = GenerateNavMesh(this.board, LevelData[id])
 	}
 
