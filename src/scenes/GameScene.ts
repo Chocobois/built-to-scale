@@ -198,7 +198,7 @@ export class GameScene extends BaseScene {
 		this.loadLevel(LevelId.Level1);
 		this.setState(GameState.Shopping);
 		// this.startDay();
-		// this.intermission.fadeToGame();
+		this.intermission.fadeToGame(); // Comment this out to see cutscenes
 	}
 
 	update(time: number, delta: number) {
