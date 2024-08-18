@@ -208,6 +208,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			duration: 200,
 			onComplete: () => {
 				this.setVisible(false);
+				this.emit("close");
 			},
 		});
 	}

@@ -71,7 +71,11 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 		this.okButton.update(time, delta);
 	}
 
-	open() {
+	open(dailyStats: {
+		money: number;
+		happyCustomers: number;
+		angryCustomers: number;
+	}) {
 		this.setVisible(true);
 		this.setAlpha(0);
 		this.scene.tweens.add({
@@ -79,6 +83,12 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 			alpha: 1,
 			duration: 200,
 		});
+
+		let text = "";
+		text += `Money earned: $${dailyStats.money}\n`;
+		text += `Customers served: ${dailyStats.happyCustomers}\n`;
+		text += `Angry customers: ${dailyStats.angryCustomers}`;
+		this.moneyText.setText(text);
 	}
 
 	close() {

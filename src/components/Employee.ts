@@ -11,13 +11,19 @@ export class Employee extends Button {
 	private spriteSize: number;
 	private sprite: Phaser.GameObjects.Sprite;
 
+	public startX: number;
+	public startY: number;
+
 	constructor(scene: GameScene, x: number, y: number, id: EmployeeId) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
 		this.employeeId = id;
-
 		this.currentCustomer = null;
+		this.doingCuteThing = false;
+
+		this.startX = x;
+		this.startY = y;
 
 		/* Sprite */
 		this.spriteSize = 200;
