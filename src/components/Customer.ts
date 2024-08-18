@@ -15,12 +15,11 @@ export interface CustomerType {
 	tags: string[];
 	antitags: string[];
 	budget: number;
-	
 }
 
 export class Customer extends Button {
 	public customerId: CustomerId;
-	public scene:GameScene;
+	public scene: GameScene;
 	// Movement
 	public lastX: number; // Last position on the grid
 	public lastY: number;
@@ -56,18 +55,26 @@ export class Customer extends Button {
 	public tasksCompleted: number;
 	public moneySpent: number;
 
-
 	// Graphics
+	private cellSize: number;
+	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
 	private thoughtBubble: ThoughtBubble;
 	private angryImage: Phaser.GameObjects.Image;
 	private patienceTimer: Timer;
 
-	constructor(scene: GameScene, x: number, y: number, id: CustomerId) {
+	constructor(
+		scene: GameScene,
+		x: number,
+		y: number,
+		id: CustomerId,
+		cellSize: number
+	) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
 		this.customerId = id;
+		this.cellSize = cellSize;
 
 		this.lastX = x;
 		this.lastY = y;
@@ -85,34 +92,35 @@ export class Customer extends Button {
 		//this.happiness = 3;
 
 		/* Sprite */
-		const size = 120;
+		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
+		this.add(this.spriteCont);
+
 		this.sprite = this.scene.add.sprite(0, 0, this.spriteKeys.sit);
 		this.sprite.setOrigin(0.5, 1.0);
-		this.sprite.y += size / 2;
-		this.sprite.setScale(size / this.sprite.width);
-		this.add(this.sprite);
+		this.sprite.setScale(this.spriteSize / this.sprite.width);
+		this.spriteCont.add(this.sprite);
 
-		this.angryImage = this.scene.add.image(0, -0.3 * size, "angyv");
+		this.angryImage = this.scene.add.image(0, -0.3 * this.spriteSize, "angyv");
 		this.angryImage.setScale(0.25);
 		this.angryImage.setVisible(false);
 		this.add(this.angryImage);
 
 		this.thoughtBubble = new ThoughtBubble(
 			scene,
-			0.4 * size,
-			-0.6 * size,
-			size
+			0.4 * cellSize,
+			-0.6 * cellSize,
+			cellSize
 		);
 		this.add(this.thoughtBubble);
 
 		this.patienceTimer = new Timer(
 			scene,
-			-0.3 * size,
-			-0.3 * size,
-			0.6 * size,
+			-0.3 * cellSize,
+			-0.3 * cellSize,
+			0.6 * cellSize,
 			0xfa9425
 		);
-		//this.patienceTimer.setAlpha(0);
+		this.patienceTimer.setAlpha(0);
 		this.add(this.patienceTimer);
 
 		this.bindInteractive(this.sprite, true);
@@ -134,7 +142,7 @@ export class Customer extends Button {
 			this.patienceTimer.setVisible(true);
 			if (!this.dragged) {
 				// 20 seconds
-				if(!this.lockPatience){
+				if (!this.lockPatience) {
 					this.patience -= (1 / 40) * (delta / 1000);
 				}
 			}
@@ -142,7 +150,7 @@ export class Customer extends Button {
 			this.patienceTimer.setColor(
 				interpolateColor(0xff0000, 0x00ff00, this.patience)
 			);
-			this.patienceTimer.redraw(this.patience/this.maxPatience);
+			this.patienceTimer.redraw(this.patience / this.maxPatience);
 			this.angryImage.setVisible(this.patience <= 0.5);
 
 			if (this.patience <= 0) {
@@ -170,7 +178,7 @@ export class Customer extends Button {
 	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
 		this.emit("pickup");
 		this.dragged = true;
-		this.sprite.setTexture(this.spriteKeys.walk);
+		this.sprite.setTexture(this.spriteKeys.walk1);
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -184,17 +192,16 @@ export class Customer extends Button {
 		this.dragged = false;
 		this.emit("drop");
 		this.sprite.setTexture(this.spriteKeys.sit);
-
 	}
 
-	resetPatience(){
-		this.patience = this.maxPatience*1.25;
+	resetPatience() {
+		this.patience = this.maxPatience * 1.25;
 	}
 
-	miniRefresh(){
-		if(!this.lockPatience) {
+	miniRefresh() {
+		if (!this.lockPatience) {
 			this.patience += 0.125;
-			if(this.patience > 1.25){
+			if (this.patience > 1.25) {
 				this.patience = 1.25;
 			}
 		}
@@ -225,7 +232,6 @@ export class Customer extends Button {
 		this.sprite.input!.enabled = !employee;
 
 		this.thoughtBubble.showSymbol(Phaser.Math.RND.pick(["happy", "love"]));
-
 	}
 
 	setAction(temp: boolean) {
@@ -251,8 +257,38 @@ export class Customer extends Button {
 		} else {
 			this.parseMoney();
 			this.scene.sound.play("cashmoney");
-			this.scene.addEffect(new TextEffect(this.scene, this.x-70+(Math.random()*80), this.y-80, "+" + this.moneySpent +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
-			this.scene.addEffect(new TextEffect(this.scene, this.x-40+(Math.random()*80), this.y-20, "Tips +" + this.tips +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
+			this.scene.addEffect(
+				new TextEffect(
+					this.scene,
+					this.x - 70 + Math.random() * 80,
+					this.y - 80,
+					"+" + this.moneySpent + " €",
+					"yellow",
+					40,
+					true,
+					"red",
+					800,
+					100,
+					0.7,
+					0
+				)
+			);
+			this.scene.addEffect(
+				new TextEffect(
+					this.scene,
+					this.x - 40 + Math.random() * 80,
+					this.y - 20,
+					"Tips +" + this.tips + " €",
+					"yellow",
+					40,
+					true,
+					"red",
+					800,
+					100,
+					0.7,
+					0
+				)
+			);
 			this.emit("pay", this.moneySpent);
 			this.emit("tip", this.tips);
 			this.leave();
@@ -286,107 +322,121 @@ export class Customer extends Button {
 			},
 		});
 	}
-	recheckHappiness(){
-		if(this.hasCompleted){
+	recheckHappiness() {
+		if (this.hasCompleted) {
 			return;
 		}
 		let tempeh = this.happiness;
 		//console.log("Base Happiness " + tempeh);
-		(this.patience > 0.5) ? (tempeh += 2) : (tempeh += (4*this.patience/this.maxPatience));
+		this.patience > 0.5
+			? (tempeh += 2)
+			: (tempeh += (4 * this.patience) / this.maxPatience);
 		//console.log("With Patience Happiness " + tempeh);
 
-		if(this.patience >= 1) {
+		if (this.patience >= 1) {
 			tempeh += 1;
 		}
 		//console.log("With Bonus Patience Happiness " + tempeh);
 		tempeh += this.rockBonus;
-		if(tempeh > 4.01) {
+		if (tempeh > 4.01) {
 			tempeh = 4.01;
 		}
 		//console.log("With Rock Happiness " + tempeh);
 		tempeh += this.happinessBonus;
 
-		if(tempeh < this.minHappiness) {
+		if (tempeh < this.minHappiness) {
 			tempeh = this.minHappiness;
 		}
-		if(tempeh > this.maxHappiness) {
+		if (tempeh > this.maxHappiness) {
 			tempeh = this.maxHappiness;
 		}
 
 		let rt = Math.trunc(tempeh);
-		switch(rt) {
+		switch (rt) {
 			case 1: {
 				this.thoughtBubble.showSymbol("h1");
 				break;
-			} case 2: {
+			}
+			case 2: {
 				this.thoughtBubble.showSymbol("h2");
 				break;
-			} case 3: {
+			}
+			case 3: {
 				this.thoughtBubble.showSymbol("h3");
 				break;
-			} case 4: {
+			}
+			case 4: {
 				this.thoughtBubble.showSymbol("h4");
 				break;
-			} case 5: {
+			}
+			case 5: {
 				this.thoughtBubble.showSymbol("h5");
 				break;
-			} case 6: {
+			}
+			case 6: {
 				this.thoughtBubble.showSymbol("h6");
 				break;
 			}
 		}
 	}
-	parseHappiness(){
+	parseHappiness() {
 		let yiff = this.happiness;
 		//console.log("Base Happiness " + tempeh);
-		(this.patience > 0.5) ? (yiff += 2) : (yiff += (4*this.patience/this.maxPatience));
+		this.patience > 0.5
+			? (yiff += 2)
+			: (yiff += (4 * this.patience) / this.maxPatience);
 		//console.log("With Patience Happiness " + tempeh);
 
-		if(this.patience >= 1) {
+		if (this.patience >= 1) {
 			yiff += 1;
 		}
 		//console.log("With Bonus Patience Happiness " + tempeh);
 		yiff += this.rockBonus;
-		if(yiff > 4.01) {
+		if (yiff > 4.01) {
 			yiff = 4.01;
 		}
 		//console.log("With Rock Happiness " + tempeh);
 		yiff += this.happinessBonus;
 
-		if(yiff < this.minHappiness) {
+		if (yiff < this.minHappiness) {
 			yiff = this.minHappiness;
 		}
-		if(yiff > this.maxHappiness) {
+		if (yiff > this.maxHappiness) {
 			yiff = this.maxHappiness;
 		}
-		
-		this.tips = (this.baseTips*(1+this.tipBonus));
+
+		this.tips = this.baseTips * (1 + this.tipBonus);
 
 		let bleistiftspitzer = Math.trunc(yiff);
-		switch(bleistiftspitzer) {
+		switch (bleistiftspitzer) {
 			case 1: {
 				this.thoughtBubble.showSymbol("h1");
-				this.tips += (0+this.tipBonus)*this.moneySpent;
+				this.tips += (0 + this.tipBonus) * this.moneySpent;
 				break;
-			} case 2: {
+			}
+			case 2: {
 				this.thoughtBubble.showSymbol("h2");
-				this.tips += (0.05+this.tipBonus)*this.moneySpent;
+				this.tips += (0.05 + this.tipBonus) * this.moneySpent;
 				break;
-			} case 3: {
+			}
+			case 3: {
 				this.thoughtBubble.showSymbol("h3");
-				this.tips += (0.10+this.tipBonus)*this.moneySpent;
+				this.tips += (0.1 + this.tipBonus) * this.moneySpent;
 				break;
-			} case 4: {
+			}
+			case 4: {
 				this.thoughtBubble.showSymbol("h4");
-				this.tips += (0.25+this.tipBonus)*this.moneySpent;
+				this.tips += (0.25 + this.tipBonus) * this.moneySpent;
 				break;
-			} case 5: {
+			}
+			case 5: {
 				this.thoughtBubble.showSymbol("h5");
-				this.tips += (0.50+this.tipBonus)*this.moneySpent;
+				this.tips += (0.5 + this.tipBonus) * this.moneySpent;
 				break;
-			} case 6: {
+			}
+			case 6: {
 				this.thoughtBubble.showSymbol("h6");
-				this.tips += (1+this.tipBonus)*this.moneySpent;
+				this.tips += (1 + this.tipBonus) * this.moneySpent;
 				break;
 			}
 		}
@@ -395,7 +445,7 @@ export class Customer extends Button {
 		this.tips = Math.trunc(this.tips);
 	}
 
-	parseMoney(){
+	parseMoney() {
 		this.parseHappiness();
 	}
 
@@ -407,6 +457,18 @@ export class Customer extends Button {
 
 	get spriteKeys() {
 		return CustomerData[this.customerId].spriteKeys;
+	}
+
+	get spriteScale(): number {
+		return CustomerData[this.customerId].spriteScale;
+	}
+
+	get spriteSize(): number {
+		return this.spriteScale * this.cellSize;
+	}
+
+	get spriteOffset(): number {
+		return 0.2 * this.spriteSize;
 	}
 
 	get walkSpeed(): number {
@@ -424,7 +486,7 @@ export class Customer extends Button {
 	get antitags(): string[] {
 		return CustomerData[this.customerId].antitags;
 	}
-	
+
 	get budget(): number {
 		return CustomerData[this.customerId].budget;
 	}

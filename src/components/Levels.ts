@@ -9,6 +9,7 @@ export interface Level {
 	background: string;
 	width: number;
 	height: number;
+	cellSize: number;
 	grid: number[][];
 	customerArrivalTimes: number[];
 }
@@ -33,6 +34,7 @@ export const LevelData: Level[] = [
 		background: "grid1",
 		width: 6 + 2,
 		height: 4 + 2,
+		cellSize: 190,
 		grid: [
 			[X, X, X, X, X, X, X, X],
 			[X, 2, _, 3, 3, _, 4, X],
@@ -48,6 +50,7 @@ export const LevelData: Level[] = [
 		background: "grid4",
 		width: 7 + 2,
 		height: 5 + 2,
+		cellSize: 100,
 		grid: [
 			[X, X, X, X, X, X, X, X, X],
 			[X, 2, _, _, _, _, _, _, X],
@@ -67,6 +70,7 @@ export const LevelData: Level[] = [
 		background: "grid3",
 		width: 8 + 2,
 		height: 6 + 2,
+		cellSize: 109,
 		grid: [
 			[X, X, X, X, X, X, X, X, X, X],
 			[X, 2, _, _, _, _, _, _, _, X],

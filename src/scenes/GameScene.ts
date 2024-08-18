@@ -48,7 +48,7 @@ export class GameScene extends BaseScene {
 	public day: number = 0;
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
-	public money: number = 0;
+	public money: number = 100000;
 	public dailyStats: {
 		money: number;
 		happyCustomers: number;
@@ -62,39 +62,22 @@ export class GameScene extends BaseScene {
 	create(): void {
 		this.fade(false, 200, 0x000000);
 
+		// Touch input settings
 		this.input.addPointer(2);
 		this.input.dragDistanceThreshold = 10;
 
+		// Reset daily stats
+		this.dailyStats = { money: 0, happyCustomers: 0, angryCustomers: 0 };
+
+		// Background
 		this.background = this.add.image(0, 0, "grid1");
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.board = new Board(this, this.CX, this.CY, 6, 4);
+		this.board = new Board(this, this.CX, this.CY, 6, 4, 100);
 
 		this.stations = [];
-		// this.addStation(0, 0, StationId.WaitingSeatTier1);
-		// this.addStation(0, 1, StationId.WaitingSeatTier2);
-		// this.addStation(0, 2, StationId.WaitingSeatTier3);
-		// this.addStation(2, 2, StationId.HornAndNailsTier1);
-		// this.addStation(3, 2, StationId.HornAndNailsTier2);
-		// this.addStation(4, 2, StationId.HornAndNailsTier3);
-		// this.addStation(2, 0, StationId.HornAndNailsTier1);
-		// this.addStation(3, 0, StationId.HornAndNailsTier2);
-		// this.addStation(4, 0, StationId.HornAndNailsTier3);
-		// this.addStation(5, 1, StationId.ScalePolishTier1);
-		// this.addStation(6, 1, StationId.ScalePolishTier2);
-		// this.addStation(7, 1, StationId.ScalePolishTier3);
-		// this.addStation(5, 3, StationId.GoldBathTier1);
-		// this.addStation(6, 3, StationId.GoldBathTier2);
-		// this.addStation(7, 3, StationId.GoldBathTier3);
-		// this.addStation(5, 5, StationId.CashRegister);
-
 		this.employees = [];
-		// this.addEmployee(0, 5, EmployeeId.RaccoonTier1);
-		// this.addEmployee(1, 5, EmployeeId.RaccoonTier1);
-		// this.addEmployee(2, 5, EmployeeId.RaccoonTier1);
-		// this.addEmployee(3, 5, EmployeeId.HumanTier1);
-
 		this.customers = [];
 
 		this.ui = new UI(this);
@@ -103,15 +86,30 @@ export class GameScene extends BaseScene {
 
 		this.effects = [];
 
-		//inventory stuff
-		this.inventory = new Inventory(this,-650,0,[10,10,10,10,10,10,10,10,10,10,10,10,10]);
-		this.invButton = new ToggleButton(this,64,540,"invbutton");
+		// Inventory
+		this.inventory = new Inventory(
+			this,
+			-650,
+			0,
+			[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+		);
+		this.invButton = new ToggleButton(this, 64, 540, "invbutton");
 		this.add.existing(this.invButton);
-        this.invButton.on("click", ()=> {this.toggleInventory()});
+		this.invButton.on("click", () => {
+			this.toggleInventory();
+		});
 		this.inventory.setDepth(10);
 		this.invButton.setDepth(9);
 		this.invButton.setAlpha(0.75);
-		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+		this.activeItem = new ItemButton(
+			this,
+			-500,
+			-500,
+			this.inventory,
+			-1,
+			-100,
+			"blankspr"
+		);
 
 		//UI
 		this.ui.setMoney(this.money);
@@ -157,12 +155,15 @@ export class GameScene extends BaseScene {
 					this.getAvailableWaitingSeat()
 				) {
 					const type = Phaser.Math.RND.pick([
-						CustomerId.TypeA,
-						CustomerId.TypeB,
-						CustomerId.TypeC,
-						CustomerId.TypeD,
-						CustomerId.TypeE,
-						CustomerId.TypeF,
+						CustomerId.Small,
+						CustomerId.Medium,
+						CustomerId.Large,
+						// CustomerId.TypeA,
+						// CustomerId.TypeB,
+						// CustomerId.TypeC,
+						// CustomerId.TypeD,
+						// CustomerId.TypeE,
+						// CustomerId.TypeF,
 					]);
 					this.addCustomer(type);
 				}
@@ -170,15 +171,15 @@ export class GameScene extends BaseScene {
 			loop: true,
 		});
 
-		// this.setState(GameState.Shopping);
 		this.loadLevel(LevelId.Level1);
-		this.startDay();
+		this.setState(GameState.Shopping);
+		// this.startDay();
 	}
 
 	update(time: number, delta: number) {
 		if (this.browsing || this.paused) {
-			this.activeItem.update(time,delta);
-			if(this.activeItem.state == 3){
+			this.activeItem.update(time, delta);
+			if (this.activeItem.state == 3) {
 				this.snapItem();
 			}
 			return;
@@ -186,11 +187,11 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
 		this.customers.forEach((x) => x.update(time, delta));
-		this.updateEffects(time,delta);
+		this.updateEffects(time, delta);
 		this.ui.update(time, delta);
 		this.summaryOverlay.update(time, delta);
-		this.activeItem.update(time,delta);
-		if(this.activeItem.state == 3){
+		this.activeItem.update(time, delta);
+		if (this.activeItem.state == 3) {
 			this.snapItem();
 		}
 		this.upgradeOverlay.update(time, delta);
@@ -201,16 +202,16 @@ export class GameScene extends BaseScene {
 		}
 	}
 
-	updateEffects(t:number, d:number){
-		for(let g = (this.effects.length-1); g >= 0; g--){
-			if(this.effects[g] == null) {
+	updateEffects(t: number, d: number) {
+		for (let g = this.effects.length - 1; g >= 0; g--) {
+			if (this.effects[g] == null) {
 				console.log("NULL INSTANCE EFFECT");
 				return;
 			}
 			this.effects[g].update(d, t);
-			if(this.effects[g].deleteFlag) {
+			if (this.effects[g].deleteFlag) {
 				this.effects[g].destroy();
-				this.effects.splice(g,1);
+				this.effects.splice(g, 1);
 			}
 		}
 	}
@@ -232,7 +233,7 @@ export class GameScene extends BaseScene {
 		const level = LevelData[id];
 
 		this.background.setTexture(level.background);
-		this.board.resize(level.width, level.height);
+		this.board.resize(level.width, level.height, level.cellSize);
 
 		// Clear all stations, employees, and customers
 		this.stations.forEach((s) => s.destroy());
@@ -291,7 +292,7 @@ export class GameScene extends BaseScene {
 		this.employees.forEach((e) => e.setDepth(0));
 
 		// TEMP: Add first customer
-		this.addCustomer(CustomerId.TypeA);
+		this.addCustomer(CustomerId.Small);
 
 		// Setup daytime tween
 		this.tweens.add({
@@ -314,7 +315,7 @@ export class GameScene extends BaseScene {
 	// Add new station
 	addStation(gridX: number, gridY: number, id: StationId) {
 		const coord = this.board.gridToCoord(gridX, gridY);
-		const station = new Station(this, coord.x, coord.y, id);
+		const station = new Station(this, coord.x, coord.y, id, this.board.size);
 		this.stations.push(station);
 
 		// Station task completed
@@ -356,7 +357,7 @@ export class GameScene extends BaseScene {
 	// Add new employee
 	addEmployee(gridX: number, gridY: number, id: EmployeeId) {
 		const coord = this.board.gridToCoord(gridX, gridY);
-		const employee = new Employee(this, coord.x, coord.y, id);
+		const employee = new Employee(this, coord.x, coord.y, id, this.board.size);
 		this.employees.push(employee);
 
 		// Employee reached the destination
@@ -388,7 +389,13 @@ export class GameScene extends BaseScene {
 	// Add new customer
 	addCustomer(type: CustomerId) {
 		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(this, coord.x, coord.y, type);
+		const customer = new Customer(
+			this,
+			coord.x,
+			coord.y,
+			type,
+			this.board.size
+		);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
@@ -574,20 +581,20 @@ export class GameScene extends BaseScene {
 		customer.nextActivity();
 	}
 
-	toggleInventory(){
+	toggleInventory() {
 		this.inventory.toggle();
-		if(this.inventory.isOpen) {
-			this.invButton.setPosition(714,540);
+		if (this.inventory.isOpen) {
+			this.invButton.setPosition(714, 540);
 			this.invButton.toggleForward();
 			this.openInventory();
 		} else {
-			this.invButton.setPosition(64,540);
+			this.invButton.setPosition(64, 540);
 			this.invButton.toggleBackward();
 			this.closeInventory();
 		}
 	}
 
-	setActiveItem(i: ItemButton){
+	setActiveItem(i: ItemButton) {
 		this.activeItem.destroy();
 		this.activeItem = i;
 		this.activeItem.on("itemdrop", () => {
@@ -598,32 +605,40 @@ export class GameScene extends BaseScene {
 		//new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
 	}
 
-	addEffect(e: Effect){
+	addEffect(e: Effect) {
 		this.effects.push(e);
 	}
 
-	parseItems(i: number, st: Station, c: Customer){
-		this.iHandler.process(this.inventory.itemList[i], st,c);
+	parseItems(i: number, st: Station, c: Customer) {
+		this.iHandler.process(this.inventory.itemList[i], st, c);
 	}
 
 	snapItem() {
 		let s = this.getClosestStationToItem(this.activeItem);
-		if(s) {
-			this.activeItem.snapTo(s.x,s.y);
+		if (s) {
+			this.activeItem.snapTo(s.x, s.y);
 		}
 	}
 
-	cleanUpItem(){
+	cleanUpItem() {
 		let s = this.getClosestStationToItem(this.activeItem);
-		if(s) {
-			s.applyItem(this.activeItem.id,this.activeItem.sprname);
+		if (s) {
+			s.applyItem(this.activeItem.id, this.activeItem.sprname);
 			this.sound.play("place");
 		} else {
 			this.returnItem(this.activeItem.id);
 			this.sound.play("return");
 		}
 		this.activeItem.destroy();
-		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+		this.activeItem = new ItemButton(
+			this,
+			-500,
+			-500,
+			this.inventory,
+			-1,
+			-100,
+			"blankspr"
+		);
 	}
 
 	returnItem(id: number) {

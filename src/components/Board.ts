@@ -12,13 +12,15 @@ export class Board extends Phaser.GameObjects.Container {
 		x: number,
 		y: number,
 		width: number,
-		height: number
+		height: number,
+		cellSize: number
 	) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
 
-		this.size = scene.H / (height + 2);
+		// this.size = scene.H / (height + 2);
+		this.size = cellSize;
 		this.grid = this.scene.add.grid(
 			0,
 			0,
@@ -39,8 +41,9 @@ export class Board extends Phaser.GameObjects.Container {
 	update(time: number, delta: number) {}
 
 	// Resize the board to new level
-	resize(width: number, height: number) {
-		this.size = this.scene.H / height;
+	resize(width: number, height: number, cellSize: number) {
+		// this.size = this.scene.H / height;
+		this.size = cellSize;
 
 		this.grid.destroy();
 		this.grid = this.scene.add.grid(
