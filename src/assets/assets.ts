@@ -36,8 +36,11 @@ const images: Image[] = [
 	// Items
 	image('items/coin', 'coin'),
 	image('items/bath1', 'bath_1'),
+	image('items/bath1f', 'bath_1_front'),
 	image('items/bath2', 'bath_2'),
+	image('items/bath2f', 'bath_2_front'),
 	image('items/bath3', 'bath_3'),
+	image('items/bath3f', 'bath_3_front'),
 	image('items/wax1', 'wax_1'),
 	image('items/wax2', 'wax_2'),
 	image('items/wax3', 'wax_3'),
