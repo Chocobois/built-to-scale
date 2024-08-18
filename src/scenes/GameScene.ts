@@ -303,6 +303,9 @@ export class GameScene extends BaseScene {
 				this.timeOfDay = tween.getValue();
 				this.ui.setTimeOfDay(this.timeOfDay);
 			},
+			onComplete: () => {
+				// Shop closed. Play sound.
+			},
 		});
 	}
 
