@@ -167,7 +167,7 @@ export class Customer extends Button {
 	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
 		this.emit("pickup");
 		this.dragged = true;
-		this.sprite.setTexture(this.spriteKeys.walk);
+		this.sprite.setTexture(this.spriteKeys.walk1);
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
