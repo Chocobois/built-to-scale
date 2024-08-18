@@ -57,7 +57,8 @@ export class GameScene extends BaseScene {
 	public day: number = 0;
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
-	public money: number = 100000;
+	public customerSpawnTimer: Phaser.Time.TimerEvent;
+	public money: number = 0;
 	public dailyStats: {
 		money: number;
 		happyCustomers: number;
@@ -187,33 +188,6 @@ export class GameScene extends BaseScene {
 		});
 
 		/* Init */
-
-		// TEMPORARY: Spawn customers every 5 seconds, if allowed
-		this.time.addEvent({
-			delay: 5000,
-			callback: () => {
-				// Spawn new customer if shop is still open
-				if (
-					this.state == GameState.Day &&
-					this.timeOfDay > 0 &&
-					this.getAvailableWaitingSeat()
-				) {
-					const type = Phaser.Math.RND.pick([
-						CustomerId.Small,
-						CustomerId.Medium,
-						CustomerId.Large,
-						// CustomerId.TypeA,
-						// CustomerId.TypeB,
-						// CustomerId.TypeC,
-						// CustomerId.TypeD,
-						// CustomerId.TypeE,
-						// CustomerId.TypeF,
-					]);
-					this.addCustomer(type);
-				}
-			},
-			loop: true,
-		});
 
 		this.loadLevel(LevelId.Level1);
 		this.setState(GameState.Shopping);
@@ -366,17 +340,17 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setDepth(0));
 		this.employees.forEach((e) => e.setDepth(0));
 
-		// TEMP: Add first customer
-		this.addCustomer(CustomerId.Small);
-
 		// Setup daytime tween
 		this.tweens.add({
 			targets: this,
-			timeOfDay: { from: 1, to: 0 },
 			duration: this.dayDuration,
+			timeOfDay: { from: 0, to: 100 },
+
+			onStart: () => {
+				this.attemptSpawnCustomer();
+			},
 			onUpdate: (tween) => {
-				this.timeOfDay = tween.getValue();
-				this.ui.setTimeOfDay(this.timeOfDay);
+				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
 			},
 			onComplete: () => {
 				// Shop closed. Play sound.
@@ -385,9 +359,53 @@ export class GameScene extends BaseScene {
 	}
 
 	endDay() {
+		this.customerSpawnTimer.destroy();
+
 		//this.stations.forEach((s) => s.returnItems());
 		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.setState(GameState.Shopping);
+	}
+
+	// Attempt to spawn customer
+	canSpawnCustomer(id: CustomerId) {
+		return (
+			this.state == GameState.Day &&
+			this.timeOfDay < 100 &&
+			this.getAvailableWaitingSeat(id)
+		);
+	}
+
+	// Attempt to spawn customer and reset timer
+	attemptSpawnCustomer() {
+		// Delay to next customer spawn
+		let delay = 1000;
+
+		// Randomly select customer type
+		const id = Phaser.Math.RND.pick([
+			CustomerId.Small,
+			CustomerId.Medium,
+			CustomerId.Large,
+		]);
+
+		if (this.canSpawnCustomer(id)) {
+			this.addCustomer(id);
+
+			// TODO: Adjust to difficulty
+			let delayMin = 5000 - 500 * this.day;
+			let delayMax = delayMin + 2000 - 100 * this.day;
+			delay = Phaser.Math.Between(delayMin, delayMax);
+
+			console.log(`Customer spawned. Waiting ${delay} ms`);
+		} else {
+			console.log(`Customer failed to spawn. Waiting ${delay} ms`);
+		}
+
+		// Setup new event timer
+		this.customerSpawnTimer = this.time.addEvent({
+			delay,
+			callback: this.attemptSpawnCustomer,
+			callbackScope: this,
+		});
 	}
 
 	// Add new station
@@ -466,19 +484,13 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new customer
-	addCustomer(type: CustomerId) {
+	addCustomer(id: CustomerId) {
 		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(
-			this,
-			coord.x,
-			coord.y,
-			type,
-			this.board.size
-		);
+		const customer = new Customer(this, coord.x, coord.y, id, this.board.size);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
-		const seat = this.getAvailableWaitingSeat();
+		const seat = this.getAvailableWaitingSeat(id);
 		if (seat) {
 			seat.setCustomer(customer);
 			customer.setStation(seat);
@@ -576,7 +588,8 @@ export class GameScene extends BaseScene {
 	}
 
 	// Get available seat for new customers to go to
-	getAvailableWaitingSeat() {
+	getAvailableWaitingSeat(id: CustomerId) {
+		// TODO: Use id to ensure seat and stations are available for tier
 		return this.stations.find(
 			(s) =>
 				s.stationType === StationType.WaitingSeat &&

@@ -72,7 +72,7 @@ export class UI extends Phaser.GameObjects.Container {
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
 
-		this.nextButton = new TextButton(scene, 0, 300, 240, 80, "Next day");
+		this.nextButton = new TextButton(scene, 0, 300, 300, 80, "Start day");
 		this.panel.add(this.nextButton);
 		this.nextButton.on("click", () => {
 			this.emit("nextDay");
