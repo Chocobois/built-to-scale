@@ -68,6 +68,7 @@ const images: Image[] = [
 	image('ui/question', 'question'),
 	image('ui/sad', 'sad'),
 	image('ui/timer', 'timer'),
+	image('ui/plus', 'plus'),
 
 	// Titlescreen
 	image('titlescreen/sky', 'title_sky'),
