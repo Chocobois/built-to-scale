@@ -154,6 +154,17 @@ export class Customer extends Button {
 			this.angryImage.setVisible(this.patience <= 0.5);
 
 			if (this.patience <= 0) {
+				if(this.hasCompleted){
+					if(Math.random()>0.2){
+						this.scene.sound.play("cashmoney");
+						this.scene.addEffect(new TextEffect(this.scene, this.x-70+(Math.random()*80), this.y-80, "+" + this.moneySpent +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
+						this.emit("pay", this.moneySpent);
+					} else {
+						this.scene.sound.play("fail");
+					}
+				} else {
+					this.scene.sound.play("fail");
+				}
 				this.leave();
 				this.thoughtBubble.showSymbol("sad");
 				this.emit("angry");
