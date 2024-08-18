@@ -696,12 +696,11 @@ export class GameScene extends BaseScene {
 			if (goldBathAvailable && Math.random() < 0.6) {
 				activities.push(StationType.GoldBath);
 			}
-			activities.push(StationType.CashRegister);
 			return activities;
 		}
 
 		let activities: StationType[] = [];
-		while (activities.length < 2) {
+		while (activities.length < 1) {
 			activities = getActivities();
 		}
 
