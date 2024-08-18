@@ -50,7 +50,7 @@ export const LevelData: Level[] = [
 		background: "grid4",
 		width: 7 + 2,
 		height: 5 + 2,
-		cellSize: 100,
+		cellSize: 150,
 		grid: [
 			[X, X, X, X, X, X, X, X, X],
 			[X, 2, _, _, _, _, _, _, X],

@@ -322,7 +322,7 @@ export class Station extends Button {
 	}
 
 	get spriteOffset(): number {
-		return 0.3 * this.spriteSize;
+		return 0.4 * this.spriteSize;
 	}
 
 	get taskDuration(): number {

@@ -60,7 +60,7 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
 
-		this.okButton = new TextButton(scene, 0, 300, "OK");
+		this.okButton = new TextButton(scene, 0, 300, 200, 100, "OK");
 		this.panel.add(this.okButton);
 		this.okButton.on("click", () => {
 			this.emit("progress");

@@ -63,7 +63,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.moneyText.setOrigin(0);
 		this.panel.add(this.moneyText);
 
-		this.buyButton = new TextButton(scene, 220, 150, "$100");
+		this.buyButton = new TextButton(scene, 220, 150, 200, 100, "$100");
 		this.panel.add(this.buyButton);
 		this.buyButton.on("click", () => {
 			if (this.selectedStation) {
