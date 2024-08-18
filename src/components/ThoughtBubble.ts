@@ -55,6 +55,12 @@ export class ThoughtBubble extends Phaser.GameObjects.Container {
 			| "money"
 			| "question"
 			| "sad"
+			| "h1"
+			| "h2"
+			| "h3"
+			| "h4"
+			| "h5"
+			| "h6"
 	) {
 		this.background.setVisible(true);
 		this.image.setVisible(false);

@@ -3,6 +3,7 @@ import { GameScene } from "@/scenes/GameScene";
 import { Station } from "./Station";
 import { Customer } from "./Customer";
 import { StationType } from "./StationData";
+import { TextEffect } from "./TextEffect";
 
 export class ItemHandler {
     public scene: GameScene;
@@ -16,6 +17,7 @@ export class ItemHandler {
             case -1: {
                 break;
             } case 0: {
+                ct.rockBonus = 1;
                 break;
             } case 1: {
                 st.taskHaste *= 0.5;
@@ -39,7 +41,7 @@ export class ItemHandler {
                 this.parsePreferredItem(i,st,ct);
                 break;
             } case 8: {
-                ct.patience = 100;
+                st.refresh = true;
                 st.taskHaste*=2;
                 break;
             } case 9: {
@@ -47,34 +49,42 @@ export class ItemHandler {
                 break;
             } case 10: {
                 let tstate = 0
-                if((i.antitags.length > 0) && ct.cdata.antitags.length > 0){
+                if((i.antitags.length > 0) && ct.antitags.length > 0){
                     for(let na = 0; na < i.antitags.length; na++){
-                        if(ct.cdata.antitags.includes(i.tags[na])) {
+                        if(ct.antitags.includes(i.tags[na])) {
                             tstate = -1;
                         }
                     }
                 }
 
                 if(tstate == -1) {
-                    ct.happinessStage -= 2;
-                    ct.maxHappiness = 3;
+                    ct.happinessBonus -= 2;
+                    ct.maxHappiness = 4.01;
                     ct.tipMultiplier *= 0.1;
+                    st.queueFail = true;
                     return;
                 } else {
-                    ct.tipMultiplier ++;
+                    ct.tipMultiplier++;
                     return;
                 }
             } case 11: {
                 let r = Math.random()*3;
+                //console.log(ct.itinerary);
                 if(r < 1) {
                     ct.itinerary.push(StationType.HornAndNails);
+                    this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-30+(Math.random()*120), "+⬤", "red", 60, false, "red", 1200, 100, 0.7, 0));
                 } else if (r < 2) {
                     ct.itinerary.push(StationType.ScalePolish);
+                    this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-30+(Math.random()*120), "+⬤", "yellow", 60, false, "red", 1200, 100, 0.7, 0));
                 } else if (r < 3) { 
                     ct.itinerary.push(StationType.GoldBath);
+                    this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-40, "+⬤", "blue", 60, false, "red", 1200, 100, 0.7, 0));
                 }
+                //console.log(ct.itinerary);
+                break;
             } case 12: {
-
+                st.crit += 0.25;
+                break;
             }
             break;
         }
@@ -82,31 +92,32 @@ export class ItemHandler {
 
     parsePreferredItem(i: Item, st:Station, ct:Customer){
         let state = 0;
-        if((i.tags.length > 0) && (ct.cdata.tags.length > 0)) {
+        if((i.tags.length > 0) && (ct.tags.length > 0)) {
             for(let nt = 0; nt < i.tags.length; nt++){
-                if(ct.cdata.tags.includes(i.tags[nt])) {
+                if(ct.tags.includes(i.tags[nt])) {
                     state = 1;
                 }
             }
         }
 
-        if((i.antitags.length > 0) && ct.cdata.antitags.length > 0){
+        if((i.antitags.length > 0) && ct.antitags.length > 0){
             for(let na = 0; na < i.antitags.length; na++){
-                if(ct.cdata.antitags.includes(i.tags[na])) {
+                if(ct.antitags.includes(i.tags[na])) {
                     state = -1;
                 }
             }
         }
 
-        if(state == 0) {
-            ct.happinessStage += 2;
+        if(state == 1) {
+            ct.happinessBonus += 2;
             return;
         } else if (state == -1) {
-            ct.happinessStage -= 2;
-            ct.maxHappiness = 3;
+            ct.happinessBonus -= 2.125;
+            ct.maxHappiness = 4.01;
+            st.queueFail = true;
             return;
         } else {
-            ct.happinessStage += 0.5;
+            ct.happinessBonus += 0.5;
             return;
         }
     }

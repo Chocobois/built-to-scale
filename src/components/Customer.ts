@@ -7,53 +7,61 @@ import { interpolateColor } from "@/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
 import { StationType } from "./StationData";
 import { CustomerData, CustomerId } from "./CustomerData";
+import { Effect } from "./Effect";
+import { TextEffect } from "./TextEffect";
 
 export interface CustomerType {
 	spr: string;
 	tags: string[];
 	antitags: string[];
 	budget: number;
+	
 }
 
 export class Customer extends Button {
 	public customerId: CustomerId;
-
+	public scene:GameScene;
 	// Movement
 	public lastX: number; // Last position on the grid
 	public lastY: number;
 	public dragX: number; // Current drag position
 	public dragY: number;
-	public tags: string[];
 	public currentStation: Station | null;
 	public currentEmployee: Employee | null;
-	public cdata: CustomerType;
+	//public cdata: CustomerType;
 	// Requests
 	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
 
-	// Happiness variables
-	public baseTip: number;
-	public tipMultiplier: number;
-	public tipBonus: number;
-	public happinessStage: number; //0-6, rounds down
-	public minHappiness: number = 0; // bonuses
-	public maxHappiness: number = 6; // bonuses
+	public hasCompleted: boolean = false;
 
-	public patience: number;
+	// Happiness variables
+	public tips = 0;
+	public tipMultiplier: number = 1;
+	public tipBonus: number = 0;
+	public happiness: number = 1.01;
+	//public happinessStage: number; //0-6, rounds down
+	public happinessBonus: number = 0;
+	public rockBonus: number = 0;
+	public minHappiness: number = 1.01; // bonuses
+	public maxHappiness: number = 6.01; // bonuses
+
+	public patience: number = 1;
 	public minPatience: number; // bonuses
+	public maxPatience: number = 1; // bonuses
 	public lockPatience: boolean; // bonuses
 
 	// Stats
 	public doingCuteThing: boolean;
 	public tasksCompleted: number;
 	public moneySpent: number;
-	public happiness: number;
+
 
 	// Graphics
 	private sprite: Phaser.GameObjects.Sprite;
 	private thoughtBubble: ThoughtBubble;
 	private angryImage: Phaser.GameObjects.Image;
-	private happinessTimer: Timer;
+	private patienceTimer: Timer;
 
 	constructor(scene: GameScene, x: number, y: number, id: CustomerId) {
 		super(scene, x, y);
@@ -74,7 +82,7 @@ export class Customer extends Button {
 		this.doingCuteThing = false;
 		this.tasksCompleted = 0;
 		this.moneySpent = 0;
-		this.happiness = 1;
+		//this.happiness = 3;
 
 		/* Sprite */
 		const size = 120;
@@ -97,15 +105,15 @@ export class Customer extends Button {
 		);
 		this.add(this.thoughtBubble);
 
-		this.happinessTimer = new Timer(
+		this.patienceTimer = new Timer(
 			scene,
 			-0.3 * size,
 			-0.3 * size,
 			0.6 * size,
 			0xfa9425
 		);
-		this.happinessTimer.setAlpha(0);
-		this.add(this.happinessTimer);
+		//this.patienceTimer.setAlpha(0);
+		this.add(this.patienceTimer);
 
 		this.bindInteractive(this.sprite, true);
 	}
@@ -123,25 +131,27 @@ export class Customer extends Button {
 		);
 
 		if (this.isWaiting) {
-			this.happinessTimer.setVisible(true);
+			this.patienceTimer.setVisible(true);
 			if (!this.dragged) {
 				// 20 seconds
-				this.happiness -= (1 / 20) * (delta / 1000);
+				if(!this.lockPatience){
+					this.patience -= (1 / 40) * (delta / 1000);
+				}
 			}
 
-			this.happinessTimer.setColor(
-				interpolateColor(0xff0000, 0x00ff00, this.happiness)
+			this.patienceTimer.setColor(
+				interpolateColor(0xff0000, 0x00ff00, this.patience)
 			);
-			this.happinessTimer.redraw(this.happiness);
-			this.angryImage.setVisible(this.happiness <= 0.5);
+			this.patienceTimer.redraw(this.patience/this.maxPatience);
+			this.angryImage.setVisible(this.patience <= 0.5);
 
-			if (this.happiness <= 0) {
+			if (this.patience <= 0) {
 				this.leave();
 				this.thoughtBubble.showSymbol("sad");
 				this.emit("angry");
 			}
 		} else {
-			this.happinessTimer.setVisible(false);
+			this.patienceTimer.setVisible(false);
 			this.angryImage.setVisible(false);
 		}
 	}
@@ -166,6 +176,19 @@ export class Customer extends Button {
 
 	}
 
+	resetPatience(){
+		this.patience = this.maxPatience*1.25;
+	}
+
+	miniRefresh(){
+		if(!this.lockPatience) {
+			this.patience += 0.125;
+			if(this.patience > 1.25){
+				this.patience = 1.25;
+			}
+		}
+	}
+
 	snapTo(x: number, y: number) {
 		this.dragX = x;
 		this.dragY = y;
@@ -177,7 +200,7 @@ export class Customer extends Button {
 		if (station) {
 			this.lastX = station.x;
 			this.lastY = station.y;
-			this.happiness = 1;
+			//this.happiness = 1;
 
 			if (this.requestedStation === station.stationType) {
 				this.thoughtBubble.showSymbol("exclamation");
@@ -191,11 +214,12 @@ export class Customer extends Button {
 		this.sprite.input!.enabled = !employee;
 
 		this.thoughtBubble.showSymbol(Phaser.Math.RND.pick(["happy", "love"]));
+
 	}
 
 	setAction(temp: boolean) {
 		this.doingCuteThing = temp;
-		this.thoughtBubble.hide();
+		//this.thoughtBubble.hide();
 	}
 
 	setRequest(type: StationType | null) {
@@ -210,8 +234,16 @@ export class Customer extends Button {
 	nextActivity() {
 		if (this.itinerary.length > 0) {
 			this.setRequest(this.itinerary.shift() || null);
+		} else if (!this.hasCompleted) {
+			this.hasCompleted = true;
+			this.setRequest(StationType.CashRegister);
 		} else {
+			this.parseMoney();
+			this.scene.sound.play("cashmoney");
+			this.scene.addEffect(new TextEffect(this.scene, this.x-70+(Math.random()*80), this.y-80, "+" + this.moneySpent +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
+			this.scene.addEffect(new TextEffect(this.scene, this.x-40+(Math.random()*80), this.y-20, "Tips +" + this.tips +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
 			this.emit("pay", this.moneySpent);
+			this.emit("tip", this.tips);
 			this.leave();
 		}
 	}
@@ -220,7 +252,7 @@ export class Customer extends Button {
 		this.sprite.input!.enabled = false;
 
 		this.setRequest(null);
-		this.happinessTimer.setVisible(false);
+		this.patienceTimer.setVisible(false);
 
 		if (this.currentStation) {
 			this.currentStation.setCustomer(null);
@@ -243,6 +275,115 @@ export class Customer extends Button {
 			},
 		});
 	}
+	recheckHappiness(){
+		let tempeh = this.happiness;
+		//console.log("Base Happiness " + tempeh);
+		(this.patience > 0.5) ? (tempeh += 2) : (tempeh += (4*this.patience/this.maxPatience));
+		//console.log("With Patience Happiness " + tempeh);
+
+		if(this.patience >= 1) {
+			tempeh += 1;
+		}
+		//console.log("With Bonus Patience Happiness " + tempeh);
+		tempeh += this.rockBonus;
+		if(tempeh > 4.01) {
+			tempeh = 4.01;
+		}
+		//console.log("With Rock Happiness " + tempeh);
+		tempeh += this.happinessBonus;
+
+		if(tempeh < this.minHappiness) {
+			tempeh = this.minHappiness;
+		}
+		if(tempeh > this.maxHappiness) {
+			tempeh = this.maxHappiness;
+		}
+
+		let rt = Math.trunc(tempeh);
+		switch(rt) {
+			case 1: {
+				this.thoughtBubble.showSymbol("h1");
+				break;
+			} case 2: {
+				this.thoughtBubble.showSymbol("h2");
+				break;
+			} case 3: {
+				this.thoughtBubble.showSymbol("h3");
+				break;
+			} case 4: {
+				this.thoughtBubble.showSymbol("h4");
+				break;
+			} case 5: {
+				this.thoughtBubble.showSymbol("h5");
+				break;
+			} case 6: {
+				this.thoughtBubble.showSymbol("h6");
+				break;
+			}
+		}
+	}
+	parseHappiness(){
+		let yiff = this.happiness;
+		//console.log("Base Happiness " + tempeh);
+		(this.patience > 0.5) ? (yiff += 2) : (yiff += (4*this.patience/this.maxPatience));
+		//console.log("With Patience Happiness " + tempeh);
+
+		if(this.patience >= 1) {
+			yiff += 1;
+		}
+		//console.log("With Bonus Patience Happiness " + tempeh);
+		yiff += this.rockBonus;
+		if(yiff > 4.01) {
+			yiff = 4.01;
+		}
+		//console.log("With Rock Happiness " + tempeh);
+		yiff += this.happinessBonus;
+
+		if(yiff < this.minHappiness) {
+			yiff = this.minHappiness;
+		}
+		if(yiff > this.maxHappiness) {
+			yiff = this.maxHappiness;
+		}
+		
+		this.tips = this.baseTips;
+
+		let bleistiftspitzer = Math.trunc(yiff);
+		switch(bleistiftspitzer) {
+			case 1: {
+				this.thoughtBubble.showSymbol("h1");
+				this.tips += 0*this.moneySpent;
+				break;
+			} case 2: {
+				this.thoughtBubble.showSymbol("h2");
+				this.tips += 0.05*this.moneySpent;
+				break;
+			} case 3: {
+				this.thoughtBubble.showSymbol("h3");
+				this.tips += 0.10*this.moneySpent;
+				break;
+			} case 4: {
+				this.thoughtBubble.showSymbol("h4");
+				this.tips += 0.25*this.moneySpent;
+				break;
+			} case 5: {
+				this.thoughtBubble.showSymbol("h5");
+				this.tips += 0.50*this.moneySpent;
+				break;
+			} case 6: {
+				this.thoughtBubble.showSymbol("h6");
+				this.tips += 1*this.moneySpent;
+				break;
+			}
+		}
+		console.log("TIPS: " + this.tips);
+		this.tips *= this.tipMultiplier;
+		this.tips = Math.trunc(this.tips);
+	}
+
+	parseMoney(){
+		this.parseHappiness();
+	}
 
 	/* Getters */
 
@@ -260,5 +401,21 @@ export class Customer extends Button {
 
 	get workMultiplier(): number {
 		return CustomerData[this.customerId].workMultiplier;
+	}
+
+	get tags(): string[] {
+		return CustomerData[this.customerId].tags;
+	}
+
+	get antitags(): string[] {
+		return CustomerData[this.customerId].antitags;
+	}
+	
+	get budget(): number {
+		return CustomerData[this.customerId].budget;
+	}
+
+	get baseTips(): number {
+		return CustomerData[this.customerId].baseTips;
 	}
 }

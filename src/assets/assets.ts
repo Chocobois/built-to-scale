@@ -59,6 +59,18 @@ const images: Image[] = [
 
 	//temp
 	image('temp/invwindow', 'invwindow'),
+	image('temp/lugia', 'lugia'),
+	image('temp/protogen', 'protogen'),
+	image('temp/triceratops', 'triceratops'),
+	image('temp/raptor', 'raptor'),
+	image('temp/boykisser', 'boykisser'),
+	image('temp/dragon', 'dragon'),
+	image('temp/h1', 'h1'),
+	image('temp/h2', 'h2'),
+	image('temp/h3', 'h3'),
+	image('temp/h4', 'h4'),
+	image('temp/h5', 'h5'),
+	image('temp/h6', 'h6'),
 
 ];
 
@@ -80,7 +92,8 @@ const spritesheets: SpriteSheet[] = [
 	spritesheet('temp/usb', 'usb', 100, 100),
 	spritesheet('temp/pillowtalk', 'pillowtalk', 100, 100),
 	spritesheet('temp/shuriken', 'shuriken', 100, 100),
-
+	spritesheet('temp/redx', 'redx', 64, 64),
+	
 	spritesheet('temp/blankspr', 'blankspr', 100, 100),
 ];
 
@@ -91,7 +104,11 @@ const audios: Audio[] = [
 	sound('place', 'place', 0.5),
 	sound('return', 'return', 0.5),
 	sound('scroll', 'scroll', 0.5),
+	sound('cashmoney', 'cashmoney', 0.5),
+	sound('button', 'button', 0.5),
 	sound('tree/rustle', 't_rustle', 0.5),
+	sound('tree/escape', 'fail', 0.5),
+	sound('crit', 'crit', 0.5),
 	sound('tree/meme_explosion_sound', 'meme_explosion_sound', 0.5),
 ];
 

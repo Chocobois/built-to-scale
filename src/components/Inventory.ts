@@ -13,6 +13,7 @@ export class Inventory extends Phaser.GameObjects.Container {
     public fwButton: SimpleButton;
     public title: Phaser.GameObjects.Text;
     public tdisplay: Phaser.GameObjects.Text;
+    private highlightIndex: number = -1;
     private currentIndices: number[] = [0,11];
     private coordinates: number[][] = [
         [64,64], [148,64], [232,64],
@@ -26,7 +27,7 @@ export class Inventory extends Phaser.GameObjects.Container {
         this.itemList = [
             new Item(0,"rock",stock[0],1,["rock","cheap"],["cheap"],"Complimentary Pet Rock","A loving pet rock to cheer up any customer. Works modestly well."),
             new Item(1,"coke",stock[1],50,["drug"],["illegal","cool"],"Cocaine","A delicious white powder made from plants. Improves working speed a whole bunch!"),
-            new Item(2,"hotdog",stock[2],25,["velociraptor","meat","bread","skeleton","ketchup","mustard","gay"],["meat","elitist","gay","gluten"],"Hot Dog","A big wiener with sauce, to satisfy any meat lover. You can also buy a bacon-wrapped cheesy version for 69 kr."),
+            new Item(2,"hotdog",stock[2],25,["raptor","meat","bread","skeleton","ketchup","mustard","gay"],["meat","elitist","gay","gluten"],"Hot Dog","A big wiener with sauce, to satisfy any meat lover. You can also buy a bacon-wrapped cheesy version for 69 kr."),
             new Item(3,"brocc",stock[3],12,["triceratops","veggie","healthy","stinky"],["veggie","healthy","stinky"],"Broccoli","This large stalk of free-range broccoli is perfect for vegans and herbivorous animals."),
             new Item(4,"usb",stock[4],30,["protogen","tech","metal","nerd"],["nerd","tech"],"Mini USB Drive", "Additional storage space in a compact unit. I wonder who would want this?"),
             new Item(5,"milk",stock[5],40,["dragon","horny","creamy","lactose","gay"],["horny","creamy","lactose","gay"],"Fresh Milk","Fresh, creamy milk for dragons. Still warm and thick."),
@@ -62,8 +63,9 @@ export class Inventory extends Phaser.GameObjects.Container {
         this.tdisplay.setWordWrapWidth(500);
         this.add(this.title);
         this.add(this.tdisplay);
-        this.fwButton = new SimpleButton(this.scene,x,y,"","fwbutton",10);
+        this.fwButton = new SimpleButton(this.scene,580,500,"","fwbutton",10);
         this.fwButton.on("click", ()=> {this.scroll()});
+        this.add(this.fwButton);
         this.scene.add.existing(this);
     }
 
@@ -75,12 +77,14 @@ export class Inventory extends Phaser.GameObjects.Container {
         }
         this.title.setText("");
         this.tdisplay.setText("");
+        this.highlightIndex = -1;
     }
 
     highlight(id: number){
         this.title.setText(this.itemList[id].name + " x" + this.itemList[id].quant);
         this.tdisplay.setText(this.itemList[id].desc);
         this.scene.sound.play("scroll");
+        this.highlightIndex = id;
     }
 
     populate(){
@@ -104,17 +108,18 @@ export class Inventory extends Phaser.GameObjects.Container {
 
     repopulate(){
         let rs = 0;
+        this.display.forEach((sp) => sp.destroy());
+        this.display = [];
         for(let np = this.currentIndices[0]; np < this.currentIndices[1]+1; np++){
-            this.display[rs].destroy();
             if(np < this.itemList.length){
-                this.display[rs] = new ItemButton(this.scene,this.coordinates[rs][0], this.coordinates[rs][1], this, this.itemList[np].id, rs, this.itemList[np].spr);
+                this.display.push(new ItemButton(this.scene,this.coordinates[rs][0], this.coordinates[rs][1], this, this.itemList[np].id, rs, this.itemList[np].spr));
                 if(this.itemList[np].quant <= 0) {
                     this.display[rs].shadow();
                 }
                 this.add(this.display[rs]);
             }
             else {
-                this.display[rs] = new ItemButton(this.scene,this.coordinates[rs][0], this.coordinates[rs][1], this, -1, rs, "blankspr");
+                this.display.push(new ItemButton(this.scene,this.coordinates[rs][0], this.coordinates[rs][1], this, -1, rs, "blankspr"));
                 this.add(this.display[rs]);
             }
             rs++;
@@ -136,12 +141,16 @@ export class Inventory extends Phaser.GameObjects.Container {
         this.isOpen=false;
         this.display = [];
         this.window.setVisible(false);
+        this.title.setText("");
+        this.tdisplay.setText("");
+        this.currentIndices=[0,11];
+        this.highlightIndex = -1;
     }
 
     open(){
         this.scene.sound.play("t_rustle");
         this.window.setVisible(true);
-        console.log("Open Processed");
+        //console.log("Open Processed");
         this.x = 0;
         this.y = 0;
         this.isOpen=true;
@@ -150,6 +159,14 @@ export class Inventory extends Phaser.GameObjects.Container {
 
     returnItem(id: number){
         this.itemList[id].quant++;
+        //console.log("STATE: " + this.isOpen + " ID: " + id + " HIGHLIGHT: " + this.highlightIndex);
+        if(this.isOpen){
+            if((this.highlightIndex >=0) && (id==this.highlightIndex)){
+                //this.scene.sound.play("meme_explosion_sound");
+                this.updateAmountText(id,this.itemList[id].quant);
+            }
+        }
+        
     }
 
     updateAmountText(id:number, i: number){
@@ -169,6 +186,9 @@ export class Inventory extends Phaser.GameObjects.Container {
         } else {
             this.currentIndices = [0,11];
         }
+        this.title.setText("");
+        this.tdisplay.setText("");
+        this.scene.sound.play("button");
         this.repopulate();
 
     }

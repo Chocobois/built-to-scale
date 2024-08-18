@@ -15,6 +15,9 @@ import { UpgradeOverlay } from "@/components/UpgradeOverlay";
 import { SummaryOverlay } from "@/components/SummaryOverlay";
 import { EmployeeId } from "@/components/EmployeeData";
 import { BlockType, LevelData, LevelId } from "@/components/Levels";
+import { Effect } from "@/components/Effect";
+import { TextEffect } from "@/components/TextEffect";
+import { BasicEffect } from "@/components/BasicEffect";
 
 enum GameState {
 	Cutscene,
@@ -37,6 +40,8 @@ export class GameScene extends BaseScene {
 	private invButton: ToggleButton;
 	private iHandler: ItemHandler;
 	public activeItem: ItemButton;
+
+	public effects: Effect[];
 
 	// Game stats
 	public state: GameState = GameState.Cutscene;
@@ -96,7 +101,10 @@ export class GameScene extends BaseScene {
 		this.ui.setDepth(1000);
 		this.iHandler = new ItemHandler(this);
 
-		this.inventory = new Inventory(this,-650,0,[4,5,2,6,3,0,0,0,0,0,0,0,0]);
+		this.effects = [];
+
+		//inventory stuff
+		this.inventory = new Inventory(this,-650,0,[10,10,10,10,10,10,10,10,10,10,10,10,10]);
 		this.invButton = new ToggleButton(this,64,540,"invbutton");
 		this.add.existing(this.invButton);
         this.invButton.on("click", ()=> {this.toggleInventory()});
@@ -104,6 +112,8 @@ export class GameScene extends BaseScene {
 		this.invButton.setDepth(9);
 		this.invButton.setAlpha(0.75);
 		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+
+		//UI
 		this.ui.setMoney(this.money);
 		this.ui.setDay(this.day);
 		this.ui.on("nextDay", () => {
@@ -147,9 +157,12 @@ export class GameScene extends BaseScene {
 					this.getAvailableWaitingSeat()
 				) {
 					const type = Phaser.Math.RND.pick([
-						CustomerId.Small,
-						CustomerId.Medium,
-						CustomerId.Large,
+						CustomerId.TypeA,
+						CustomerId.TypeB,
+						CustomerId.TypeC,
+						CustomerId.TypeD,
+						CustomerId.TypeE,
+						CustomerId.TypeF,
 					]);
 					this.addCustomer(type);
 				}
@@ -164,12 +177,16 @@ export class GameScene extends BaseScene {
 
 	update(time: number, delta: number) {
 		if (this.browsing || this.paused) {
+			this.activeItem.update(time,delta);
+			if(this.activeItem.state == 3){
+				this.snapItem();
+			}
 			return;
 		}
 		this.stations.forEach((s) => s.update(time, delta));
 		this.employees.forEach((e) => e.update(time, delta));
 		this.customers.forEach((x) => x.update(time, delta));
-
+		this.updateEffects(time,delta);
 		this.ui.update(time, delta);
 		this.summaryOverlay.update(time, delta);
 		this.activeItem.update(time,delta);
@@ -181,6 +198,20 @@ export class GameScene extends BaseScene {
 		// Depth sorting hack
 		if (this.state === GameState.Day) {
 			this.sortDepth();
+		}
+	}
+
+	updateEffects(t:number, d:number){
+		for(let g = (this.effects.length-1); g >= 0; g--){
+			if(this.effects[g] == null) {
+				console.log("NULL INSTANCE EFFECT");
+				return;
+			}
+			this.effects[g].update(d, t);
+			if(this.effects[g].deleteFlag) {
+				this.effects[g].destroy();
+				this.effects.splice(g,1);
+			}
 		}
 	}
 
@@ -260,7 +291,7 @@ export class GameScene extends BaseScene {
 		this.employees.forEach((e) => e.setDepth(0));
 
 		// TEMP: Add first customer
-		this.addCustomer(CustomerId.Small);
+		this.addCustomer(CustomerId.TypeA);
 
 		// Setup daytime tween
 		this.tweens.add({
@@ -315,6 +346,11 @@ export class GameScene extends BaseScene {
 
 	openInventory() {
 		this.browsing = true;
+		this.tweens.pauseAll();
+	}
+	closeInventory() {
+		this.browsing = false;
+		this.tweens.resumeAll();
 	}
 
 	// Add new employee
@@ -429,6 +465,12 @@ export class GameScene extends BaseScene {
 			this.ui.setMoney(this.money);
 		});
 
+		customer.on("tip", (money: number) => {
+			this.money += money;
+			this.dailyStats.money += money;
+			this.ui.setMoney(this.money);
+		});
+
 		// Customer leaving angry
 		customer.on("angry", () => {
 			this.dailyStats.angryCustomers += 1;
@@ -518,7 +560,7 @@ export class GameScene extends BaseScene {
 			if (Math.random() < 0.5) {
 				activities.push(StationType.GoldBath);
 			}
-			activities.push(StationType.CashRegister);
+			//activities.push(StationType.CashRegister);
 			return activities;
 		}
 
@@ -537,9 +579,11 @@ export class GameScene extends BaseScene {
 		if(this.inventory.isOpen) {
 			this.invButton.setPosition(714,540);
 			this.invButton.toggleForward();
+			this.openInventory();
 		} else {
 			this.invButton.setPosition(64,540);
 			this.invButton.toggleBackward();
+			this.closeInventory();
 		}
 	}
 
@@ -552,6 +596,10 @@ export class GameScene extends BaseScene {
 
 		this.add.existing(this.activeItem);
 		//new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
+	}
+
+	addEffect(e: Effect){
+		this.effects.push(e);
 	}
 
 	parseItems(i: number, st: Station, c: Customer){
@@ -571,17 +619,21 @@ export class GameScene extends BaseScene {
 			s.applyItem(this.activeItem.id,this.activeItem.sprname);
 			this.sound.play("place");
 		} else {
-			this.inventory.returnItem(this.activeItem.id);
+			this.returnItem(this.activeItem.id);
 			this.sound.play("return");
 		}
 		this.activeItem.destroy();
 		this.activeItem = new ItemButton(this,-500, -500, this.inventory, -1, -100, "blankspr");
 	}
 
+	returnItem(id: number) {
+		this.inventory.returnItem(id);
+	}
+
 	getClosestStationToItem(item: ItemButton): Station | null {
 		let closestStation = null;
 		let closestDistance = Infinity;
-		const maxDistance = 75;
+		const maxDistance = 80;
 
 		this.stations.forEach((station) => {
 			const distance = Phaser.Math.Distance.Between(
@@ -591,6 +643,7 @@ export class GameScene extends BaseScene {
 				station.y
 			);
 			if (
+				!(station.stationType == StationType.CashRegister) &&
 				!station.currentCustomer &&
 				distance < closestDistance &&
 				distance < maxDistance &&

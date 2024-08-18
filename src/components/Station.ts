@@ -9,14 +9,24 @@ import {
 	StationTypeData,
 } from "./StationData";
 import { interpolateColor } from "@/functions";
+import { SimpleButton } from "./elements/SimpleButton";
+import { TextEffect } from "./TextEffect";
 
 export class Station extends Button {
 	public stationId: StationId;
 	public currentCustomer: Customer | null; // The customer using the station
 	//public taskDuration: number; // Time it takes to complete a task
 	public taskSpeed: number = 1; // For permanent bonuses
+
+	//temp variables
 	public taskHaste: number = 1; // For temporary bonuses
-	
+	public refresh: boolean = false;
+	public queueFail: boolean = false;
+	public crit: number = 0;
+
+	public clearButton: SimpleButton;
+
+	public scene: GameScene;
 	public taskTimer: number = 0;
 
 	public appliedItems: number[];
@@ -73,6 +83,12 @@ export class Station extends Button {
 
 		this.appliedItems = [];
 		this.appliedSprites = [];
+		this.clearButton = new SimpleButton(this.scene, 0.45*size,-0.45*size,"","redx",10);
+		this.clearButton.on("click", ()=> {this.returnItems()});
+		this.add(this.clearButton);
+		this.clearButton.setScale(0.75,0.75);
+		this.clearButton.setDepth(5);
+		this.clearButton.setVisible(false);
 	}
 
 	update(time: number, delta: number) {
@@ -82,18 +98,28 @@ export class Station extends Button {
 
 	setCustomer(customer: Customer | null) {
 		this.currentCustomer = customer;
-
 		this.text.setText(customer ? "Click me!" : "Available");
 	}
 
 	startTask() {
 		this.text.setText("Working");
+		this.currentCustomer ? (this.taskHaste *= this.currentCustomer.workMultiplier) : (this.taskHaste *= 1);
 		this.parseItems();
+		if(this.queueFail) {
+			this.scene.sound.play("fail");
+		}
 		this.clearItems();
+		if(this.stationType == StationType.CashRegister) {
+			this.taskHaste = 1;
+		}
+		if(this.currentCustomer) {
+			this.currentCustomer.recheckHappiness();
+		}
+
 		this.scene.tweens.addCounter({
 			from: 1,
 			to: 0,
-			duration: this.taskDuration,
+			duration: this.taskDuration*this.taskHaste*this.taskSpeed,
 			onStart: () => {
 				this.progressTimer.setVisible(true);
 			},
@@ -101,11 +127,59 @@ export class Station extends Button {
 				this.progressTimer.redraw(tween.getValue());
 			},
 			onComplete: () => {
+				this.parseTaskEndParams();
+				this.resetTempVariables();
 				this.emit("taskend");
 				this.progressTimer.setVisible(false);
 				this.text.setText("Click me!");
 			},
 		});
+		this.setCrits(this.taskDuration*this.taskHaste*this.taskSpeed);
+	}
+
+	setCrits(t: number){
+		if(this.crit <= 0){
+			return;
+		}
+		let orcane = 1;
+		for(let coom = 0; coom < 5; coom++){
+			if(Math.random() < this.crit){
+				orcane++;
+			}
+		}
+		for(let algae = 0; algae < orcane; algae++){
+			this.scene.tweens.addCounter({
+				from: 1,
+				to: 0,
+				duration: (t*0.1)+Math.trunc(Math.random()*(t*0.8)),
+				onStart: () => {},
+				onUpdate: () => {},
+				onComplete: () => {
+					this.scene.addEffect(new TextEffect(this.scene, this.x-80+(Math.random()*160), this.y-80+(Math.random()*160), "Crit! +Happiness!", "cyan", 30, true, "red", 800, 100, 0.7, 0));
+					this.scene.sound.play("crit");
+					if(this.currentCustomer){
+						this.currentCustomer.happinessBonus += 0.75;
+						this.currentCustomer.recheckHappiness();
+					}
+				},
+			});
+		}
+	}
+
+	parseTaskEndParams(){
+		if(this.refresh){
+			if(this.currentCustomer) {
+				this.currentCustomer.resetPatience();
+			}
+		}
+
+	}
+
+	resetTempVariables(){
+		this.taskHaste = 1;
+		this.refresh = false;
+		this.queueFail = false;
+		this.crit = 0;
 	}
 
 	setClickable(value: boolean) {
@@ -121,23 +195,45 @@ export class Station extends Button {
 
 	applyItem(id: number, sp: string){
 		this.appliedItems.push(id);
-		let st = new Phaser.GameObjects.Sprite(this.scene,-70+(35*this.appliedItems.length),40,sp);
+		let st = new Phaser.GameObjects.Sprite(this.scene,-80+(40*this.appliedItems.length),60,sp);
 		st.setOrigin(0.5,0.5);
 		st.setScale(0.4);
 		st.setDepth(2);
 		st.setAlpha(0.85);
 		this.add(st);
 		this.appliedSprites.push(st);
+		this.clearButton.setVisible(true);
 	}
 
 	clearItems(){
 		this.appliedItems = [];
 		this.appliedSprites.forEach((sp) => sp.destroy());
 		this.appliedSprites = [];
+		this.clearButton.setVisible(false);
 	}
 
 	parseItems(){
-		
+		if(this.currentCustomer) {
+			this.currentCustomer.miniRefresh();
+			if(this.appliedItems.length > 0) {
+				this.appliedItems.forEach((it) => this.scene.parseItems(it,this,this.currentCustomer!));
+			}
+		}
+	}
+
+	returnItems(){
+		if(this.appliedItems.length > 0) {
+			this.appliedItems.forEach((it) => this.scene.returnItem(it));
+		}
+		if(this.appliedSprites.length > 0){
+			this.appliedSprites.forEach((sp) => sp.destroy());
+		}
+
+		this.appliedItems = [];
+		this.appliedSprites = [];
+		this.scene.sound.play("return");
+		this.clearButton.setVisible(false);
+		//this.scene.sound.play("meme_explosion_sound");
 	}
 
 	/* Getters */

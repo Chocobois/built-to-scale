@@ -69,19 +69,26 @@ export class ItemButton extends Button {
             this.parent.unhighlight();
             this.select();
             this.parent.highlight(this.id);
-        } else if (this.state == 1) {
+        }
+    }
+
+	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
+		this.dragged = true;
+        if(this.state == 0) {
+            this.parent.unhighlight();
+            this.select();
+            this.parent.highlight(this.id);
+        }
+        if (this.state == 1) {
+            this.spr.setFrame(0);
             this.state = 3;
             this.parent.remove(this);
             this.parent.scene.setActiveItem(this);
             this.setPosition(0,0);
             this.split();
             this.passivate = true;
-            this.setDepth(5);
+            this.setDepth(10);
         }
-    }
-
-	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
-		this.dragged = true;
         this.emit("itempickup");
 	}
 

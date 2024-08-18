@@ -95,7 +95,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 1,
 		spriteKey: "nail_1",
 		taskDuration: 3000,
-		admissionFee: 10,
+		admissionFee: 20,
 		upgradeCost: 100,
 		upgradeTo: StationId.HornAndNailsTier2,
 	},
@@ -105,7 +105,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 2,
 		spriteKey: "nail_2",
 		taskDuration: 2500,
-		admissionFee: 20,
+		admissionFee: 40,
 		upgradeCost: 300,
 		upgradeTo: StationId.HornAndNailsTier3,
 	},
@@ -115,7 +115,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 3,
 		spriteKey: "nail_3",
 		taskDuration: 2000,
-		admissionFee: 30,
+		admissionFee: 60,
 	},
 
 	[StationId.ScalePolishTier1]: {
