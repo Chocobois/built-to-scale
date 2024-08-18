@@ -19,7 +19,9 @@ export enum CustomerId {
 export interface CustomerInterface {
 	tier: number;
 	spriteKeys: {
-		walk: string;
+		walk1: string;
+		walk2: string;
+		walk3: string;
 		sit: string;
 	};
 	spriteScale: number;
@@ -35,7 +37,9 @@ export interface CustomerInterface {
 export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.TypeA]: {
 		spriteKeys: {
-			walk: "raptor",
+			walk1: "raptor",
+			walk2: "raptor",
+			walk3: "raptor",
 			sit: "raptor",
 		},
 		spriteScale: 1.0,
@@ -48,7 +52,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	},
 	[CustomerId.TypeB]: {
 		spriteKeys: {
-			walk: "triceratops",
+			walk1: "triceratops",
+			walk2: "triceratops",
+			walk3: "triceratops",
 			sit: "triceratops",
 		},
 		spriteScale: 1.0,
@@ -61,7 +67,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	},
 	[CustomerId.TypeC]: {
 		spriteKeys: {
-			walk: "protogen",
+			walk1: "protogen",
+			walk2: "protogen",
+			walk3: "protogen",
 			sit: "protogen",
 		},
 		spriteScale: 1.0,
@@ -74,7 +82,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	},
 	[CustomerId.TypeD]: {
 		spriteKeys: {
-			walk: "dragon",
+			walk1: "dragon",
+			walk2: "dragon",
+			walk3: "dragon",
 			sit: "dragon",
 		},
 		spriteScale: 1.0,
@@ -87,7 +97,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	},
 	[CustomerId.TypeE]: {
 		spriteKeys: {
-			walk: "lugia",
+			walk1: "lugia",
+			walk2: "lugia",
+			walk3: "lugia",
 			sit: "lugia",
 		},
 		spriteScale: 1.0,
@@ -100,7 +112,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	},
 	[CustomerId.TypeF]: {
 		spriteKeys: {
-			walk: "boykisser",
+			walk1: "boykisser",
+			walk2: "boykisser",
+			walk3: "boykisser",
 			sit: "boykisser",
 		},
 		spriteScale: 1.0,
@@ -118,7 +132,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.Small]: {
 		tier: 1,
 		spriteKeys: {
-			walk: "small_customer_walk1",
+			walk1: "small_customer_walk1",
+			walk2: "small_customer_walk2",
+			walk3: "small_customer_walk3",
 			sit: "small_customer_sit1",
 		},
 		spriteScale: 1.0,
@@ -132,7 +148,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.Medium]: {
 		tier: 2,
 		spriteKeys: {
-			walk: "medium_customer_walk1",
+			walk1: "medium_customer_walk1",
+			walk2: "medium_customer_walk1",
+			walk3: "medium_customer_walk1",
 			sit: "medium_customer_sit1",
 		},
 		spriteScale: 1.4,
@@ -146,7 +164,9 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.Large]: {
 		tier: 3,
 		spriteKeys: {
-			walk: "large_customer_walk1",
+			walk1: "large_customer_walk1",
+			walk2: "large_customer_walk1",
+			walk3: "large_customer_walk1",
 			sit: "large_customer_sit1",
 		},
 		spriteScale: 1.7,
