@@ -83,6 +83,7 @@ export class UI extends Phaser.GameObjects.Container {
 		this.newLocationButton.on("click", () => {
 			this.emit("nextLevel");
 		});
+		this.newLocationButton.setVisible(false);
 	}
 
 	update(time: number, delta: number) {}

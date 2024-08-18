@@ -14,8 +14,8 @@ import { TextEffect } from "./TextEffect";
 
 export class Station extends Button {
 	public stationId: StationId;
+	public hasBeenPurchased: boolean;
 	public currentCustomer: Customer | null; // The customer using the station
-	//public taskDuration: number; // Time it takes to complete a task
 	public taskSpeed: number = 1; // For permanent bonuses
 
 	//temp variables
@@ -53,6 +53,9 @@ export class Station extends Button {
 		this.stationId = id;
 		this.cellSize = cellSize;
 		this.currentCustomer = null;
+
+		// Initially not purchased
+		this.hasBeenPurchased = false;
 
 		/* Sprite */
 		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
@@ -109,7 +112,8 @@ export class Station extends Button {
 	}
 
 	update(time: number, delta: number) {
-		const squish = 1.0 + 0.02 * Math.sin((6 * time) / 1000);
+		const amount = this.hasBeenPurchased ? 0.02 : 0;
+		const squish = 1.0 + amount * Math.sin((6 * time) / 1000);
 		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
 	}
 
@@ -124,7 +128,7 @@ export class Station extends Button {
 			? (this.taskHaste *= this.currentCustomer.workMultiplier)
 			: (this.taskHaste *= 1);
 		this.parseItems();
-		if(this.queueFail) {
+		if (this.queueFail) {
 			this.scene.sound.play("rip");
 		} else {
 			this.playJingle();
@@ -222,7 +226,12 @@ export class Station extends Button {
 	}
 
 	upgrade() {
-		if (this.upgradeTo) {
+		// this.scene.sound.play("upgrade");
+
+		if (!this.hasBeenPurchased) {
+			this.hasBeenPurchased = true;
+			this.setAlpha(1.0);
+		} else if (this.upgradeTo) {
 			this.stationId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
 			this.spriteCont.y = this.spriteOffset;
@@ -280,15 +289,17 @@ export class Station extends Button {
 		//this.scene.sound.play("meme_explosion_sound");
 	}
 
-	playJingle(){
-		switch(this.stationType){
+	playJingle() {
+		switch (this.stationType) {
 			case StationType.ScalePolish: {
 				this.scene.sound.play("polish");
 				break;
-			} case StationType.GoldBath: {
+			}
+			case StationType.GoldBath: {
 				this.scene.sound.play("goldbath");
 				break;
-			} case StationType.HornAndNails: {
+			}
+			case StationType.HornAndNails: {
 				this.scene.sound.play("snip");
 				break;
 			}
@@ -334,7 +345,13 @@ export class Station extends Button {
 	}
 
 	get upgradeCost(): number {
-		return StationData[this.stationId].upgradeCost ?? 0;
+		if (!this.hasBeenPurchased) {
+			return StationData[this.stationId].cost;
+		}
+		if (this.upgradeTo) {
+			return StationData[this.upgradeTo].cost;
+		}
+		return 0;
 	}
 
 	get upgradeTo(): StationId | undefined {

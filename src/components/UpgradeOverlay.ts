@@ -102,7 +102,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		}
 
 		// Upgrade text if there is an upgrade available
-		if (station.upgradeTo) {
+		if (station.upgradeTo && station.hasBeenPurchased) {
 			const nextData = StationData[station.upgradeTo];
 			const durationDiff = nextData.taskDuration! - station.taskDuration;
 			const revenueDiff = nextData.admissionFee! - station.admissionFee;
@@ -118,9 +118,6 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 				text += `Revenue: $${station.admissionFee} (+$${revenueDiff})\n`;
 			}
 			this.moneyText.setText(text);
-
-			this.buyButton.setVisible(true);
-			this.buyButton.setText(`$${station.upgradeCost}`);
 		}
 		// Otherwise, show current stats
 		else {
@@ -129,13 +126,13 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			text += `Duration: ${station.taskDuration / 1000}s\n`;
 			text += `Revenue: $${station.admissionFee}\n`;
 			this.moneyText.setText(text);
-
-			this.buyButton.setVisible(false);
 		}
 
 		// Enable/disable buy button
 		const canAfford = station.upgradeCost <= this.scene.money;
 		this.buyButton.setEnabled(canAfford);
+		this.buyButton.setVisible(!!station.upgradeTo || !station.hasBeenPurchased);
+		this.buyButton.setText(`$${station.upgradeCost}`);
 
 		this.open();
 	}
@@ -155,7 +152,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		}
 
 		// Upgrade text if there is an upgrade available
-		if (employee.upgradeTo) {
+		if (employee.upgradeTo && employee.hasBeenPurchased) {
 			const nextData = EmployeeData[employee.upgradeTo];
 			const walkDiff = nextData.walkSpeed! - employee.walkSpeed;
 			const workDiff = nextData.workSpeed! - employee.workSpeed;
@@ -167,7 +164,6 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			this.moneyText.setText(text);
 
 			this.buyButton.setVisible(true);
-			this.buyButton.setText(`$${employee.upgradeCost}`);
 		}
 		// Otherwise, show current stats
 		else {
@@ -176,13 +172,15 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			text += `Walk speed: ${employee.walkSpeed}\n`;
 			text += `Work speed: ${employee.workSpeed}\n`;
 			this.moneyText.setText(text);
-
-			this.buyButton.setVisible(false);
 		}
 
 		// Enable/disable buy button
 		const canAfford = employee.upgradeCost <= this.scene.money;
 		this.buyButton.setEnabled(canAfford);
+		this.buyButton.setVisible(
+			!!employee.upgradeTo || !employee.hasBeenPurchased
+		);
+		this.buyButton.setText(`$${employee.upgradeCost}`);
 
 		this.open();
 	}

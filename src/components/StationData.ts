@@ -62,7 +62,7 @@ export interface StationInterface {
 	spriteScale: number; // Multiplier for sprite size
 	taskDuration?: number; // Time it takes to complete a task
 	admissionFee?: number; // Customer pays this amount to use the station
-	upgradeCost?: number; // Cost to upgrade the station
+	cost: number; // Cost to purchase the station
 	upgradeTo?: StationId; // Station to upgrade to
 }
 
@@ -73,7 +73,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 1,
 		spriteKey: "waitchair_1",
 		spriteScale: 1.0,
-		upgradeCost: 100,
+		cost: 100,
 		upgradeTo: StationId.WaitingSeatTier2,
 	},
 	[StationId.WaitingSeatTier2]: {
@@ -82,7 +82,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 2,
 		spriteKey: "waitchair_2",
 		spriteScale: 1.25,
-		upgradeCost: 500,
+		cost: 250,
 		upgradeTo: StationId.WaitingSeatTier3,
 	},
 	[StationId.WaitingSeatTier3]: {
@@ -91,6 +91,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 3,
 		spriteKey: "waitchair_3",
 		spriteScale: 1.5,
+		cost: 500,
 	},
 
 	[StationId.HornAndNailsTier1]: {
@@ -101,7 +102,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.0,
 		taskDuration: 3000,
 		admissionFee: 20,
-		upgradeCost: 100,
+		cost: 150,
 		upgradeTo: StationId.HornAndNailsTier2,
 	},
 	[StationId.HornAndNailsTier2]: {
@@ -112,7 +113,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.25,
 		taskDuration: 2500,
 		admissionFee: 40,
-		upgradeCost: 300,
+		cost: 250,
 		upgradeTo: StationId.HornAndNailsTier3,
 	},
 	[StationId.HornAndNailsTier3]: {
@@ -123,6 +124,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.5,
 		taskDuration: 2000,
 		admissionFee: 60,
+		cost: 400,
 	},
 
 	[StationId.ScalePolishTier1]: {
@@ -133,7 +135,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.0,
 		taskDuration: 2000,
 		admissionFee: 10,
-		upgradeCost: 150,
+		cost: 100,
 		upgradeTo: StationId.ScalePolishTier2,
 	},
 	[StationId.ScalePolishTier2]: {
@@ -144,7 +146,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.25,
 		taskDuration: 1500,
 		admissionFee: 20,
-		upgradeCost: 400,
+		cost: 250,
 		upgradeTo: StationId.ScalePolishTier3,
 	},
 	[StationId.ScalePolishTier3]: {
@@ -155,6 +157,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.5,
 		taskDuration: 1000,
 		admissionFee: 30,
+		cost: 500,
 	},
 
 	[StationId.GoldBathTier1]: {
@@ -165,7 +168,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.0,
 		taskDuration: 4000,
 		admissionFee: 20,
-		upgradeCost: 200,
+		cost: 200,
 		upgradeTo: StationId.GoldBathTier2,
 	},
 	[StationId.GoldBathTier2]: {
@@ -176,7 +179,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.25,
 		taskDuration: 3000,
 		admissionFee: 30,
-		upgradeCost: 600,
+		cost: 350,
 		upgradeTo: StationId.GoldBathTier3,
 	},
 	[StationId.GoldBathTier3]: {
@@ -187,6 +190,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteScale: 1.5,
 		taskDuration: 2000,
 		admissionFee: 40,
+		cost: 600,
 	},
 
 	[StationId.CashRegister]: {
@@ -196,5 +200,6 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteKey: "checkout",
 		spriteScale: 1.4,
 		taskDuration: 500,
+		cost: 0,
 	},
 };
