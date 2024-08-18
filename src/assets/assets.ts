@@ -14,6 +14,10 @@ const images: Image[] = [
 	// Characters
 	image('characters/player', 'player'),
 	image('characters/worker', 'worker'),
+	// WALK ANIMATION SHOULD LOOP LIKE THIS: walk1 - walk2 - walk3 - walk2
+	image('characters/workerWalkDown1', 'workerWalk1'),
+	image('characters/workerWalkDown2', 'workerWalk2'),
+	image('characters/workerWalkDown3', 'workerWalk3'),
 	// Small size customers
 	image('characters/smallCWalk1', 'small_customer_walk1'),
 	image('characters/smallCSit1', 'small_customer_sit1'),
