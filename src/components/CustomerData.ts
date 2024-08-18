@@ -1,4 +1,5 @@
 /* Specific customer instance data */
+/*
 export enum CustomerId {
 	TypeA,
 	TypeB,
@@ -7,26 +8,37 @@ export enum CustomerId {
 	TypeE,
 	TypeF
 }
+*/
+
+export enum CustomerId {
+	Small,
+	Medium,
+	Large,
+}
 
 export interface CustomerInterface {
+	tier: number;
 	spriteKeys: {
 		walk: string;
 		sit: string;
 	};
+	spriteScale: number;
 	walkSpeed: number; // Speed of the customer walking
 	workMultiplier: number; // Penalty multiplier for work (bigger is slower)
-	tags:string[];
-	antitags:string[];
-	budget:number;
-	baseTips: number,
+	tags: string[];
+	antitags: string[];
+	budget: number;
+	baseTips: number;
 }
 
+/*
 export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.TypeA]: {
 		spriteKeys: {
 			walk: "raptor",
 			sit: "raptor",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 1,
 		workMultiplier: 1,
 		tags:["raptor","meat","fluffy"],
@@ -39,6 +51,7 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 			walk: "triceratops",
 			sit: "triceratops",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 3,
 		workMultiplier: 3,
 		tags:["triceratops","veggie","healthy","stinky"],
@@ -51,6 +64,7 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 			walk: "protogen",
 			sit: "protogen",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 1.5,
 		workMultiplier: 1.5,
 		tags:["protogen","nerd","tech"],
@@ -63,6 +77,7 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 			walk: "dragon",
 			sit: "dragon",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 5,
 		workMultiplier: 5,
 		tags:["dragon","horny","creamy"],
@@ -75,6 +90,7 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 			walk: "lugia",
 			sit: "lugia",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 3.5,
 		workMultiplier: 3.5,
 		tags:["lugia","cold","ball"],
@@ -87,6 +103,7 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 			walk: "boykisser",
 			sit: "boykisser",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 2,
 		workMultiplier: 2,
 		tags:["boykisser","weeb","sweet","horny","creamy"],
@@ -95,47 +112,49 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 		baseTips:15,
 	},
 };
-
-/*
-export enum CustomerId {
-	Small,
-	Medium,
-	Large,
-}
-
-export interface CustomerInterface {
-	spriteKeys: {
-		walk: string;
-		sit: string;
-	};
-	walkSpeed: number; // Speed of the customer walking
-	workMultiplier: number; // Penalty multiplier for work (bigger is slower)
-}
+*/
 
 export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.Small]: {
+		tier: 1,
 		spriteKeys: {
 			walk: "small_customer_walk1",
 			sit: "small_customer_sit1",
 		},
+		spriteScale: 1.0,
 		walkSpeed: 1,
 		workMultiplier: 1,
+		tags: [],
+		antitags: [],
+		budget: 100,
+		baseTips: 10,
 	},
 	[CustomerId.Medium]: {
+		tier: 2,
 		spriteKeys: {
 			walk: "medium_customer_walk1",
 			sit: "medium_customer_sit1",
 		},
+		spriteScale: 1.4,
 		walkSpeed: 2,
 		workMultiplier: 2,
+		tags: [],
+		antitags: [],
+		budget: 100,
+		baseTips: 10,
 	},
 	[CustomerId.Large]: {
+		tier: 3,
 		spriteKeys: {
 			walk: "large_customer_walk1",
 			sit: "large_customer_sit1",
 		},
+		spriteScale: 1.7,
 		walkSpeed: 3,
 		workMultiplier: 3,
+		tags: [],
+		antitags: [],
+		budget: 100,
+		baseTips: 10,
 	},
 };
-*/

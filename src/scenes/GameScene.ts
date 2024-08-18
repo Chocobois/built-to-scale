@@ -155,12 +155,15 @@ export class GameScene extends BaseScene {
 					this.getAvailableWaitingSeat()
 				) {
 					const type = Phaser.Math.RND.pick([
-						CustomerId.TypeA,
-						CustomerId.TypeB,
-						CustomerId.TypeC,
-						CustomerId.TypeD,
-						CustomerId.TypeE,
-						CustomerId.TypeF,
+						CustomerId.Small,
+						CustomerId.Medium,
+						CustomerId.Large,
+						// CustomerId.TypeA,
+						// CustomerId.TypeB,
+						// CustomerId.TypeC,
+						// CustomerId.TypeD,
+						// CustomerId.TypeE,
+						// CustomerId.TypeF,
 					]);
 					this.addCustomer(type);
 				}
@@ -289,7 +292,7 @@ export class GameScene extends BaseScene {
 		this.employees.forEach((e) => e.setDepth(0));
 
 		// TEMP: Add first customer
-		this.addCustomer(CustomerId.TypeA);
+		this.addCustomer(CustomerId.Small);
 
 		// Setup daytime tween
 		this.tweens.add({
@@ -386,7 +389,13 @@ export class GameScene extends BaseScene {
 	// Add new customer
 	addCustomer(type: CustomerId) {
 		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(this, coord.x, coord.y, type);
+		const customer = new Customer(
+			this,
+			coord.x,
+			coord.y,
+			type,
+			this.board.size
+		);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
