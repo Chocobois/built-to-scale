@@ -106,7 +106,9 @@ export class Station extends Button {
 		this.currentCustomer ? (this.taskHaste *= this.currentCustomer.workMultiplier) : (this.taskHaste *= 1);
 		this.parseItems();
 		if(this.queueFail) {
-			this.scene.sound.play("fail");
+			this.scene.sound.play("rip");
+		} else {
+			this.playJingle();
 		}
 		this.clearItems();
 		if(this.stationType == StationType.CashRegister) {
@@ -234,6 +236,21 @@ export class Station extends Button {
 		this.scene.sound.play("return");
 		this.clearButton.setVisible(false);
 		//this.scene.sound.play("meme_explosion_sound");
+	}
+
+	playJingle(){
+		switch(this.stationType){
+			case StationType.ScalePolish: {
+				this.scene.sound.play("polish");
+				break;
+			} case StationType.GoldBath: {
+				this.scene.sound.play("goldbath");
+				break;
+			} case StationType.HornAndNails: {
+				this.scene.sound.play("snip");
+				break;
+			}
+		}
 	}
 
 	/* Getters */
