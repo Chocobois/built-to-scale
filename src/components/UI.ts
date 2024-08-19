@@ -118,5 +118,6 @@ export class UI extends Phaser.GameObjects.Container {
 
 	setShoppingMode(isShopping: boolean) {
 		this.nextButton.setVisible(isShopping);
+		this.newLocationButton.setVisible(isShopping);
 	}
 }
