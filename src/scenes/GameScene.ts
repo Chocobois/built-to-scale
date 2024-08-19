@@ -405,8 +405,8 @@ export class GameScene extends BaseScene {
 			this.addCustomer(id);
 
 			// TODO: Adjust to difficulty
-			let delayMin = Math.max(1000, 5000 - 500 * this.day);
-			let delayMax = delayMin + 4000 - 500 * this.day;
+			let delayMin = Math.max(1000, 4000 - 400 * this.day);
+			let delayMax = delayMin + 5000 - 500 * this.day;
 			delay = Phaser.Math.Between(delayMin, delayMax);
 
 			console.log(`Customer spawned. Waiting ${delay} ms`);
@@ -426,16 +426,15 @@ export class GameScene extends BaseScene {
 	updateSpawnPool() {
 		this.customerSpawnPool = [];
 
-		const tier2StationCount = this.stations.filter(
-			(s) => s.stationTier >= 2 && s.hasBeenPurchased
-		).length;
-		const tier3StationCount = this.stations.filter(
-			(s) => s.stationTier >= 2 && s.hasBeenPurchased
-		).length;
+		this.stations.forEach((s) => {
+			if (s.hasBeenPurchased) {
+				if (s.stationTier >= 1) this.customerSpawnPool.push(CustomerId.Small);
+				if (s.stationTier >= 2) this.customerSpawnPool.push(CustomerId.Medium);
+				if (s.stationTier >= 3) this.customerSpawnPool.push(CustomerId.Large);
+			}
+		});
 
-		this.customerSpawnPool.push(CustomerId.Small);
-		if (tier2StationCount >= 2) this.customerSpawnPool.push(CustomerId.Medium);
-		if (tier3StationCount >= 2) this.customerSpawnPool.push(CustomerId.Large);
+		console.log("Spawn pool:", this.customerSpawnPool);
 	}
 
 	updateSavedPurchases() {
