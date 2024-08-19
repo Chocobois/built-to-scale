@@ -112,6 +112,7 @@ export class GameScene extends BaseScene {
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
 		this.ui.on("nextDay", () => {
+			if (this.inventory.isOpen) this.toggleInventory();
 			this.startDay();
 		});
 		this.ui.on("nextLevel", () => {
@@ -119,6 +120,7 @@ export class GameScene extends BaseScene {
 			if (this.money >= upgradeCost) {
 				this.money -= upgradeCost;
 				this.ui.setMoney(this.money);
+				if (this.inventory.isOpen) this.toggleInventory();
 				this.intermission.fadeToIntermission(Mode.NextLevelCutscene);
 			}
 		});
@@ -156,8 +158,8 @@ export class GameScene extends BaseScene {
 		this.invButton.on("click", () => {
 			this.toggleInventory();
 		});
-		this.inventory.setDepth(10);
-		this.invButton.setDepth(9);
+		this.inventory.setDepth(800);
+		this.invButton.setDepth(900);
 		this.invButton.setAlpha(0.75);
 		this.activeItem = new ItemButton(
 			this,
@@ -266,7 +268,7 @@ export class GameScene extends BaseScene {
 		});
 
 		if (isShopping && this.day > 0) {
-			this.summaryOverlay.open(this.dailyStats);
+			this.summaryOverlay.open(this.day, this.dailyStats);
 		}
 	}
 
@@ -405,7 +407,7 @@ export class GameScene extends BaseScene {
 	// Attempt to spawn customer and reset timer
 	attemptSpawnCustomer() {
 		// Delay to next customer spawn
-		let delay = 2000;
+		let delay = 4000;
 
 		// Randomly select customer type
 		const id = Phaser.Math.RND.pick(this.customerSpawnPool);
@@ -414,8 +416,8 @@ export class GameScene extends BaseScene {
 			this.addCustomer(id);
 
 			// TODO: Adjust to difficulty
-			let delayMin = Math.max(1000, 4000 - 400 * this.day);
-			let delayMax = delayMin + 5000 - 500 * this.day;
+			let delayMin = Math.max(2000, 6000 - 400 * this.day);
+			let delayMax = delayMin + 10000 - 400 * this.day;
 			delay = Phaser.Math.Between(delayMin, delayMax);
 
 			console.log(`Customer spawned. Waiting ${delay} ms`);
@@ -722,6 +724,7 @@ export class GameScene extends BaseScene {
 			goal.y -= 3.6;
 
 			const gridPath = this.navmesh.findPath(start, goal);
+			// Pathfinding success, walk to station
 			if (gridPath) {
 				const points = gridPath.map((pos) =>
 					this.board.navGridToCoord(pos.x, pos.y)
@@ -732,12 +735,13 @@ export class GameScene extends BaseScene {
 				// const path = new Phaser.Curves.Spline(points);
 
 				closestEmployee.walk(path);
-			} else {
+			}
+			// Fallback to direct line if pathfinding fails
+			else {
 				console.error("No path found");
 				const debug = this.board.navGridToCoord(goal.x, goal.y);
 				this.add.ellipse(debug.x, debug.y, 30, 30, 0xff0000);
 
-				// Fallback to direct walk
 				const path = new Phaser.Curves.Path();
 				path.moveTo(closestEmployee.x, closestEmployee.y);
 				path.lineTo(
