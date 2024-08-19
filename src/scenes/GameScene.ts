@@ -177,6 +177,7 @@ export class GameScene extends BaseScene {
 			this.ui.setMoney(this.money);
 			station.upgrade();
 			this.upgradeOverlay.selectStation(station);
+			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
@@ -184,6 +185,7 @@ export class GameScene extends BaseScene {
 			this.ui.setMoney(this.money);
 			employee.upgrade();
 			this.upgradeOverlay.selectEmployee(employee);
+			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("close", () => {
@@ -202,80 +204,6 @@ export class GameScene extends BaseScene {
 		this.setState(GameState.Shopping);
 		// this.startDay();
 		this.intermission.fadeToGame(); // Comment this out to see cutscenes
-
-		// TEMP
-		let graphics = this.add.graphics();
-		this.input.on("pointermove", ({ x: mx, y: my }: any) => {
-			const cellSize = this.board.size;
-
-			const { gridX, gridY } = this.board.coordToNavGrid(mx, my);
-			const { x: roundX, y: roundY } = this.board.navGridToCoord(gridX, gridY);
-
-			const from = { x: 7 + 3, y: 7 + 3 };
-			const to = { x: gridX+0.5, y: gridY+0.5 };
-			// console.log(from, to);
-
-			graphics.clear();
-			// graphics.fillStyle(0x00ff00);
-			// graphics.fillCircle(mx, my, 20);
-			// graphics.fillStyle(0xff0000);
-			// graphics.fillCircle(roundX, roundY, 10);
-
-			this.navmesh.getPolygons().forEach((poly) => {
-				graphics.lineStyle(10, 0x0000ff);
-				const points = poly.polygon.points;
-
-				// Draw lines between each pair of points
-				for (let i = 0; i < points.length - 1; i++) {
-					const p1 = this.board.navGridToCoord(points[i].x, points[i].y);
-					const p2 = this.board.navGridToCoord(
-						points[i + 1].x,
-						points[i + 1].y
-					);
-					graphics.lineBetween(p1.x, p1.y, p2.x, p2.y);
-				}
-				// Draw line between the first and last point
-				const p1 = this.board.navGridToCoord(
-					points[points.length - 1].x,
-					points[points.length - 1].y
-				);
-				const p2 = this.board.navGridToCoord(points[0].x, points[0].y);
-				graphics.lineBetween(p1.x, p1.y, p2.x, p2.y);
-			});
-
-			// for (let ngy = 0; ngy < this.board.height * 7; ngy++) {
-			// 	for (let ngx = 0; ngx < this.board.width * 7; ngx++) {
-			// 		if (this.navmesh.isPointInPolygon({ ngx, ngy })) {
-			// 			const { x, y } = this.board.navGridToCoord(ngx, ngy);
-			// 			graphics.fillCircle(x, y, 4);
-			// 		}
-			// 	}
-			// }
-
-			graphics.fillStyle(0x0000ff);
-			const f = this.board.navGridToCoord(from.x, from.y);
-			graphics.fillCircle(f.x, f.y, 20);
-			graphics.fillStyle(0xffff00);
-			const t = this.board.navGridToCoord(to.x, to.y);
-			graphics.fillCircle(t.x, t.y, 20);
-
-			graphics.lineStyle(10, 0xff0000);
-			const path = this.navmesh.findPath(from, to);
-			if (path) {
-				const points = path.map((pos) =>
-					this.board.navGridToCoord(pos.x, pos.y)
-				);
-				// Draw lines between every set of points
-				for (let i = 0; i < points.length - 1; i++) {
-					graphics.lineBetween(
-						points[i].x,
-						points[i].y,
-						points[i + 1].x,
-						points[i + 1].y
-					);
-				}
-			}
-		});
 	}
 
 	update(time: number, delta: number) {
@@ -744,20 +672,19 @@ export class GameScene extends BaseScene {
 		return closestStation;
 	}
 
-	// Request an available employee to serve the customer
-	callEmployee(customer: Customer) {
-		// Abort if customer is not assigned to a station
-		if (!customer.currentStation || customer.currentEmployee) {
-			return;
-		}
-
+	// Find the closest employee to coord
+	getClosestEmployee(x: number, y: number): Employee | null {
 		let closestEmployee: Employee = null as unknown as Employee;
 		let closestDistance = Infinity;
 
+		// Offset to top-left corner, the employee working location
+		x -= this.board.size / 4;
+		y -= this.board.size / 2;
+
 		this.employees.forEach((employee) => {
 			const distance = Phaser.Math.Distance.Between(
-				customer.x,
-				customer.y,
+				x,
+				y,
 				employee.x,
 				employee.y
 			);
@@ -771,36 +698,54 @@ export class GameScene extends BaseScene {
 			}
 		});
 
+		return closestEmployee;
+	}
+
+	// Request an available employee to serve the customer
+	callEmployee(customer: Customer) {
+		// Abort if customer is not assigned to a station
+		if (!customer.currentStation || customer.currentEmployee) {
+			return;
+		}
+
+		const closestEmployee = this.getClosestEmployee(customer.x, customer.y);
+
 		if (closestEmployee) {
 			const station = customer.currentStation;
-			const { gridX, gridY } = this.board.coordToGrid(station.x, station.y);
-			const { x, y } = this.board.gridToCoord(gridX, gridY - 1);
-
 			customer.setRequest(null);
 			customer.setEmployee(closestEmployee);
-
 			closestEmployee.setCustomer(customer);
 
-			const posEmp = this.board.coordToGrid(
-				closestEmployee.x,
-				closestEmployee.y
-			);
-			const posSta = this.board.coordToGrid(station.x, station.y);
+			const start = this.board.coordToNav(closestEmployee.x, closestEmployee.y);
+			const goal = this.board.coordToNav(station.x, station.y);
+			goal.x -= 2.6;
+			goal.y -= 3.6;
 
-			console.log(posEmp, posSta);
-			const scale = ({ gridX, gridY }: GridPoint) => {
-				return { x: gridX * 7, y: gridY * 7 };
-			};
+			const gridPath = this.navmesh.findPath(start, goal);
+			if (gridPath) {
+				const points = gridPath.map((pos) =>
+					this.board.navGridToCoord(pos.x, pos.y)
+				);
+				const path = new Phaser.Curves.Path();
+				path.moveTo(closestEmployee.x, closestEmployee.y);
+				points.forEach((point) => path.lineTo(point.x, point.y));
+				// const path = new Phaser.Curves.Spline(points);
 
-			const path = this.navmesh
-				.findPath(scale(posEmp), scale(posSta))!
-				.map((pos) => this.board.gridToCoord(pos.x / 7, pos.y / 7));
+				closestEmployee.walk(path);
+			} else {
+				console.error("No path found");
+				const debug = this.board.navGridToCoord(goal.x, goal.y);
+				this.add.ellipse(debug.x, debug.y, 30, 30, 0xff0000);
 
-			console.log(path);
-
-			closestEmployee.walkTo(path);
-
-			// Wait for employee.on("walkend")
+				// Fallback to direct walk
+				const path = new Phaser.Curves.Path();
+				path.moveTo(closestEmployee.x, closestEmployee.y);
+				path.lineTo(
+					station.x - this.board.size / 3,
+					station.y - this.board.size / 3
+				);
+				closestEmployee.walk(path);
+			}
 		}
 	}
 
@@ -1009,10 +954,8 @@ export class GameScene extends BaseScene {
 	}
 
 	sortDepth() {
-		this.stations.forEach((s) => s.setDepth(s.y / 100 + 0));
-		this.employees.forEach((e) => e.setDepth(e.y / 100 + 1));
-		this.customers.forEach((c) =>
-			c.setDepth(c.y / 100 + (c.dragged ? 100 : 1))
-		);
+		this.stations.forEach((s) => s.setDepth(s.y / 50 + 0));
+		this.employees.forEach((e) => e.setDepth(e.y / 50 + 1));
+		this.customers.forEach((c) => c.setDepth(c.y / 50 + (c.dragged ? 100 : 1)));
 	}
 }

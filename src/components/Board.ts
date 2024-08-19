@@ -1,8 +1,8 @@
 import { GameScene } from "@/scenes/GameScene";
 
 export type GridPoint = {
-	gridX: number;
-	gridY: number;
+	x: number;
+	y: number;
 };
 
 export class Board extends Phaser.GameObjects.Container {
@@ -66,9 +66,9 @@ export class Board extends Phaser.GameObjects.Container {
 			this.size,
 			this.size,
 			0xffffff,
-			0.5,
+			0,
 			0xff0000,
-			0.5
+			0
 		);
 		this.add(this.grid);
 	}
@@ -93,7 +93,7 @@ export class Board extends Phaser.GameObjects.Container {
 	coordToGrid(x: number, y: number): GridPoint {
 		const gridX = Math.floor((x - this.x + this.grid.width / 2) / this.size);
 		const gridY = Math.floor((y - this.y + this.grid.height / 2) / this.size);
-		return { gridX, gridY };
+		return { x: gridX, y: gridY };
 	}
 
 	// Return nav grid cell of the coordinates
@@ -104,6 +104,14 @@ export class Board extends Phaser.GameObjects.Container {
 		const gridY = Math.floor(
 			(y - this.y + this.grid.height / 2) / (this.size / 7)
 		);
-		return { gridX, gridY };
+		return { x: gridX, y: gridY };
+	}
+
+	// Return nav coord of world coords, not rounded
+	coordToNav(x: number, y: number): GridPoint {
+		return {
+			x: (x - this.x + this.grid.width / 2) / (this.size / 7),
+			y: (y - this.y + this.grid.height / 2) / (this.size / 7),
+		};
 	}
 }

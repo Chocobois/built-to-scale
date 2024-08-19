@@ -9,25 +9,18 @@ const subdivision = 7;
 const _ = true;
 const X = false;
 const stationMask = [
-	// [true,true,true,true,true,true,true],
-	// [true,true,false,false,false,false,true],
-	// [true,false,false,false,false,true,true],
-	// [true,true,false,true,true,true,true],
-	// [true,false,false,false,false,true,true],
-	// [true,true,false,false,false,false,true],
-	// [true,true,true,true,true,true,true],
-	[_, _, _, _, _, _, _],
 	[_, X, X, X, X, X, _],
 	[_, X, X, X, X, X, _],
 	[_, X, X, X, X, X, _],
 	[_, X, X, X, X, X, _],
 	[_, X, X, X, X, X, _],
-	[_, _, _, _, _, _, _],
+	[_, X, X, X, X, X, _],
+	[_, X, X, X, X, X, _],
 ];
 
 function stationToGrid(board: Board, station: Station) {
-	const { gridX, gridY } = board.coordToGrid(station.x, station.y);
-	return [gridX, gridY];
+	const { x, y } = board.coordToGrid(station.x, station.y);
+	return [x, y];
 }
 
 function Array2DFromGrid(board: Board, subdivision: number): boolean[][] {
@@ -46,9 +39,6 @@ export function centerOnSubdividedCoord(
 	return [x + center, y + center];
 }
 
-const t = true;
-const f = false;
-
 export function GenerateNavMesh(board: Board, level: Level) {
 	const nav = Array2DFromGrid(board, subdivision);
 
@@ -61,6 +51,16 @@ export function GenerateNavMesh(board: Board, level: Level) {
 					for (let sy = 0; sy < subdivision; sy++) {
 						for (let sx = 0; sx < subdivision; sx++) {
 							nav[y * subdivision + sy][x * subdivision + sx] = false;
+
+							// Special case for employees, cave out upper wall
+							if (
+								y == 0 &&
+								sy == subdivision - 1 &&
+								x > 0 &&
+								x < level.width - 1
+							) {
+								nav[y * subdivision + sy][x * subdivision + sx] = true;
+							}
 						}
 					}
 					break;
