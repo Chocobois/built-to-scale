@@ -38,6 +38,8 @@ const images: Image[] = [
 	// Large size customers
 	image('characters/largeCWalk1', 'large_customer_walk1'),
 	image('characters/largeCSit1', 'large_customer_sit1'),
+	// Sprite
+	image('characters/moneybagSprite', 'moneybag_sprite'),
 
 	// Items
 	image('items/coin', 'coin'),
