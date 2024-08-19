@@ -35,7 +35,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "worker",
 		walkSpeed: 1,
 		workSpeed: 1,
-		cost: 1000,
+		cost: 300,
 		upgradeTo: EmployeeId.RaccoonTier2,
 	},
 	[EmployeeId.RaccoonTier2]: {

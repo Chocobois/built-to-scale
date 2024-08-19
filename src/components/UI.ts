@@ -1,6 +1,7 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Timer } from "./Timer";
 import { TextButton } from "./TextButton";
+import { Level } from "./Levels";
 
 export class UI extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -72,21 +73,23 @@ export class UI extends Phaser.GameObjects.Container {
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
 
-		this.nextButton = new TextButton(scene, 0, 300, 240, 80, "Next day");
+		this.nextButton = new TextButton(scene, 0, 600, 300, 80, "Start day");
 		this.panel.add(this.nextButton);
 		this.nextButton.on("click", () => {
 			this.emit("nextDay");
 		});
 
-		this.newLocationButton = new TextButton(scene, 0, 440, 240, 80, "Move");
+		this.newLocationButton = new TextButton(scene, 0, 400, 300, 200, "...");
 		this.panel.add(this.newLocationButton);
 		this.newLocationButton.on("click", () => {
 			this.emit("nextLevel");
 		});
-		this.newLocationButton.setVisible(false);
 	}
 
-	update(time: number, delta: number) {}
+	update(time: number, delta: number) {
+		this.nextButton.update(time, delta);
+		this.newLocationButton.update(time, delta);
+	}
 
 	setDay(day: number) {
 		this.dayText.setText(`Day ${day}`);
@@ -96,8 +99,21 @@ export class UI extends Phaser.GameObjects.Container {
 		this.dayProgressTimer.redraw(time);
 	}
 
+	setLevel(level: Level) {
+		this.newLocationButton.setData("cost", level.upgradeCost);
+		this.newLocationButton.setVisible(level.upgradeCost !== undefined);
+		this.newLocationButton.setText(
+			`Upgrade\n     shop\n   $${level.upgradeCost}`
+		);
+	}
+
 	setMoney(money: number) {
 		this.moneyText.setText(`Money: $${money}`);
+
+		const upgradeCost = this.newLocationButton.getData("cost");
+		const canUpgrade = money >= upgradeCost;
+		this.newLocationButton.setAlpha(canUpgrade ? 1 : 0.5);
+		this.newLocationButton.enabled = canUpgrade;
 	}
 
 	setShoppingMode(isShopping: boolean) {

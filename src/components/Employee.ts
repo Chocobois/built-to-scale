@@ -52,11 +52,7 @@ export class Employee extends Button {
 	}
 
 	update(time: number, delta: number) {
-		const factor = this.doingCuteThing
-			? 0.1
-			: this.hasBeenPurchased
-			? 0.02
-			: 0;
+		const factor = this.doingCuteThing ? 0.1 : this.hasBeenPurchased ? 0.02 : 0;
 		const squish = 1.0 + factor * Math.sin((6 * time) / 1000);
 		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
 	}
@@ -112,6 +108,14 @@ export class Employee extends Button {
 			this.employeeId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
 		}
+	}
+
+	// Only used when loading levels
+	forceUpgrade(id: EmployeeId) {
+		this.hasBeenPurchased = true;
+		this.setAlpha(1.0);
+		this.employeeId = id;
+		this.sprite.setTexture(this.spriteKey);
 	}
 
 	/* Getters */

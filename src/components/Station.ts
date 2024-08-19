@@ -239,6 +239,16 @@ export class Station extends Button {
 		}
 	}
 
+	// Only used when loading levels
+	forceUpgrade(id: StationId) {
+		this.hasBeenPurchased = true;
+		this.setAlpha(1.0);
+		this.stationId = id;
+		this.sprite.setTexture(this.spriteKey);
+		this.spriteCont.y = this.spriteOffset;
+		this.sprite.setScale(this.spriteSize / this.sprite.width);
+	}
+
 	applyItem(id: number, sp: string) {
 		this.appliedItems.push(id);
 		let st = new Phaser.GameObjects.Sprite(
