@@ -5,6 +5,33 @@ export enum EmployeeType {
 	Human, // Temporary. Replace with whatever.
 }
 
+export interface EmployeeTypeInterface {
+	spriteKeys: {
+		idle: string;
+		walk: string[];
+		work: string[];
+	};
+}
+
+export const EmployeeTypeData: {
+	[key in EmployeeType]: EmployeeTypeInterface;
+} = {
+	[EmployeeType.Raccoon]: {
+		spriteKeys: {
+			idle: "worker",
+			walk: ["workerWalk1", "workerWalk2", "workerWalk3", "workerWalk2"],
+			work: ["workerWork1", "workerWork2"],
+		},
+	},
+	[EmployeeType.Human]: {
+		spriteKeys: {
+			idle: "player",
+			walk: ["player"],
+			work: ["player"],
+		},
+	},
+};
+
 /* Specific employee instance data */
 
 export enum EmployeeId {
@@ -20,12 +47,6 @@ export interface EmployeeInterface {
 	type: EmployeeType; // Employee type
 	name: string; // Employee name
 	tier: number; // Tier number
-	spriteKeys: {
-		// Employee sprite keys
-		idle: string;
-		walk: string[];
-		work: string[];
-	};
 	walkSpeed: number; // Speed of the employee walking
 	workSpeed: number; // Speed of the employee working
 	cost: number; // Cost to purchase that tier of employee
@@ -37,11 +58,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		type: EmployeeType.Raccoon,
 		name: "Raccoon employee",
 		tier: 1,
-		spriteKeys: {
-			idle: "worker",
-			walk: ["workerWalk1", "workerWalk2", "workerWalk3", "workerWalk2"],
-			work: ["workerWork1", "workerWork2", "workerWork1", "worker"],
-		},
 		walkSpeed: 2,
 		workSpeed: 1,
 		cost: 300,
@@ -51,11 +67,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		type: EmployeeType.Raccoon,
 		name: "Raccoon employee",
 		tier: 2,
-		spriteKeys: {
-			idle: "worker",
-			walk: ["workerWalk1", "workerWalk2", "workerWalk3", "workerWalk2"],
-			work: ["workerWork1", "workerWork2", "workerWork1", "worker"],
-		},
 		walkSpeed: 3,
 		workSpeed: 2,
 		cost: 400,
@@ -65,11 +76,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		type: EmployeeType.Raccoon,
 		name: "Raccoon employee",
 		tier: 3,
-		spriteKeys: {
-			idle: "worker",
-			walk: ["workerWalk1", "workerWalk2", "workerWalk3", "workerWalk2"],
-			work: ["workerWork1", "workerWork2", "workerWork1", "worker"],
-		},
 		walkSpeed: 5,
 		workSpeed: 3,
 		cost: 800,
@@ -79,11 +85,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		type: EmployeeType.Human,
 		name: "Human employee",
 		tier: 1,
-		spriteKeys: {
-			idle: "player",
-			walk: ["player"],
-			work: ["player"],
-		},
 		walkSpeed: 2,
 		workSpeed: 1,
 		cost: 1000,
@@ -93,11 +94,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		type: EmployeeType.Human,
 		name: "Human employee",
 		tier: 2,
-		spriteKeys: {
-			idle: "player",
-			walk: ["player"],
-			work: ["player"],
-		},
 		walkSpeed: 3,
 		workSpeed: 2,
 		cost: 400,
@@ -107,11 +103,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		type: EmployeeType.Human,
 		name: "Human employee",
 		tier: 3,
-		spriteKeys: {
-			idle: "player",
-			walk: ["player"],
-			work: ["player"],
-		},
 		walkSpeed: 5,
 		workSpeed: 3,
 		cost: 800,

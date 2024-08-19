@@ -1,7 +1,12 @@
 import { GameScene } from "@/scenes/GameScene";
 import { Button } from "./elements/Button";
 import { Customer } from "./Customer";
-import { EmployeeData, EmployeeId, EmployeeType } from "./EmployeeData";
+import {
+	EmployeeData,
+	EmployeeId,
+	EmployeeType,
+	EmployeeTypeData,
+} from "./EmployeeData";
 
 export class Employee extends Button {
 	public employeeId: EmployeeId;
@@ -158,7 +163,7 @@ export class Employee extends Button {
 	}
 
 	get spriteKeys() {
-		return EmployeeData[this.employeeId].spriteKeys;
+		return EmployeeTypeData[this.employeeType].spriteKeys;
 	}
 
 	get spriteScale(): number {
