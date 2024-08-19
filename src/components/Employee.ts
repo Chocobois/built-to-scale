@@ -5,6 +5,7 @@ import { EmployeeData, EmployeeId, EmployeeType } from "./EmployeeData";
 
 export class Employee extends Button {
 	public employeeId: EmployeeId;
+	public hasBeenPurchased: boolean;
 	public currentCustomer: Customer | null;
 	public doingCuteThing: boolean;
 
@@ -33,6 +34,9 @@ export class Employee extends Button {
 		this.startX = x;
 		this.startY = y;
 
+		// Initially not purchased
+		this.hasBeenPurchased = false;
+
 		/* Sprite */
 		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
 		this.add(this.spriteCont);
@@ -48,13 +52,13 @@ export class Employee extends Button {
 	}
 
 	update(time: number, delta: number) {
-		const factor = this.doingCuteThing ? 0.1 : 0.02;
+		const factor = this.doingCuteThing ? 0.1 : this.hasBeenPurchased ? 0.02 : 0;
 		const squish = 1.0 + factor * Math.sin((6 * time) / 1000);
 		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
 	}
 
 	setCustomer(customer: Customer | null) {
-		if(customer){
+		if (customer) {
 			this.scene.sound.play("sqk");
 		}
 
@@ -95,10 +99,23 @@ export class Employee extends Button {
 	}
 
 	upgrade() {
-		if (this.upgradeTo) {
+		// this.scene.sound.play("upgrade");
+
+		if (!this.hasBeenPurchased) {
+			this.hasBeenPurchased = true;
+			this.setAlpha(1.0);
+		} else if (this.upgradeTo) {
 			this.employeeId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
 		}
+	}
+
+	// Only used when loading levels
+	forceUpgrade(id: EmployeeId) {
+		this.hasBeenPurchased = true;
+		this.setAlpha(1.0);
+		this.employeeId = id;
+		this.sprite.setTexture(this.spriteKey);
 	}
 
 	/* Getters */
@@ -140,7 +157,13 @@ export class Employee extends Button {
 	}
 
 	get upgradeCost(): number {
-		return EmployeeData[this.employeeId].upgradeCost ?? 0;
+		if (!this.hasBeenPurchased) {
+			return EmployeeData[this.employeeId].cost;
+		}
+		if (this.upgradeTo) {
+			return EmployeeData[this.upgradeTo].cost;
+		}
+		return 0;
 	}
 
 	get upgradeTo(): EmployeeId | undefined {

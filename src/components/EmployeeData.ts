@@ -23,7 +23,7 @@ export interface EmployeeInterface {
 	spriteKey: string; // Employee image key
 	walkSpeed: number; // Speed of the employee walking
 	workSpeed: number; // Speed of the employee working
-	upgradeCost?: number; // Cost to upgrade the employee
+	cost: number; // Cost to purchase that tier of employee
 	upgradeTo?: EmployeeId; // Employee to upgrade to
 }
 
@@ -35,7 +35,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "worker",
 		walkSpeed: 1,
 		workSpeed: 1,
-		upgradeCost: 100,
+		cost: 300,
 		upgradeTo: EmployeeId.RaccoonTier2,
 	},
 	[EmployeeId.RaccoonTier2]: {
@@ -45,7 +45,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "worker",
 		walkSpeed: 2,
 		workSpeed: 2,
-		upgradeCost: 500,
+		cost: 400,
 		upgradeTo: EmployeeId.RaccoonTier3,
 	},
 	[EmployeeId.RaccoonTier3]: {
@@ -55,6 +55,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "worker",
 		walkSpeed: 3,
 		workSpeed: 3,
+		cost: 800,
 	},
 
 	[EmployeeId.HumanTier1]: {
@@ -64,7 +65,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "player",
 		walkSpeed: 1,
 		workSpeed: 1,
-		upgradeCost: 100,
+		cost: 1000,
 		upgradeTo: EmployeeId.HumanTier2,
 	},
 	[EmployeeId.HumanTier2]: {
@@ -74,7 +75,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "player",
 		walkSpeed: 2,
 		workSpeed: 2,
-		upgradeCost: 500,
+		cost: 400,
 		upgradeTo: EmployeeId.HumanTier3,
 	},
 	[EmployeeId.HumanTier3]: {
@@ -84,5 +85,6 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 		spriteKey: "player",
 		walkSpeed: 3,
 		workSpeed: 3,
+		cost: 800,
 	},
 };

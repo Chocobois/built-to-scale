@@ -11,7 +11,7 @@ export interface Level {
 	height: number;
 	cellSize: number;
 	grid: number[][];
-	customerArrivalTimes: number[];
+	upgradeCost?: number;
 }
 
 export enum BlockType {
@@ -37,13 +37,13 @@ export const LevelData: Level[] = [
 		cellSize: 190,
 		grid: [
 			[X, X, X, X, X, X, X, X],
+			[X, 2, _, 9, 9, _, 4, X],
 			[X, 2, _, 3, 3, _, 4, X],
-			[X, 2, _, _, _, _, 4, X],
-			[_, _, _, 5, 5, _, _, X],
-			[X, 9, 9, _, _, 6, _, _],
+			[_, _, _, _, _, _, _, X],
+			[X, _, 5, 5, _, 6, _, _],
 			[X, X, X, X, X, X, X, X],
 		],
-		customerArrivalTimes: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+		upgradeCost: 1000,
 	},
 	{
 		id: LevelId.Level2,
@@ -60,17 +60,14 @@ export const LevelData: Level[] = [
 			[X, 9, 9, 9, _, _, 6, _, _],
 			[X, X, X, X, X, X, X, X, X],
 		],
-		customerArrivalTimes: [
-			0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90,
-			95, 100,
-		],
+		upgradeCost: 2000,
 	},
 	{
 		id: LevelId.Level3,
-		background: "grid3",
+		background: "grid2",
 		width: 8 + 2,
 		height: 6 + 2,
-		cellSize: 109,
+		cellSize: 138,
 		grid: [
 			[X, X, X, X, X, X, X, X, X, X],
 			[X, 2, _, _, _, _, _, _, _, X],
@@ -80,10 +77,6 @@ export const LevelData: Level[] = [
 			[_, _, _, 5, 5, 5, _, _, _, X],
 			[X, 9, 9, 9, 9, _, _, 6, _, _],
 			[X, X, X, X, X, X, X, X, X, X],
-		],
-		customerArrivalTimes: [
-			0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90,
-			95, 100,
 		],
 	},
 ];

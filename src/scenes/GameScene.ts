@@ -1,11 +1,11 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Board } from "@/components/Board";
+import { Board, GridPoint } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { CustomerId } from "@/components/CustomerData";
 import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
-import { StationId, StationType } from "@/components/StationData";
+import { StationData, StationId, StationType } from "@/components/StationData";
 import { Inventory } from "@/components/Inventory";
 import { SimpleButton } from "@/components/elements/SimpleButton";
 import { ToggleButton } from "@/components/elements/ToggleButton";
@@ -13,7 +13,7 @@ import { ItemButton } from "@/components/ItemButton";
 import { ItemHandler } from "@/components/ItemHandler";
 import { UpgradeOverlay } from "@/components/UpgradeOverlay";
 import { SummaryOverlay } from "@/components/SummaryOverlay";
-import { EmployeeId } from "@/components/EmployeeData";
+import { EmployeeData, EmployeeId } from "@/components/EmployeeData";
 import { BlockType, LevelData, LevelId } from "@/components/Levels";
 import { Effect } from "@/components/Effect";
 import { TextEffect } from "@/components/TextEffect";
@@ -21,12 +21,16 @@ import { BasicEffect } from "@/components/BasicEffect";
 import { Intermission, Mode } from "@/components/Intermission";
 import { SnapType } from "@/components/Item";
 
+import { NavMesh } from "navmesh";
+import { centerOnSubdividedCoord, GenerateNavMesh } from "@/utils/NavMeshHelper";
+
 enum GameState {
 	Cutscene,
 	Day,
 	Shopping,
 	Intermission,
 }
+
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -46,6 +50,7 @@ export class GameScene extends BaseScene {
 	public activeItem: ItemButton;
 
 	public effects: Effect[];
+	private navmesh: NavMesh;
 
 	// Game stats
 	public state: GameState = GameState.Cutscene;
@@ -53,11 +58,19 @@ export class GameScene extends BaseScene {
 	public day: number = 0;
 	public dayDuration: number = 60000; // 1 minute
 	public timeOfDay: number = 0;
-	public money: number = 100000;
+	public customerSpawnTimer: Phaser.Time.TimerEvent;
+	public customerSpawnPool: CustomerId[] = [];
+	public money: number = 500;
 	public dailyStats: {
 		money: number;
 		happyCustomers: number;
 		angryCustomers: number;
+	};
+
+	// Keeps track of made purchases when starting a level
+	public savedPurchases: {
+		stations: StationId[];
+		employees: EmployeeId[];
 	};
 
 	constructor() {
@@ -73,6 +86,15 @@ export class GameScene extends BaseScene {
 
 		// Reset daily stats
 		this.dailyStats = { money: 0, happyCustomers: 0, angryCustomers: 0 };
+		this.savedPurchases = {
+			stations: [
+				StationId.WaitingSeatTier1,
+				StationId.HornAndNailsTier1,
+				StationId.ScalePolishTier1,
+				StationId.CashRegister,
+			],
+			employees: [EmployeeId.RaccoonTier1],
+		};
 
 		// Background
 		this.background = this.add.image(0, 0, "grid1");
@@ -87,13 +109,24 @@ export class GameScene extends BaseScene {
 
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
+		this.ui.on("nextDay", () => {
+			this.startDay();
+		});
+		this.ui.on("nextLevel", () => {
+			const upgradeCost = LevelData[this.level].upgradeCost ?? 0;
+			if (this.money >= upgradeCost) {
+				this.money -= upgradeCost;
+				this.ui.setMoney(this.money);
+				this.intermission.fadeToIntermission(Mode.NextLevelCutscene);
+			}
+		});
+
 		this.iHandler = new ItemHandler(this);
 
 		this.intermission = new Intermission(this);
 		this.intermission.setDepth(10000);
 		this.intermission.on("close", () => {
 			this.intermission.fadeToGame();
-			// this.startLevel(levels[this.levelIndex]);
 		});
 		this.intermission.on("nextLevel", () => {
 			const nextLevel = {
@@ -135,16 +168,6 @@ export class GameScene extends BaseScene {
 			SnapType.STATION
 		);
 
-		//UI
-		this.ui.setMoney(this.money);
-		this.ui.setDay(this.day);
-		this.ui.on("nextDay", () => {
-			this.startDay();
-		});
-		this.ui.on("nextLevel", () => {
-			this.intermission.fadeToIntermission(Mode.NextLevelCutscene);
-		});
-
 		this.upgradeOverlay = new UpgradeOverlay(this);
 		this.upgradeOverlay.setDepth(1010);
 		this.upgradeOverlay.on("upgradeStation", (station: Station) => {
@@ -152,12 +175,14 @@ export class GameScene extends BaseScene {
 			this.ui.setMoney(this.money);
 			station.upgrade();
 			this.upgradeOverlay.selectStation(station);
+			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
 			this.money -= employee.upgradeCost;
 			this.ui.setMoney(this.money);
 			employee.upgrade();
 			this.upgradeOverlay.selectEmployee(employee);
+			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("close", () => {
 			this.sortDepth();
@@ -171,37 +196,10 @@ export class GameScene extends BaseScene {
 
 		/* Init */
 
-		// TEMPORARY: Spawn customers every 5 seconds, if allowed
-		this.time.addEvent({
-			delay: 5000,
-			callback: () => {
-				// Spawn new customer if shop is still open
-				if (
-					this.state == GameState.Day &&
-					this.timeOfDay > 0 &&
-					this.getAvailableWaitingSeat()
-				) {
-					const type = Phaser.Math.RND.pick([
-						CustomerId.Small,
-						CustomerId.Medium,
-						CustomerId.Large,
-						// CustomerId.TypeA,
-						// CustomerId.TypeB,
-						// CustomerId.TypeC,
-						// CustomerId.TypeD,
-						// CustomerId.TypeE,
-						// CustomerId.TypeF,
-					]);
-					this.addCustomer(type);
-				}
-			},
-			loop: true,
-		});
-
 		this.loadLevel(LevelId.Level1);
 		this.setState(GameState.Shopping);
 		// this.startDay();
-		// this.intermission.fadeToGame();
+		this.intermission.fadeToGame(); // Comment this out to see cutscenes
 	}
 
 	update(time: number, delta: number) {
@@ -250,11 +248,22 @@ export class GameScene extends BaseScene {
 		this.state = state;
 
 		const isShopping = state === GameState.Shopping;
-
-		this.stations.forEach((s) => s.setClickable(isShopping));
-		this.employees.forEach((e) => e.setClickable(isShopping));
 		this.ui.setShoppingMode(isShopping);
-		if (isShopping && this.day > 0) this.summaryOverlay.open(this.dailyStats);
+
+		// Make unpurchased objects are visible only during shopping
+		const unpurchasedAlpha = 0.2;
+		this.stations.forEach((s) => {
+			s.setClickable(isShopping);
+			s.setAlpha(s.hasBeenPurchased ? 1 : isShopping ? unpurchasedAlpha : 0);
+		});
+		this.employees.forEach((e) => {
+			e.setClickable(isShopping);
+			e.setAlpha(e.hasBeenPurchased ? 1 : isShopping ? unpurchasedAlpha : 0);
+		});
+
+		if (isShopping && this.day > 0) {
+			this.summaryOverlay.open(this.dailyStats);
+		}
 	}
 
 	// Load level data
@@ -306,6 +315,33 @@ export class GameScene extends BaseScene {
 				}
 			}
 		}
+
+		// Load saved purchases
+		this.savedPurchases.stations.forEach((id) => {
+			const station = this.stations.find(
+				(s) => !s.hasBeenPurchased && s.stationType === StationData[id].type
+			);
+			if (station) {
+				station.forceUpgrade(id);
+			}
+		});
+		this.savedPurchases.employees.forEach((id) => {
+			const employee = this.employees.find(
+				(e) => !e.hasBeenPurchased && e.employeeType === EmployeeData[id].type
+			);
+			if (employee) {
+				employee.forceUpgrade(id);
+			}
+		});
+
+		// Generate navmesh
+		this.navmesh = GenerateNavMesh(this.board, LevelData[id]);
+
+		this.ui.setLevel(level);
+		this.ui.setMoney(this.money);
+		this.ui.setDay(this.day);
+
+		this.setState(GameState.Shopping);
 	}
 
 	// Start a new day
@@ -321,17 +357,21 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setDepth(0));
 		this.employees.forEach((e) => e.setDepth(0));
 
-		// TEMP: Add first customer
-		this.addCustomer(CustomerId.Small);
+		// Reset customer spawning
+		if (this.customerSpawnTimer) this.customerSpawnTimer.destroy();
+		this.updateSpawnPool();
 
 		// Setup daytime tween
 		this.tweens.add({
 			targets: this,
-			timeOfDay: { from: 1, to: 0 },
 			duration: this.dayDuration,
+			timeOfDay: { from: 0, to: 100 },
+
+			onStart: () => {
+				this.attemptSpawnCustomer();
+			},
 			onUpdate: (tween) => {
-				this.timeOfDay = tween.getValue();
-				this.ui.setTimeOfDay(this.timeOfDay);
+				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
 			},
 			onComplete: () => {
 				// Shop closed. Play sound.
@@ -340,10 +380,75 @@ export class GameScene extends BaseScene {
 	}
 
 	endDay() {
+		this.customerSpawnTimer.destroy();
+
 		//this.stations.forEach((s) => s.returnItems());
 		this.sound.play("endday");
 		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.setState(GameState.Shopping);
+	}
+
+	// Attempt to spawn customer
+	canSpawnCustomer(id: CustomerId) {
+		return (
+			this.state == GameState.Day &&
+			this.timeOfDay < 100 &&
+			this.getAvailableWaitingSeat(id)
+		);
+	}
+
+	// Attempt to spawn customer and reset timer
+	attemptSpawnCustomer() {
+		// Delay to next customer spawn
+		let delay = 2000;
+
+		// Randomly select customer type
+		const id = Phaser.Math.RND.pick(this.customerSpawnPool);
+
+		if (this.canSpawnCustomer(id)) {
+			this.addCustomer(id);
+
+			// TODO: Adjust to difficulty
+			let delayMin = Math.max(1000, 5000 - 500 * this.day);
+			let delayMax = delayMin + 4000 - 500 * this.day;
+			delay = Phaser.Math.Between(delayMin, delayMax);
+
+			console.log(`Customer spawned. Waiting ${delay} ms`);
+		} else {
+			console.log(`Customer failed to spawn. Waiting ${delay} ms`);
+		}
+
+		// Setup new event timer
+		this.customerSpawnTimer = this.time.addEvent({
+			delay,
+			callback: this.attemptSpawnCustomer,
+			callbackScope: this,
+		});
+	}
+
+	// Update customer spawn pool based on available stations
+	updateSpawnPool() {
+		this.customerSpawnPool = [];
+
+		const tier2StationCount = this.stations.filter(
+			(s) => s.stationTier >= 2 && s.hasBeenPurchased
+		).length;
+		const tier3StationCount = this.stations.filter(
+			(s) => s.stationTier >= 2 && s.hasBeenPurchased
+		).length;
+
+		this.customerSpawnPool.push(CustomerId.Small);
+		if (tier2StationCount >= 2) this.customerSpawnPool.push(CustomerId.Medium);
+		if (tier3StationCount >= 2) this.customerSpawnPool.push(CustomerId.Large);
+	}
+
+	updateSavedPurchases() {
+		this.savedPurchases.stations = this.stations
+			.filter((s) => s.hasBeenPurchased)
+			.map((s) => s.stationId);
+		this.savedPurchases.employees = this.employees
+			.filter((e) => e.hasBeenPurchased)
+			.map((e) => e.employeeId);
 	}
 
 	// Add new station
@@ -422,19 +527,13 @@ export class GameScene extends BaseScene {
 	}
 
 	// Add new customer
-	addCustomer(type: CustomerId) {
+	addCustomer(id: CustomerId) {
 		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(
-			this,
-			coord.x,
-			coord.y,
-			type,
-			this.board.size
-		);
+		const customer = new Customer(this, coord.x, coord.y, id, this.board.size);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
-		const seat = this.getAvailableWaitingSeat();
+		const seat = this.getAvailableWaitingSeat(id);
 		if (seat) {
 			seat.setCustomer(customer);
 			customer.setStation(seat);
@@ -500,8 +599,6 @@ export class GameScene extends BaseScene {
 		});
 		*/
 
-
-
 		// Customer leaving the game
 		customer.on("offscreen", () => {
 			this.customers = this.customers.filter((c) => c !== customer);
@@ -534,9 +631,13 @@ export class GameScene extends BaseScene {
 	}
 
 	// Get available seat for new customers to go to
-	getAvailableWaitingSeat() {
+	getAvailableWaitingSeat(id: CustomerId) {
+		// TODO: Use id to ensure seat and stations are available for tier
 		return this.stations.find(
-			(s) => s.stationType === StationType.WaitingSeat && !s.currentCustomer
+			(s) =>
+				s.stationType === StationType.WaitingSeat &&
+				s.hasBeenPurchased &&
+				!s.currentCustomer
 		);
 	}
 
@@ -554,6 +655,7 @@ export class GameScene extends BaseScene {
 				station.y
 			);
 			if (
+				station.hasBeenPurchased &&
 				!station.currentCustomer &&
 				distance < closestDistance &&
 				distance < maxDistance &&
@@ -573,7 +675,7 @@ export class GameScene extends BaseScene {
 			return;
 		}
 
-		let closestEmployee: any = null;
+		let closestEmployee: Employee = null as unknown as Employee;
 		let closestDistance = Infinity;
 
 		this.employees.forEach((employee) => {
@@ -583,7 +685,11 @@ export class GameScene extends BaseScene {
 				employee.x,
 				employee.y
 			);
-			if (!employee.currentCustomer && distance < closestDistance) {
+			if (
+				employee.hasBeenPurchased &&
+				!employee.currentCustomer &&
+				distance < closestDistance
+			) {
 				closestEmployee = employee;
 				closestDistance = distance;
 			}
@@ -599,29 +705,58 @@ export class GameScene extends BaseScene {
 
 			closestEmployee.setCustomer(customer);
 			closestEmployee.walkTo(x, y);
+			
+			const [cx, cy] = centerOnSubdividedCoord(this.board, station, 7);
+			const posEmp = this.board.coordToGrid(closestEmployee.x, closestEmployee.y);
+			const posSta = this.board.coordToGrid(station.x, station.y);
+
+
+			const scale = ({gridX, gridY}: GridPoint) => {
+				return {x: gridX*7, y: gridY*7}
+			}
+
+			//this.navmesh.findPath({})
+		
+			console.log(scale(posEmp))
+			
+			const path = this.navmesh.findPath(scale(posEmp), scale(posSta));
+
+
+
+			console.log("path", path)
+
 			// Wait for employee.on("walkend")
 		}
 	}
 
 	// Generate a list of requests for the customer
 	setCustomerItinerary(customer: Customer) {
+		// Check availibility of stations
+		const check = (type: StationType) => {
+			return this.stations.some(
+				(s) => s.stationType === type && s.hasBeenPurchased
+			);
+		};
+		const hornNailsAvailable = check(StationType.HornAndNails);
+		const scalePolishAvailable = check(StationType.ScalePolish);
+		const goldBathAvailable = check(StationType.GoldBath);
+
 		function getActivities() {
 			let activities = [];
-			if (Math.random() < 0.5) {
+			if (hornNailsAvailable && Math.random() < 0.6) {
 				activities.push(StationType.HornAndNails);
 			}
-			if (Math.random() < 0.5) {
+			if (scalePolishAvailable && Math.random() < 0.6) {
 				activities.push(StationType.ScalePolish);
 			}
-			if (Math.random() < 0.5) {
+			if (goldBathAvailable && Math.random() < 0.6) {
 				activities.push(StationType.GoldBath);
 			}
-			//activities.push(StationType.CashRegister);
 			return activities;
 		}
 
 		let activities: StationType[] = [];
-		while (activities.length < 2) {
+		while (activities.length < 1) {
 			activities = getActivities();
 		}
 
