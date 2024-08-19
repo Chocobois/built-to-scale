@@ -24,7 +24,7 @@ export class TextEffect extends Effect{
     private amp: number = 1;
 
     constructor(scene:GameScene, x: number, y: number, txt: string, color1: string = "yellow", size: number = 30, flash: boolean = false, 
-    color2: string = "red", fadeTime: number = 800, flashTime: number = 100, valence: number = 1, amplitude: number = 1, depth: number = 9) {
+    color2: string = "red", fadeTime: number = 800, flashTime: number = 100, valence: number = 1, amplitude: number = 1, depth: number = 700) {
         super(scene,x,y);
         this.scene = scene;
         this.myText = this.scene.addText({

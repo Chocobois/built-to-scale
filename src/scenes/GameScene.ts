@@ -178,7 +178,7 @@ export class GameScene extends BaseScene {
 			this.money -= station.upgradeCost;
 			this.ui.setMoney(this.money);
 			station.upgrade();
-			this.upgradeOverlay.selectStation(station);
+			// this.upgradeOverlay.selectStation(station);
 			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
@@ -186,7 +186,7 @@ export class GameScene extends BaseScene {
 			this.money -= employee.upgradeCost;
 			this.ui.setMoney(this.money);
 			employee.upgrade();
-			this.upgradeOverlay.selectEmployee(employee);
+			// this.upgradeOverlay.selectEmployee(employee);
 			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
@@ -380,7 +380,7 @@ export class GameScene extends BaseScene {
 				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
 			},
 			onComplete: () => {
-				// Shop closed. Play sound.
+				this.sound.play("endday");
 			},
 		});
 	}
@@ -389,7 +389,6 @@ export class GameScene extends BaseScene {
 		this.customerSpawnTimer.destroy();
 
 		//this.stations.forEach((s) => s.returnItems());
-		this.sound.play("endday");
 		// Fix this later
 		// this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.setState(GameState.Shopping);

@@ -1,6 +1,7 @@
 import { GameScene } from "@/scenes/GameScene";
 import { RoundRectangle } from "./elements/RoundRectangle";
 import { Button } from "./elements/Button";
+import { Color } from "@/utils/colors";
 
 export class TextButton extends Button {
 	public scene: GameScene;
@@ -18,7 +19,7 @@ export class TextButton extends Button {
 			width: width + 20,
 			height: height + 20,
 			radius: 20 + 10,
-			color: 0x777777,
+			color: Color.White,
 		});
 		this.add(this.border);
 
@@ -26,17 +27,17 @@ export class TextButton extends Button {
 			width,
 			height,
 			radius: 20,
-			color: 0xffffff,
+			color: Color.Green700,
 		});
 		this.add(this.background);
 
 		this.text = this.scene.addText({
-			size: 50,
+			size: 48,
 			color: "#FFFFFF",
 			text,
 		});
 		this.text.setOrigin(0.5);
-		this.text.setStroke("black", 4);
+		// this.text.setStroke("black", 8);
 		this.add(this.text);
 
 		this.bindInteractive(this.border);

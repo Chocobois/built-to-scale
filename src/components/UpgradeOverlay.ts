@@ -27,7 +27,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.setAlpha(0);
 
 		// Fullscreen blackness
-		this.background = this.scene.add.rectangle(0, 0, scene.W, scene.H, 0, 0.75);
+		this.background = this.scene.add.rectangle(0, 0, scene.W, scene.H, 0, 0.8);
 		this.background.setOrigin(0);
 		this.add(this.background);
 
@@ -49,7 +49,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			text: "...",
 		});
 		this.titleText.setOrigin(0.5);
-		this.titleText.setStroke("black", 4);
+		this.titleText.setStroke("black", 6);
 		this.panel.add(this.titleText);
 
 		this.moneyText = this.scene.addText({
@@ -59,7 +59,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			color: "#FFFFFF",
 			text: "...",
 		});
-		this.moneyText.setStroke("black", 4);
+		this.moneyText.setStroke("black", 6);
 		this.moneyText.setOrigin(0);
 		this.panel.add(this.moneyText);
 

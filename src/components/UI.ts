@@ -46,7 +46,7 @@ export class UI extends Phaser.GameObjects.Container {
 			scene,
 			0,
 			-0.3 * panelHeight,
-			200,
+			300,
 			0xff7700
 		);
 		this.panel.add(this.dayProgressTimer);
@@ -73,7 +73,7 @@ export class UI extends Phaser.GameObjects.Container {
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
 
-		this.nextButton = new TextButton(scene, 0, 600, 300, 80, "Start day");
+		this.nextButton = new TextButton(scene, 0, 600, 300, 90, "Start day");
 		this.panel.add(this.nextButton);
 		this.nextButton.on("click", () => {
 			this.emit("nextDay");
