@@ -1,3 +1,8 @@
+export enum SnapType {
+    CUSTOMER,
+    STATION,
+}
+
 export class Item {
     public id:number;
     public spr:string;
@@ -7,6 +12,10 @@ export class Item {
     public antitags:string[];
     public name:string;
     public desc:string;
+    public snap:SnapType;
+    public sound: string;
+
+    public clippingType: number;
 
     //-1 - default item, does nothing
     //0 - Complimentary Pet Rock - increases satisfaction by one stage
@@ -23,7 +32,7 @@ export class Item {
     //11 - pillow talk - adds a random station to the end of a customer's itinerary
     //12 - shuriken - barbers can crit, crit causes happiness to raise one stage
 
-    constructor(id:number,sp:string,qt:number,pr:number,tgs:string[],atgs:string[],name:string,dsc:string) {
+    constructor(id:number,sp:string,qt:number,pr:number,tgs:string[],atgs:string[],name:string,dsc:string,snptype: SnapType, sound: string) {
         this.id=id;
         this.spr=sp;
         this.quant=qt;
@@ -32,6 +41,9 @@ export class Item {
         this.antitags=atgs;
         this.name=name;
         this.desc=dsc;
+        this.snap = snptype;
+        this.sound = sound;
+
     }
 
     setQuantity(n:number){
