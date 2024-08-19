@@ -63,13 +63,13 @@ export class Customer extends Button {
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
 	private thoughtBubble: ThoughtBubble;
-	private angryImage: Phaser.GameObjects.Image;
+	private angryImage: Phaser.GameObjects.Sprite;
 	private patienceTimer: Timer;
 
 	public itemList: number[];
 	public sprList: Phaser.GameObjects.Sprite[];
 
-	private testTimer:PatienceTimer;
+	private testTimer: PatienceTimer;
 
 	private eatDelay: number = 0;
 	private playFail: boolean = false;
@@ -112,12 +112,13 @@ export class Customer extends Button {
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
 
-		this.angryImage = this.scene.add.image(0, -0.3 * this.spriteSize, "angyv");
-		this.angryImage.setScale(0.25);
+		const s = this.spriteSize;
+		this.angryImage = this.scene.add.sprite(-0.2 * s, -0.5 * s, "anger");
+		this.angryImage.setScale(1.0);
 		this.angryImage.setVisible(false);
 		this.add(this.angryImage);
 
-		this.testTimer = new PatienceTimer(this.scene,-80,-40,1,0xff0000);
+		this.testTimer = new PatienceTimer(this.scene, -80, -40, 1, 0xff0000);
 		this.add(this.testTimer);
 		this.thoughtBubble = new ThoughtBubble(
 			scene,
@@ -151,10 +152,10 @@ export class Customer extends Button {
 		const wobble = this.doingCuteThing ? 0.1 : 0.02;
 		const squish = 1.0 + wobble * Math.sin((6 * time) / 1000);
 		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
-		this.sprite.setTint(
-			interpolateColor(0xffffff, 0xff0000, 1 - this.happiness)
-		);
 
+		this.sprite.setTint(
+			interpolateColor(0xff0000, 0xffffff, 2 * this.patience)
+		);
 
 		if (this.isWaiting) {
 			this.patienceTimer.setVisible(true);
@@ -169,14 +170,34 @@ export class Customer extends Button {
 				interpolateColor(0xff0000, 0x00ff00, this.patience)
 			);
 			this.patienceTimer.redraw(this.patience / this.maxPatience);
-			this.testTimer.redraw(((this.patience / this.maxPatience) > 1) ? 1 : (this.patience / this.maxPatience));
-			this.angryImage.setVisible(this.patience <= 0.5);
-			this.testTimer.update(time,delta);
+			this.testTimer.redraw(
+				this.patience / this.maxPatience > 1
+					? 1
+					: this.patience / this.maxPatience
+			);
+			this.angryImage.setVisible(this.patience <= 0.25);
+			this.angryImage.setFrame(Math.floor((time / 300) % 2));
+			this.testTimer.update(time, delta);
 			if (this.patience <= 0) {
-				if(this.hasCompleted){
-					if(Math.random()>0.2){
+				if (this.hasCompleted) {
+					if (Math.random() > 0.2) {
 						this.scene.sound.play("cashmoney");
-						this.scene.addEffect(new TextEffect(this.scene, this.x-70+(Math.random()*80), this.y-80, "+" + this.moneySpent +" €", "yellow", 40, true, "red", 800, 100, 0.7, 0));
+						this.scene.addEffect(
+							new TextEffect(
+								this.scene,
+								this.x - 70 + Math.random() * 80,
+								this.y - 80,
+								"+" + this.moneySpent + " €",
+								"yellow",
+								40,
+								true,
+								"red",
+								800,
+								100,
+								0.7,
+								0
+							)
+						);
 						this.emit("pay", this.moneySpent);
 					} else {
 						this.scene.sound.play("rip");
@@ -193,41 +214,43 @@ export class Customer extends Button {
 			this.angryImage.setVisible(false);
 		}
 
-		this.testTimer.update(time,delta);
-		if(this.itemList.length > 0){
-			if(this.eatDelay <= 0) {
-				this.eatDelay = 100+Math.random()*200;
+		this.testTimer.update(time, delta);
+		if (this.itemList.length > 0) {
+			if (this.eatDelay <= 0) {
+				this.eatDelay = 100 + Math.random() * 200;
 			}
 		}
-		if(this.eatDelay > 0){
+		if (this.eatDelay > 0) {
 			this.eatDelay -= delta;
-			if(this.eatDelay <= 0) {
+			if (this.eatDelay <= 0) {
 				this.eatDelay = 0;
-				if(this.itemList.length > 0) {
-					this.scene.parseCustomerItems(this.itemList.shift()!,this);
-					if(this.sprList[0]){
+				if (this.itemList.length > 0) {
+					this.scene.parseCustomerItems(this.itemList.shift()!, this);
+					if (this.sprList[0]) {
 						this.sprList[0].destroy();
 						this.sprList.shift();
 					}
 				}
 			}
 		}
-		if(this.playFail){
+		if (this.playFail) {
 			this.scene.sound.play("rip");
 			this.playFail = false;
 		}
 	}
 
-	onOver(	pointer: Phaser.Input.Pointer,
+	onOver(
+		pointer: Phaser.Input.Pointer,
 		localX: number,
 		localY: number,
-		event: Phaser.Types.Input.EventData){
-			super.onOver(pointer,localX,localY,event);
-			this.toggleTimer();
+		event: Phaser.Types.Input.EventData
+	) {
+		super.onOver(pointer, localX, localY, event);
+		this.toggleTimer();
 	}
 
 	onOut(pointer: Phaser.Input.Pointer, event: Phaser.Types.Input.EventData) {
-		super.onOut(pointer,event);
+		super.onOut(pointer, event);
 		this.untoggleTimer();
 	}
 
@@ -263,19 +286,19 @@ export class Customer extends Button {
 		}
 	}
 
-	toggleTimer(){
+	toggleTimer() {
 		this.testTimer.unveil();
 	}
 
-	untoggleTimer(){
+	untoggleTimer() {
 		this.testTimer.veil();
 	}
 
-	lockTimer(){
+	lockTimer() {
 		this.testTimer.lockTimer();
 	}
 
-	unlockTimer(){
+	unlockTimer() {
 		this.testTimer.unlockTimer();
 	}
 
@@ -290,7 +313,13 @@ export class Customer extends Button {
 		if (station) {
 			this.lastX = station.x;
 			this.lastY = station.y;
-			//this.happiness = 1;
+
+			if (
+				this.patience < 0.25 &&
+				this.requestedStation !== station.stationType
+			) {
+				this.patience = 0.25;
+			}
 
 			if (this.requestedStation === station.stationType) {
 				this.thoughtBubble.showSymbol("exclamation");
@@ -303,7 +332,7 @@ export class Customer extends Button {
 
 		this.sprite.input!.enabled = !employee;
 
-		if(employee){
+		if (employee) {
 			this.untoggleTimer();
 			this.lockTimer();
 		}
@@ -522,7 +551,7 @@ export class Customer extends Button {
 		this.tips = Math.trunc(this.tips);
 	}
 
-	applyItem(i: number, s: string){
+	applyItem(i: number, s: string) {
 		this.itemList.push(i);
 		let st = new Phaser.GameObjects.Sprite(
 			this.scene,
@@ -538,7 +567,7 @@ export class Customer extends Button {
 		this.sprList.push(st);
 	}
 
-	queueFail(){
+	queueFail() {
 		this.playFail = true;
 	}
 
