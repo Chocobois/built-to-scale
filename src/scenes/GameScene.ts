@@ -405,8 +405,8 @@ export class GameScene extends BaseScene {
 			this.addCustomer(id);
 
 			// TODO: Adjust to difficulty
-			let delayMin = 5000 - 500 * this.day;
-			let delayMax = delayMin + 2000 - 100 * this.day;
+			let delayMin = Math.max(1000, 5000 - 500 * this.day);
+			let delayMax = delayMin + 4000 - 500 * this.day;
 			delay = Phaser.Math.Between(delayMin, delayMax);
 
 			console.log(`Customer spawned. Waiting ${delay} ms`);
