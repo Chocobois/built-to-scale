@@ -22,7 +22,10 @@ import { Intermission, Mode } from "@/components/Intermission";
 import { SnapType } from "@/components/Item";
 
 import { NavMesh } from "navmesh";
-import { centerOnSubdividedCoord, GenerateNavMesh } from "@/utils/NavMeshHelper";
+import {
+	centerOnSubdividedCoord,
+	GenerateNavMesh,
+} from "@/utils/NavMeshHelper";
 
 enum GameState {
 	Cutscene,
@@ -30,7 +33,6 @@ enum GameState {
 	Shopping,
 	Intermission,
 }
-
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
@@ -200,6 +202,80 @@ export class GameScene extends BaseScene {
 		this.setState(GameState.Shopping);
 		// this.startDay();
 		this.intermission.fadeToGame(); // Comment this out to see cutscenes
+
+		// TEMP
+		let graphics = this.add.graphics();
+		this.input.on("pointermove", ({ x: mx, y: my }: any) => {
+			const cellSize = this.board.size;
+
+			const { gridX, gridY } = this.board.coordToNavGrid(mx, my);
+			const { x: roundX, y: roundY } = this.board.navGridToCoord(gridX, gridY);
+
+			const from = { x: 7 + 3, y: 7 + 3 };
+			const to = { x: gridX+0.5, y: gridY+0.5 };
+			// console.log(from, to);
+
+			graphics.clear();
+			// graphics.fillStyle(0x00ff00);
+			// graphics.fillCircle(mx, my, 20);
+			// graphics.fillStyle(0xff0000);
+			// graphics.fillCircle(roundX, roundY, 10);
+
+			this.navmesh.getPolygons().forEach((poly) => {
+				graphics.lineStyle(10, 0x0000ff);
+				const points = poly.polygon.points;
+
+				// Draw lines between each pair of points
+				for (let i = 0; i < points.length - 1; i++) {
+					const p1 = this.board.navGridToCoord(points[i].x, points[i].y);
+					const p2 = this.board.navGridToCoord(
+						points[i + 1].x,
+						points[i + 1].y
+					);
+					graphics.lineBetween(p1.x, p1.y, p2.x, p2.y);
+				}
+				// Draw line between the first and last point
+				const p1 = this.board.navGridToCoord(
+					points[points.length - 1].x,
+					points[points.length - 1].y
+				);
+				const p2 = this.board.navGridToCoord(points[0].x, points[0].y);
+				graphics.lineBetween(p1.x, p1.y, p2.x, p2.y);
+			});
+
+			// for (let ngy = 0; ngy < this.board.height * 7; ngy++) {
+			// 	for (let ngx = 0; ngx < this.board.width * 7; ngx++) {
+			// 		if (this.navmesh.isPointInPolygon({ ngx, ngy })) {
+			// 			const { x, y } = this.board.navGridToCoord(ngx, ngy);
+			// 			graphics.fillCircle(x, y, 4);
+			// 		}
+			// 	}
+			// }
+
+			graphics.fillStyle(0x0000ff);
+			const f = this.board.navGridToCoord(from.x, from.y);
+			graphics.fillCircle(f.x, f.y, 20);
+			graphics.fillStyle(0xffff00);
+			const t = this.board.navGridToCoord(to.x, to.y);
+			graphics.fillCircle(t.x, t.y, 20);
+
+			graphics.lineStyle(10, 0xff0000);
+			const path = this.navmesh.findPath(from, to);
+			if (path) {
+				const points = path.map((pos) =>
+					this.board.navGridToCoord(pos.x, pos.y)
+				);
+				// Draw lines between every set of points
+				for (let i = 0; i < points.length - 1; i++) {
+					graphics.lineBetween(
+						points[i].x,
+						points[i].y,
+						points[i + 1].x,
+						points[i + 1].y
+					);
+				}
+			}
+		});
 	}
 
 	update(time: number, delta: number) {
@@ -705,19 +781,22 @@ export class GameScene extends BaseScene {
 
 			closestEmployee.setCustomer(customer);
 
-			const posEmp = this.board.coordToGrid(closestEmployee.x, closestEmployee.y);
+			const posEmp = this.board.coordToGrid(
+				closestEmployee.x,
+				closestEmployee.y
+			);
 			const posSta = this.board.coordToGrid(station.x, station.y);
 
-			console.log(posEmp, posSta)
-			const scale = ({gridX, gridY}: GridPoint) => {
-				return {x: gridX*7, y: gridY*7}
-			}
-			
-			const path = this.navmesh.findPath(scale(posEmp), scale(posSta))!.map((pos) => 
-				this.board.gridToCoord(pos.x/7, pos.y/7)
-			);
+			console.log(posEmp, posSta);
+			const scale = ({ gridX, gridY }: GridPoint) => {
+				return { x: gridX * 7, y: gridY * 7 };
+			};
 
-			console.log(path)
+			const path = this.navmesh
+				.findPath(scale(posEmp), scale(posSta))!
+				.map((pos) => this.board.gridToCoord(pos.x / 7, pos.y / 7));
+
+			console.log(path);
 
 			closestEmployee.walkTo(path);
 
@@ -794,7 +873,7 @@ export class GameScene extends BaseScene {
 	}
 
 	snapItem() {
-		if(this.activeItem.snap == SnapType.STATION) {
+		if (this.activeItem.snap == SnapType.STATION) {
 			let s = this.getClosestStationToItem(this.activeItem);
 			if (s) {
 				this.activeItem.snapTo(s.x, s.y);
@@ -803,13 +882,12 @@ export class GameScene extends BaseScene {
 			console.log("Snapping to Customer");
 			let ct = this.getClosestCustomerToItem(this.activeItem);
 			if (ct) {
-				this.activeItem.snapTo(ct.x, ct.y-30);
+				this.activeItem.snapTo(ct.x, ct.y - 30);
 			}
 		}
-
 	}
 
-	applyToStation(){
+	applyToStation() {
 		let s = this.getClosestStationToItem(this.activeItem);
 		if (s) {
 			s.applyItem(this.activeItem.id, this.activeItem.sprname);
@@ -831,9 +909,7 @@ export class GameScene extends BaseScene {
 		);
 	}
 
-	
-
-	applyToCustomer(){
+	applyToCustomer() {
 		let cs = this.getClosestCustomerToItem(this.activeItem);
 		if (cs) {
 			cs.applyItem(this.activeItem.id, this.activeItem.sprname);
@@ -856,9 +932,9 @@ export class GameScene extends BaseScene {
 	}
 
 	cleanUpItem() {
-		if(this.activeItem.snap == SnapType.CUSTOMER){
+		if (this.activeItem.snap == SnapType.CUSTOMER) {
 			this.applyToCustomer();
-		} else if (this.activeItem.snap == SnapType.STATION){
+		} else if (this.activeItem.snap == SnapType.STATION) {
 			this.applyToStation();
 		}
 		this.inventory.unglassify();
@@ -869,12 +945,12 @@ export class GameScene extends BaseScene {
 		this.inventory.returnItem(id);
 	}
 
-	parseCustomerItems(i: number, ct: Customer){
-		this.iHandler.processCustomerItem(this.inventory.itemList[i],ct);
+	parseCustomerItems(i: number, ct: Customer) {
+		this.iHandler.processCustomerItem(this.inventory.itemList[i], ct);
 		this.sound.play(this.inventory.itemList[i].sound);
 	}
 
-	getClosestCustomerToItem(item: ItemButton): Customer | null{
+	getClosestCustomerToItem(item: ItemButton): Customer | null {
 		let closestCustomer = null;
 		let closestDistance = Infinity;
 		const maxDistance = 70;
@@ -883,13 +959,13 @@ export class GameScene extends BaseScene {
 				item.dragX,
 				item.dragY,
 				cs.x,
-				(cs.y-30)
+				cs.y - 30
 			);
 			if (
-				(cs.itemList.length < 3) &&
+				cs.itemList.length < 3 &&
 				distance < closestDistance &&
 				distance < maxDistance &&
-				!(cs.actionsComplete)
+				!cs.actionsComplete
 			) {
 				closestCustomer = cs;
 				closestDistance = distance;
@@ -924,11 +1000,11 @@ export class GameScene extends BaseScene {
 		return closestStation;
 	}
 
-	veilInvButton(){
+	veilInvButton() {
 		this.invButton.setAlpha(0.17);
 	}
 
-	unveilInvButton(){
+	unveilInvButton() {
 		this.invButton.setAlpha(0.85);
 	}
 
