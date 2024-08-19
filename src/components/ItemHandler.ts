@@ -90,6 +90,41 @@ export class ItemHandler {
         }
     }
 
+
+    processCustomerItem(i: Item, ct: Customer){
+        switch(i.id)
+        {
+            case -1: {
+                break;
+            } case 0: {
+                ct.rockBonus = 1;
+                break;
+            } case 2: {
+                this.parseCustomerPreferredItem(i,ct);
+                break;
+            } case 3: {
+                this.parseCustomerPreferredItem(i,ct);
+                break;
+            } case 4: {
+                this.parseCustomerPreferredItem(i,ct);
+                break;
+            } case 5: {
+                this.parseCustomerPreferredItem(i,ct);
+                break;
+            } case 6: {
+                this.parseCustomerPreferredItem(i,ct);
+                break;
+            } case 7: {
+                this.parseCustomerPreferredItem(i,ct);
+                break;
+            } case 9: {
+                ct.lockPatience = true;
+                break;
+            }
+            break;
+        }
+    }
+
     parsePreferredItem(i: Item, st:Station, ct:Customer){
         let state = 0;
         if((i.tags.length > 0) && (ct.tags.length > 0)) {
@@ -117,6 +152,40 @@ export class ItemHandler {
             ct.maxHappiness = 4.01;
             ct.tipMultiplier*=0.25;
             st.queueFail = true;
+            return;
+        } else {
+            ct.happinessBonus += 0.5;
+            return;
+        }
+    }
+
+    parseCustomerPreferredItem(i: Item, ct:Customer){
+        let state = 0;
+        if((i.tags.length > 0) && (ct.tags.length > 0)) {
+            for(let nt = 0; nt < i.tags.length; nt++){
+                if(ct.tags.includes(i.tags[nt])) {
+                    state = 1;
+                }
+            }
+        }
+
+        if((i.antitags.length > 0) && ct.antitags.length > 0){
+            for(let na = 0; na < i.antitags.length; na++){
+                if(ct.antitags.includes(i.tags[na])) {
+                    state = -1;
+                }
+            }
+        }
+
+        if(state == 1) {
+            ct.happinessBonus += 2;
+            ct.tipBonus+=0.25;
+            return;
+        } else if (state == -1) {
+            ct.happinessBonus -= 2.125;
+            ct.maxHappiness = 4.01;
+            ct.tipMultiplier*=0.25;
+            //ct.queueFail = true;
             return;
         } else {
             ct.happinessBonus += 0.5;

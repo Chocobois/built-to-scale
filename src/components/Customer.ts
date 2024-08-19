@@ -51,6 +51,8 @@ export class Customer extends Button {
 	public maxPatience: number = 1; // bonuses
 	public lockPatience: boolean; // bonuses
 
+	public actionsComplete: boolean = false;
+
 	// Stats
 	public doingCuteThing: boolean;
 	public tasksCompleted: number;
@@ -64,7 +66,13 @@ export class Customer extends Button {
 	private angryImage: Phaser.GameObjects.Image;
 	private patienceTimer: Timer;
 
+	public itemList: number[];
+	public sprList: Phaser.GameObjects.Sprite[];
+
 	private testTimer:PatienceTimer;
+
+	private eatDelay: number = 0;
+	private playFail: boolean = false;
 
 	//testing stuff
 	constructor(
@@ -129,6 +137,9 @@ export class Customer extends Button {
 		this.patienceTimer.setAlpha(0);
 		this.add(this.patienceTimer);
 
+		this.itemList = [];
+		this.sprList = [];
+
 		this.bindInteractive(this.sprite, true);
 	}
 
@@ -143,6 +154,7 @@ export class Customer extends Button {
 		this.sprite.setTint(
 			interpolateColor(0xffffff, 0xff0000, 1 - this.happiness)
 		);
+
 
 		if (this.isWaiting) {
 			this.patienceTimer.setVisible(true);
@@ -177,9 +189,32 @@ export class Customer extends Button {
 				this.emit("angry");
 			}
 		} else {
-			this.testTimer.update(time,delta);
 			this.patienceTimer.setVisible(false);
 			this.angryImage.setVisible(false);
+		}
+
+		this.testTimer.update(time,delta);
+		if(this.itemList.length > 0){
+			if(this.eatDelay <= 0) {
+				this.eatDelay = 100+Math.random()*200;
+			}
+		}
+		if(this.eatDelay > 0){
+			this.eatDelay -= delta;
+			if(this.eatDelay <= 0) {
+				this.eatDelay = 0;
+				if(this.itemList.length > 0) {
+					this.scene.parseCustomerItems(this.itemList.shift()!,this);
+					if(this.sprList[0]){
+						this.sprList[0].destroy();
+						this.sprList.shift();
+					}
+				}
+			}
+		}
+		if(this.playFail){
+			this.scene.sound.play("rip");
+			this.playFail = false;
 		}
 	}
 
@@ -296,6 +331,7 @@ export class Customer extends Button {
 			this.hasCompleted = true;
 			this.setRequest(StationType.CashRegister);
 		} else {
+			this.actionsComplete = true;
 			this.parseMoney();
 			this.scene.sound.play("cashmoney");
 			this.scene.addEffect(
@@ -484,6 +520,26 @@ export class Customer extends Button {
 		//console.log("TIPS: " + this.tips);
 		this.tips *= this.tipMultiplier;
 		this.tips = Math.trunc(this.tips);
+	}
+
+	applyItem(i: number, s: string){
+		this.itemList.push(i);
+		let st = new Phaser.GameObjects.Sprite(
+			this.scene,
+			-80 + 40 * this.itemList.length,
+			60,
+			s
+		);
+		st.setOrigin(0.5, 0.5);
+		st.setScale(0.4);
+		st.setDepth(4);
+		st.setAlpha(0.85);
+		this.add(st);
+		this.sprList.push(st);
+	}
+
+	queueFail(){
+		this.playFail = true;
 	}
 
 	parseMoney() {

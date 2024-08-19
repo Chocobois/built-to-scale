@@ -19,6 +19,7 @@ import { Effect } from "@/components/Effect";
 import { TextEffect } from "@/components/TextEffect";
 import { BasicEffect } from "@/components/BasicEffect";
 import { Intermission, Mode } from "@/components/Intermission";
+import { SnapType } from "@/components/Item";
 
 import { NavMesh } from "navmesh";
 import { centerOnSubdividedCoord, GenerateNavMesh } from "@/utils/NavMeshHelper";
@@ -148,6 +149,7 @@ export class GameScene extends BaseScene {
 			[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 		);
 		this.invButton = new ToggleButton(this, 64, 540, "invbutton");
+		this.invButton.setAlpha(0.85);
 		this.add.existing(this.invButton);
 		this.invButton.on("click", () => {
 			this.toggleInventory();
@@ -162,7 +164,8 @@ export class GameScene extends BaseScene {
 			this.inventory,
 			-1,
 			-100,
-			"blankspr"
+			"blankspr",
+			SnapType.STATION
 		);
 
 		this.upgradeOverlay = new UpgradeOverlay(this);
@@ -380,6 +383,7 @@ export class GameScene extends BaseScene {
 		this.customerSpawnTimer.destroy();
 
 		//this.stations.forEach((s) => s.returnItems());
+		this.sound.play("endday");
 		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.setState(GameState.Shopping);
 	}
@@ -793,13 +797,22 @@ export class GameScene extends BaseScene {
 	}
 
 	snapItem() {
-		let s = this.getClosestStationToItem(this.activeItem);
-		if (s) {
-			this.activeItem.snapTo(s.x, s.y);
+		if(this.activeItem.snap == SnapType.STATION) {
+			let s = this.getClosestStationToItem(this.activeItem);
+			if (s) {
+				this.activeItem.snapTo(s.x, s.y);
+			}
+		} else if (this.activeItem.snap == SnapType.CUSTOMER) {
+			console.log("Snapping to Customer");
+			let ct = this.getClosestCustomerToItem(this.activeItem);
+			if (ct) {
+				this.activeItem.snapTo(ct.x, ct.y-30);
+			}
 		}
+
 	}
 
-	cleanUpItem() {
+	applyToStation(){
 		let s = this.getClosestStationToItem(this.activeItem);
 		if (s) {
 			s.applyItem(this.activeItem.id, this.activeItem.sprname);
@@ -816,12 +829,76 @@ export class GameScene extends BaseScene {
 			this.inventory,
 			-1,
 			-100,
-			"blankspr"
+			"blankspr",
+			SnapType.STATION
 		);
+	}
+
+	
+
+	applyToCustomer(){
+		let cs = this.getClosestCustomerToItem(this.activeItem);
+		if (cs) {
+			cs.applyItem(this.activeItem.id, this.activeItem.sprname);
+			this.sound.play("place");
+		} else {
+			this.returnItem(this.activeItem.id);
+			this.sound.play("return");
+		}
+		this.activeItem.destroy();
+		this.activeItem = new ItemButton(
+			this,
+			-500,
+			-500,
+			this.inventory,
+			-1,
+			-100,
+			"blankspr",
+			SnapType.STATION
+		);
+	}
+
+	cleanUpItem() {
+		if(this.activeItem.snap == SnapType.CUSTOMER){
+			this.applyToCustomer();
+		} else if (this.activeItem.snap == SnapType.STATION){
+			this.applyToStation();
+		}
+		this.inventory.unglassify();
+		this.unveilInvButton();
 	}
 
 	returnItem(id: number) {
 		this.inventory.returnItem(id);
+	}
+
+	parseCustomerItems(i: number, ct: Customer){
+		this.iHandler.processCustomerItem(this.inventory.itemList[i],ct);
+		this.sound.play(this.inventory.itemList[i].sound);
+	}
+
+	getClosestCustomerToItem(item: ItemButton): Customer | null{
+		let closestCustomer = null;
+		let closestDistance = Infinity;
+		const maxDistance = 70;
+		this.customers.forEach((cs) => {
+			const distance = Phaser.Math.Distance.Between(
+				item.dragX,
+				item.dragY,
+				cs.x,
+				(cs.y-30)
+			);
+			if (
+				(cs.itemList.length < 3) &&
+				distance < closestDistance &&
+				distance < maxDistance &&
+				!(cs.actionsComplete)
+			) {
+				closestCustomer = cs;
+				closestDistance = distance;
+			}
+		});
+		return closestCustomer;
 	}
 
 	getClosestStationToItem(item: ItemButton): Station | null {
@@ -848,6 +925,14 @@ export class GameScene extends BaseScene {
 			}
 		});
 		return closestStation;
+	}
+
+	veilInvButton(){
+		this.invButton.setAlpha(0.17);
+	}
+
+	unveilInvButton(){
+		this.invButton.setAlpha(0.85);
 	}
 
 	sortDepth() {

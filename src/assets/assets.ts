@@ -138,6 +138,11 @@ const audios: Audio[] = [
 	sound('goldbath', 'goldbath', 0.5),
 	sound('fail', 'rip', 0.5),
 	sound('sqk', 'sqk', 0.5),
+	sound('endday', 'endday', 0.5),
+	sound('chomp', 'chomp', 0.5),
+	sound('bite', 'bite', 0.5),
+	sound('doink', 'doink', 0.5),
+	sound('slurp', 'slurp', 0.5),
 	sound('tree/meme_explosion_sound', 'meme_explosion_sound', 0.5),
 ];
 

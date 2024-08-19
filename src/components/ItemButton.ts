@@ -1,4 +1,4 @@
-import { Item } from "./Item";
+import { Item, SnapType } from "./Item";
 import { Inventory } from "./Inventory";
 import { Button } from "./elements/Button";
 import { BaseScene } from "@/scenes/BaseScene";
@@ -15,13 +15,15 @@ export class ItemButton extends Button {
 	public dragY: number;
     public doingCuteThing: boolean;
     private parent: Inventory;
-    constructor(scene:BaseScene,x:number,y:number,parent: Inventory, id:number, index:number, spr:string){
+    public snap: SnapType;
+    constructor(scene:BaseScene,x:number,y:number,parent: Inventory, id:number, index:number, spr:string, snp: SnapType){
         super(scene,x,y);
         this.parent = parent;
         this.default = [x,y];
         this.id=id;
         this.index=index;
         this.sprname = spr;
+        this.snap = snp;
         this.spr = new Phaser.GameObjects.Sprite(this.scene,x,y,spr,0);
         this.spr.setOrigin(0.5,0.5);
         this.bindInteractive(this.spr, true);
@@ -84,6 +86,7 @@ export class ItemButton extends Button {
             this.state = 3;
             this.parent.remove(this);
             this.parent.scene.setActiveItem(this);
+            this.parent.scene.veilInvButton();
             this.setPosition(0,0);
             this.split();
             this.passivate = true;
@@ -139,7 +142,7 @@ export class ItemButton extends Button {
     }
 
     split(){
-        this.parent.display[this.index] = new ItemButton(this.scene,this.default[0],this.default[1],this.parent,this.id,this.index,this.sprname);
+        this.parent.display[this.index] = new ItemButton(this.scene,this.default[0],this.default[1],this.parent,this.id,this.index,this.sprname,this.snap);
         this.parent.itemList[this.id].quant--;
         let r = this.parent.itemList[this.id].quant;
         if(r <= 0) {
@@ -148,6 +151,7 @@ export class ItemButton extends Button {
             this.parent.display[this.index].select();
         }
         this.parent.updateAmountText(this.id,r);
+        this.parent.glassify();
     }
 
 }
