@@ -74,6 +74,7 @@ export function GenerateNavMesh(board: Board, level: Level) {
         case BlockType.HornAndNails:
         case BlockType.ScalePolish:
         case BlockType.GoldBath:
+        case BlockType.CashRegister:
           for(let sx = 0; sx < stationMask.length; sx++) {
             for(let sy = 0; sy < stationMask.length; sy++) {
               if(!stationMask[sx][sy]) {
@@ -81,8 +82,6 @@ export function GenerateNavMesh(board: Board, level: Level) {
               }
             }
           }
-        //case BlockType.CashRegister:
-          //this.addStation(x, y, StationId.CashRegister);
           break;
       }
     }

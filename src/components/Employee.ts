@@ -65,24 +65,39 @@ export class Employee extends Button {
 		this.currentCustomer = customer;
 	}
 
-	walkTo(targetX: number, targetY: number) {
+	walkTo(paths: Array<{x: number, y: number}>) {
 		// TODO: Replace with pathfinding algorithm
+
+		if(paths.length <= 0) return;
+
+		console.log("walkTo", paths);
+
+		const last = paths[paths.length-1]
 
 		// Temporary: set duration based on distance
 		const distance = Phaser.Math.Distance.Between(
 			this.x,
 			this.y,
-			targetX,
-			targetY
+			last.x,
+			last.y
 		);
 
+		const path = paths.reduce((path, pos) => {
+			return path.lineTo(pos.x, pos.y);
+		}, new Phaser.Curves.Path(this.x, this.y));
+
+		console.log(path);
+
 		// Add tween to move from current position to the target
-		this.scene.tweens.add({
-			targets: this,
-			x: targetX,
-			y: targetY,
+		this.scene.tweens.addCounter({
 			duration: 2 * distance,
 			ease: "Linear",
+
+			onUpdate: ({progress}) => {
+				const pos = path.getPoint(progress);
+				this.setX(pos.x);
+				this.setY(pos.y);
+			},
 
 			onComplete: () => {
 				this.emit("walkend");

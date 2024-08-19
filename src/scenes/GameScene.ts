@@ -384,7 +384,8 @@ export class GameScene extends BaseScene {
 
 		//this.stations.forEach((s) => s.returnItems());
 		this.sound.play("endday");
-		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
+		// Fix this later
+		// this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.setState(GameState.Shopping);
 	}
 
@@ -409,8 +410,8 @@ export class GameScene extends BaseScene {
 			this.addCustomer(id);
 
 			// TODO: Adjust to difficulty
-			let delayMin = Math.max(1000, 5000 - 500 * this.day);
-			let delayMax = delayMin + 4000 - 500 * this.day;
+			let delayMin = Math.max(1000, 4000 - 400 * this.day);
+			let delayMax = delayMin + 5000 - 500 * this.day;
 			delay = Phaser.Math.Between(delayMin, delayMax);
 
 			console.log(`Customer spawned. Waiting ${delay} ms`);
@@ -430,16 +431,15 @@ export class GameScene extends BaseScene {
 	updateSpawnPool() {
 		this.customerSpawnPool = [];
 
-		const tier2StationCount = this.stations.filter(
-			(s) => s.stationTier >= 2 && s.hasBeenPurchased
-		).length;
-		const tier3StationCount = this.stations.filter(
-			(s) => s.stationTier >= 2 && s.hasBeenPurchased
-		).length;
+		this.stations.forEach((s) => {
+			if (s.hasBeenPurchased) {
+				if (s.stationTier >= 1) this.customerSpawnPool.push(CustomerId.Small);
+				if (s.stationTier >= 2) this.customerSpawnPool.push(CustomerId.Medium);
+				if (s.stationTier >= 3) this.customerSpawnPool.push(CustomerId.Large);
+			}
+		});
 
-		this.customerSpawnPool.push(CustomerId.Small);
-		if (tier2StationCount >= 2) this.customerSpawnPool.push(CustomerId.Medium);
-		if (tier3StationCount >= 2) this.customerSpawnPool.push(CustomerId.Large);
+		console.log("Spawn pool:", this.customerSpawnPool);
 	}
 
 	updateSavedPurchases() {
@@ -704,26 +704,22 @@ export class GameScene extends BaseScene {
 			customer.setEmployee(closestEmployee);
 
 			closestEmployee.setCustomer(customer);
-			closestEmployee.walkTo(x, y);
-			
-			const [cx, cy] = centerOnSubdividedCoord(this.board, station, 7);
+
 			const posEmp = this.board.coordToGrid(closestEmployee.x, closestEmployee.y);
 			const posSta = this.board.coordToGrid(station.x, station.y);
 
-
+			console.log(posEmp, posSta)
 			const scale = ({gridX, gridY}: GridPoint) => {
 				return {x: gridX*7, y: gridY*7}
 			}
-
-			//this.navmesh.findPath({})
-		
-			console.log(scale(posEmp))
 			
-			const path = this.navmesh.findPath(scale(posEmp), scale(posSta));
+			const path = this.navmesh.findPath(scale(posEmp), scale(posSta))!.map((pos) => 
+				this.board.gridToCoord(pos.x/7, pos.y/7)
+			);
 
+			console.log(path)
 
-
-			console.log("path", path)
+			closestEmployee.walkTo(path);
 
 			// Wait for employee.on("walkend")
 		}
