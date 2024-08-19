@@ -11,6 +11,7 @@ export interface Level {
 	height: number;
 	cellSize: number;
 	grid: number[][];
+	upgradeCost?: number;
 }
 
 export enum BlockType {
@@ -42,6 +43,7 @@ export const LevelData: Level[] = [
 			[X, _, 5, 5, _, 6, _, _],
 			[X, X, X, X, X, X, X, X],
 		],
+		upgradeCost: 1000,
 	},
 	{
 		id: LevelId.Level2,
@@ -58,6 +60,7 @@ export const LevelData: Level[] = [
 			[X, 9, 9, 9, _, _, 6, _, _],
 			[X, X, X, X, X, X, X, X, X],
 		],
+		upgradeCost: 2000,
 	},
 	{
 		id: LevelId.Level3,
