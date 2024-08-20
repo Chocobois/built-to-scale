@@ -160,6 +160,15 @@ export class ItemHandler {
         }
     }
 
+    restorePatience(ct: Customer, n: number){
+        if(!ct.lockPatience) {
+            ct.patience += n;
+        }
+        if(ct.patience > 1.25){
+            ct.patience = 1.25;
+        }
+    }
+
     parseCustomerPreferredItem(i: Item, ct:Customer){
         let state = 0;
         if((i.tags.length > 0) && (ct.tags.length > 0)) {
@@ -180,6 +189,7 @@ export class ItemHandler {
 
         if(state == 1) {
             ct.happinessBonus += 2;
+            this.restorePatience(ct,0.25);
             ct.tipBonus+=0.25;
             return;
         } else if (state == -1) {
