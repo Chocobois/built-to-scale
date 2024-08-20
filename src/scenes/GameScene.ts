@@ -161,6 +161,7 @@ export class GameScene extends BaseScene {
 
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
+		this.ui.setTimeOfDay(1);
 		this.ui.on("nextDay", () => {
 			if (this.inventory.isOpen) this.toggleInventory();
 			this.startDay();
@@ -508,7 +509,7 @@ export class GameScene extends BaseScene {
 				this.sound.play("endday", { volume: 0.2 });
 			},
 			onUpdate: (tween) => {
-				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
+				this.ui.setTimeOfDay(this.timeOfDay / 100);
 			},
 			onComplete: () => {
 				this.sound.play("endday", { volume: 0.2 });

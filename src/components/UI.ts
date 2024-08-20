@@ -4,6 +4,7 @@ import { TextButton } from "./TextButton";
 import { Level } from "./Levels";
 import { RoundRectangle } from "./elements/RoundRectangle";
 import { numberWithCommas } from "@/utils/functions";
+import { Color, ColorStr } from "@/utils/colors";
 
 export class UI extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -56,7 +57,7 @@ export class UI extends Phaser.GameObjects.Container {
 		this.clockText = this.scene.addText({
 			x: 0,
 			y: this.dayProgressTimer.y,
-			size: 40,
+			size: 35,
 			color: "#FFFFFF",
 			text: "09:00",
 		});
@@ -124,13 +125,17 @@ export class UI extends Phaser.GameObjects.Container {
 
 		const startHour = 9;
 		const endHour = 16;
-		const hour = endHour - time * (endHour - startHour);
+		const hour = startHour + time * (endHour - startHour);
 		const minute = (hour % 1) * 60;
 		const hourStr = Math.floor(hour).toString().padStart(2, "0");
 		const minuteStr = (Math.floor(minute / 10) * 10)
 			.toString()
 			.padStart(2, "0");
 		this.clockText.setText(`${hourStr}:${minuteStr}`);
+
+		if (time == 1) {
+			this.clockText.setText(`Closed`);
+		}
 	}
 
 	setLevel(level: Level) {
