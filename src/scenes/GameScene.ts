@@ -552,7 +552,12 @@ export class GameScene extends BaseScene {
 		let delay = 4000;
 
 		// Randomly select customer type
-		const id = Phaser.Math.RND.pick(this.customerSpawnPool);
+		let id = Phaser.Math.RND.pick(this.customerSpawnPool);
+
+		// Very first customer
+		if (this.day == 1 && this.timeOfDay == 0) {
+			id = CustomerId.SmallRed;
+		}
 
 		if (this.canSpawnCustomer(id)) {
 			this.addCustomer(id);
