@@ -218,6 +218,9 @@ const spritesheets: SpriteSheet[] = [
 /* Audios */
 const audios: Audio[] = [
 	music('bgm_intro', 'm_main_menu'),
+	music('salonbase', 'm_salonbase'),
+	music('saloncutscene', 'm_saloncutscene'),
+	music('salondowntime', 'm_salondowntime'),
 	sound('place', 'place', 0.5),
 	sound('return', 'return', 0.5),
 	sound('scroll', 'scroll', 0.5),
