@@ -1403,21 +1403,17 @@ export class GameScene extends BaseScene {
 			downtime: 0,
 		}
 
-		switch (this.state) {
-			case GameState.Shopping:
-			case GameState.Cutscene:
-			case GameState.Intermission:
-				intendedVolume = {
-					base: 0,
-					cutscene: 0,
-					downtime: 1,
-				};
-				break;
-					
-			case GameState.Day:
-			default:
-				break;
-		}
+		if (this.state != GameState.Day) intendedVolume = {
+			base: 0,
+			cutscene: 0,
+			downtime: 1,
+		};
+		
+		if (this.intermission.visible) intendedVolume = {
+			base: 0,
+			cutscene: 1,
+			downtime: 0,
+		};
 
 		this.musicBase.setVolume(intendedVolume.base * volumeModifier);
 		this.musicDowntime.setVolume(intendedVolume.downtime * volumeModifier);
