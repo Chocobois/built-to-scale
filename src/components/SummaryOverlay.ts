@@ -93,6 +93,8 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 		text += `Angry customers: ${dailyStats.angryCustomers}`;
 		this.moneyText.setText(text);
 		this.dayText.setText(`Day ${day}`);
+
+		this.scene.sound.play("flail", { volume: 0.3 });
 	}
 
 	close() {
@@ -106,5 +108,6 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 				this.setVisible(false);
 			},
 		});
+		this.scene.sound.play("missLand", { volume: 0.2 });
 	}
 }
