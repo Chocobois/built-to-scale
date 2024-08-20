@@ -17,11 +17,13 @@ export class ToggleButton extends Button{
     toggleForward(){
         this.toggled = true;
         this.spr.setFrame(1);
+        console.log("FORWARD");
     }
 
     toggleBackward(){
         this.toggled = false;
         this.spr.setFrame(0);
+        console.log("REVERSE");
     }
 
 }

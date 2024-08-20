@@ -33,6 +33,8 @@ export class Station extends Button {
 	public appliedSprites: Phaser.GameObjects.Sprite[];
 	//public admissionFee: number; // Cost to use the station
 
+	private jolteon: boolean = false;
+
 	private cellSize: number;
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Image;
@@ -223,6 +225,22 @@ export class Station extends Button {
 
 	setClickable(value: boolean) {
 		this.sprite.input!.enabled = value;
+	}
+
+	pauseClickable(){
+		if(!(this.sprite.input!.enabled)){
+			this.jolteon = true;
+		} else {
+			this.sprite.input!.enabled = false;
+		}
+	}
+
+	resumeClickable(){
+		if(this.jolteon) {
+			this.jolteon = false;
+		} else {
+			this.sprite.input!.enabled = true;
+		}
 	}
 
 	upgrade() {

@@ -69,6 +69,8 @@ export class Customer extends Button {
 	public itemList: number[];
 	public sprList: Phaser.GameObjects.Sprite[];
 
+	private garchomp: boolean;
+
 	private testTimer:PatienceTimer;
 
 	private eatDelay: number = 0;
@@ -544,6 +546,22 @@ export class Customer extends Button {
 
 	parseMoney() {
 		this.parseHappiness();
+	}
+
+	pauseClickable(){
+		if(!(this.sprite.input!.enabled)) {
+			this.garchomp = true;
+		} else {
+			this.sprite.input!.enabled = false;
+		}
+	}
+
+	resumeClickable(){
+		if(this.garchomp) {
+			this.garchomp = false;
+		} else {
+			this.sprite.input!.enabled = true;
+		}
 	}
 
 	/* Getters */

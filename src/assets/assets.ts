@@ -78,6 +78,7 @@ const images: Image[] = [
 
 	//temp
 	image('temp/invwindow', 'invwindow'),
+	image('temp/shopwindow', 'shopwindow'),
 	image('temp/lugia', 'lugia'),
 	image('temp/protogen', 'protogen'),
 	image('temp/triceratops', 'triceratops'),
@@ -96,7 +97,7 @@ const images: Image[] = [
 /* Spritesheets */
 const spritesheets: SpriteSheet[] = [
 	//temp
-	spritesheet('temp/invbutton', 'invbutton', 128, 128),
+	spritesheet('temp/invbutton', 'invbutton', 240, 480),
 	spritesheet('temp/fwbutton', 'fwbutton', 64, 262),
 	spritesheet('temp/rock', 'rock', 100, 100),
 	spritesheet('temp/coke', 'coke', 100, 100),
@@ -118,6 +119,8 @@ const spritesheets: SpriteSheet[] = [
 	spritesheet('temp/greensparks', 'greenspark', 64, 64),
 	spritesheet('temp/defaultsparks', 'defaultspark', 64, 64),
 	spritesheet('temp/blankspr', 'blankspr', 100, 100),
+	spritesheet('temp/buybutton', 'buybutton', 120, 90),
+	spritesheet('temp/otter', 'otter', 1080, 1080),
 ];
 
 /* Audios */

@@ -13,6 +13,8 @@ export class Employee extends Button {
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
 
+	private linoone: boolean = false;
+
 	public startX: number;
 	public startY: number;
 
@@ -107,6 +109,22 @@ export class Employee extends Button {
 		} else if (this.upgradeTo) {
 			this.employeeId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
+		}
+	}
+
+	pauseClickable(){
+		if(!(this.sprite.input!.enabled)){
+			this.linoone = true;
+		} else {
+			this.sprite.input!.enabled = false;
+		}
+	}
+
+	resumeClickable(){
+		if(this.linoone) {
+			this.linoone = false;
+		} else {
+			this.sprite.input!.enabled = true;
 		}
 	}
 
