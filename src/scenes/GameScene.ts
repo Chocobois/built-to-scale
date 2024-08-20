@@ -1418,8 +1418,6 @@ export class GameScene extends BaseScene {
 			intendedVolume.base *= tween;
 		}
 
-		console.debug(tween, intendedVolume)
-
 		this.musicBase.setVolume(		 clamp(intendedVolume.base,		  0, 1) * volumeModifier);
 		this.musicDowntime.setVolume(clamp(intendedVolume.downtime, 0, 1) * volumeModifier);
 		this.musicCutscene.setVolume(clamp(intendedVolume.cutscene, 0, 1) * volumeModifier);
