@@ -137,7 +137,12 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.Medium]: {
 		tier: 2,
 		spriteKeys: {
-			walk: ["medium_customer_walk1"],
+			walk: [
+				"medium_customer_walk1",
+				"medium_customer_walk2",
+				"medium_customer_walk1",
+				"medium_customer_walk3",
+			],
 			sit: "medium_customer_sit1",
 		},
 		spriteScale: 1.4,
@@ -151,7 +156,12 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 	[CustomerId.Large]: {
 		tier: 3,
 		spriteKeys: {
-			walk: ["large_customer_walk1"],
+			walk: [
+				"large_customer_walk1",
+				"large_customer_walk2",
+				"large_customer_walk1",
+				"large_customer_walk3",
+			],
 			sit: "large_customer_sit1",
 		},
 		spriteScale: 1.7,
