@@ -23,7 +23,7 @@ export class UI extends Phaser.GameObjects.Container {
 		scene.add.existing(this);
 		this.scene = scene;
 
-		const panelWidth = 350;
+		const panelWidth = 330;
 		const panelHeight = 500;
 		const pad = 13;
 
