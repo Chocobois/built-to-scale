@@ -10,6 +10,7 @@ import { CustomerData, CustomerId } from "./CustomerData";
 import { Effect } from "./Effect";
 import { TextEffect } from "./TextEffect";
 import { PatienceTimer } from "./PatienceTimer";
+import { Color } from "@/utils/colors";
 
 export interface CustomerType {
 	spr: string;
@@ -63,6 +64,7 @@ export class Customer extends Button {
 	private cellSize: number;
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
+	private customColor: number;
 	// private graphics: Phaser.GameObjects.Graphics;
 	private thoughtBubble: ThoughtBubble;
 	private angryImage: Phaser.GameObjects.Sprite;
@@ -114,6 +116,32 @@ export class Customer extends Button {
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
 
+		const colors = [
+			Color.Red600,
+			Color.Orange600,
+			Color.Amber600,
+			Color.Yellow600,
+			Color.Lime600,
+			Color.Green600,
+			Color.Emerald600,
+			Color.Teal600,
+			Color.Cyan600,
+			Color.Sky600,
+			Color.Blue600,
+			Color.Indigo600,
+			Color.Violet600,
+			Color.Purple600,
+			Color.Fuchsia600,
+			Color.Pink600,
+			Color.Rose600,
+		];
+		// White wash
+		this.customColor = interpolateColor(
+			Phaser.Math.RND.pick(colors),
+			0xffffff,
+			0.8
+		);
+
 		// this.graphics = this.scene.add.graphics();
 
 		const s = this.spriteSize;
@@ -158,7 +186,7 @@ export class Customer extends Button {
 		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
 
 		this.sprite.setTint(
-			interpolateColor(0xff0000, 0xffffff, 2 * this.patience)
+			interpolateColor(0xff0000, this.customColor, 2 * this.patience)
 		);
 
 		if (this.isWaiting) {
