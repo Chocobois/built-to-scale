@@ -155,10 +155,13 @@ const images: Image[] = [
 	image('ui/plus', 'plus'),
 
 	// Titlescreen
-	image('titlescreen/sky', 'title_sky'),
 	image('titlescreen/background', 'title_background'),
-	image('titlescreen/foreground', 'title_foreground'),
-	image('titlescreen/character', 'title_character'),
+	image('titlescreen/backgroundsitting', 'title_chairs'),
+	image('titlescreen/backgroundbath', 'title_bath'),
+	image('titlescreen/tail', 'title_tail'),
+	image('titlescreen/hand', 'title_hand'),
+	image('titlescreen/washbeartail', 'title_washbear_tail'),
+	image('titlescreen/washbearhand', 'title_washbear_hand'),
 
 	//temp
 	image('temp/invwindow', 'invwindow'),
