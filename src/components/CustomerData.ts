@@ -121,8 +121,8 @@ export const CustomerData: { [key in CustomerId]: CustomerInterface } = {
 			walk: [
 				"small_customer_walk1",
 				"small_customer_walk2",
+				"small_customer_walk1",
 				"small_customer_walk3",
-				"small_customer_walk2",
 			],
 			sit: "small_customer_sit1",
 		},
