@@ -84,7 +84,7 @@ export class Inventory extends Phaser.GameObjects.Container {
     highlight(id: number){
         this.title.setText(this.itemList[id].name + " x" + this.itemList[id].quant);
         this.tdisplay.setText(this.itemList[id].desc);
-        this.scene.sound.play("scroll");
+        this.scene.sound.play("scroll", {volume: 0.5});
         this.highlightIndex = id;
     }
 
@@ -136,7 +136,7 @@ export class Inventory extends Phaser.GameObjects.Container {
     }
 
     close(){
-        this.scene.sound.play("t_rustle");
+        this.scene.sound.play("t_rustle", {volume: 0.5});
         this.display.forEach((ib) => ib.destroy());
         this.setPosition(-650,0);
         this.isOpen=false;
@@ -149,7 +149,7 @@ export class Inventory extends Phaser.GameObjects.Container {
     }
 
     open(){
-        this.scene.sound.play("t_rustle");
+        this.scene.sound.play("t_rustle", {volume: 0.5});
         this.window.setVisible(true);
         //console.log("Open Processed");
         this.x = 0;
@@ -163,7 +163,7 @@ export class Inventory extends Phaser.GameObjects.Container {
         //console.log("STATE: " + this.isOpen + " ID: " + id + " HIGHLIGHT: " + this.highlightIndex);
         if(this.isOpen){
             if((this.highlightIndex >=0) && (id==this.highlightIndex)){
-                //this.scene.sound.play("meme_explosion_sound");
+                //this.scene.sound.play("meme_explosion_sound", {volume: 0.5});
                 this.updateAmountText(id,this.itemList[id].quant);
             }
         }
@@ -209,7 +209,7 @@ export class Inventory extends Phaser.GameObjects.Container {
         }
         this.title.setText("");
         this.tdisplay.setText("");
-        this.scene.sound.play("button");
+        this.scene.sound.play("button", {volume: 0.5});
         this.repopulate();
 
     }

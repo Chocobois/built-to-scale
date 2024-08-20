@@ -292,7 +292,7 @@ export class Customer extends Button {
 		this.emit("pickup");
 		this.dragged = true;
 		this.sprite.setTexture(this.spriteKeys.sit);
-		this.scene.sound.play("grab", { volume: 0.5 });
+		this.scene.sound.play("grab", { volume: 0.4 });
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -385,6 +385,7 @@ export class Customer extends Button {
 				this.sprite.setTexture(this.spriteKeys.sit);
 				this.sprite.flipX = false;
 				this.hasEnteredShop = true;
+				this.scene.sound.play("letgo1", { volume: 0.2 });
 				this.emit("seated");
 			},
 		});

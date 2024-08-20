@@ -146,6 +146,8 @@ export class Intermission extends Phaser.GameObjects.Container {
 	}
 
 	proceed() {
+		this.scene.sound.play("scroll", { volume: 0.3 });
+
 		switch (this.mode) {
 			case Mode.IntroCutscene1:
 				this.setMode(Mode.IntroCutscene2);

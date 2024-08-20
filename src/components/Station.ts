@@ -131,7 +131,7 @@ export class Station extends Button {
 			: (this.taskHaste *= 1);
 		this.parseItems();
 		if (this.queueFail) {
-			this.scene.sound.play("rip");
+			this.scene.sound.play("rip", { volume: 0.5 });
 		} else {
 			this.playJingle();
 		}
@@ -198,7 +198,7 @@ export class Station extends Button {
 							0
 						)
 					);
-					this.scene.sound.play("crit");
+					this.scene.sound.play("crit", { volume: 0.5 });
 					if (this.currentCustomer) {
 						this.currentCustomer.happinessBonus += 0.75;
 						this.currentCustomer.recheckHappiness();
@@ -227,16 +227,16 @@ export class Station extends Button {
 		this.sprite.input!.enabled = value;
 	}
 
-	pauseClickable(){
-		if(!(this.sprite.input!.enabled)){
+	pauseClickable() {
+		if (!this.sprite.input!.enabled) {
 			this.jolteon = true;
 		} else {
 			this.sprite.input!.enabled = false;
 		}
 	}
 
-	resumeClickable(){
-		if(this.jolteon) {
+	resumeClickable() {
+		if (this.jolteon) {
 			this.jolteon = false;
 		} else {
 			this.sprite.input!.enabled = true;
@@ -244,7 +244,7 @@ export class Station extends Button {
 	}
 
 	upgrade() {
-		// this.scene.sound.play("upgrade");
+		// this.scene.sound.play("upgrade", {volume: 0.5 });
 
 		if (!this.hasBeenPurchased) {
 			this.hasBeenPurchased = true;
@@ -312,23 +312,23 @@ export class Station extends Button {
 
 		this.appliedItems = [];
 		this.appliedSprites = [];
-		this.scene.sound.play("return");
+		this.scene.sound.play("return", { volume: 0.5 });
 		this.clearButton.setVisible(false);
-		//this.scene.sound.play("meme_explosion_sound");
+		//this.scene.sound.play("meme_explosion_sound", {volume: 0.5 });
 	}
 
 	playJingle() {
 		switch (this.stationType) {
 			case StationType.ScalePolish: {
-				this.scene.sound.play("polish");
+				this.scene.sound.play("polish", { volume: 0.5 });
 				break;
 			}
 			case StationType.GoldBath: {
-				this.scene.sound.play("goldbath");
+				this.scene.sound.play("goldbath", { volume: 0.5 });
 				break;
 			}
 			case StationType.HornAndNails: {
-				this.scene.sound.play("snip");
+				this.scene.sound.play("snip", { volume: 0.5 });
 				break;
 			}
 		}

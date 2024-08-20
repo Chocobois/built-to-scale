@@ -312,7 +312,7 @@ export class GameScene extends BaseScene {
 		this.loadLevel(LevelId.Level1);
 		this.setState(GameState.Shopping);
 		// this.startDay();
-		this.intermission.fadeToGame(); // Comment this out to see cutscenes
+		// this.intermission.fadeToGame(); // Comment this out to see cutscenes
 
 		this.pauseInvButton();
 	}
@@ -505,13 +505,13 @@ export class GameScene extends BaseScene {
 
 			onStart: () => {
 				this.attemptSpawnCustomer();
-				this.sound.play("endday", { volume: 0.4 });
+				this.sound.play("endday", { volume: 0.2 });
 			},
 			onUpdate: (tween) => {
 				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
 			},
 			onComplete: () => {
-				this.sound.play("endday", { volume: 0.4 });
+				this.sound.play("endday", { volume: 0.2 });
 			},
 		});
 	}
@@ -864,6 +864,7 @@ export class GameScene extends BaseScene {
 			customer.setRequest(null);
 			customer.setEmployee(closestEmployee);
 			closestEmployee.setCustomer(customer);
+			this.sound.play("crit", { volume: 0.5 });
 
 			const start = this.board.coordToNav(closestEmployee.x, closestEmployee.y);
 			const goal = this.board.coordToNav(station.x, station.y);
@@ -897,6 +898,8 @@ export class GameScene extends BaseScene {
 				);
 				closestEmployee.walk(path);
 			}
+		} else {
+			this.sound.play("sqk", { volume: 0.6 });
 		}
 	}
 
