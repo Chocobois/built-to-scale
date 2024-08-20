@@ -95,7 +95,7 @@ export class GameScene extends BaseScene {
 				StationId.ScalePolishTier1,
 				StationId.CashRegister,
 			],
-			employees: [EmployeeId.RaccoonTier1],
+			employees: [EmployeeId.RaccoonGrayTier1],
 		};
 
 		// Background
@@ -315,8 +315,20 @@ export class GameScene extends BaseScene {
 					case BlockType.CashRegister:
 						this.addStation(gridX, gridY, StationId.CashRegister);
 						break;
-					case BlockType.Employee:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonTier1);
+					case BlockType.EmployeeGray:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGrayTier1);
+						break;
+					case BlockType.EmployeeBrown:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonBrownTier1);
+						break;
+					case BlockType.EmployeeYellow:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonYellowTier1);
+						break;
+					case BlockType.EmployeePurple:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonPurpleTier1);
+						break;
+					case BlockType.EmployeeGreen:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGreenTier1);
 						break;
 				}
 			}

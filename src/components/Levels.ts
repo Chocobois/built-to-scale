@@ -22,11 +22,22 @@ export enum BlockType {
 	ScalePolish = 4,
 	GoldBath = 5,
 	CashRegister = 6,
-	Employee = 9,
+
+	EmployeeGray = 11,
+	EmployeeBrown = 12,
+	EmployeeYellow = 13,
+	EmployeePurple = 14,
+	EmployeeGreen = 15,
 }
 
 const _ = BlockType.Empty;
 const X = BlockType.Wall;
+
+const A = BlockType.EmployeeGray;
+const B = BlockType.EmployeeBrown;
+const C = BlockType.EmployeeYellow;
+const D = BlockType.EmployeePurple;
+const E = BlockType.EmployeeGreen;
 
 export const LevelData: Level[] = [
 	{
@@ -37,10 +48,10 @@ export const LevelData: Level[] = [
 		cellSize: 190,
 		grid: [
 			[X, X, X, X, X, X, X, X],
-			[X, 2, _, 9, 0, 9, 4, X],
+			[X, 2, _, A, B, C, 4, X],
 			[X, 2, _, 3, 3, _, 4, X],
 			[_, _, _, _, _, _, _, X],
-			[X, _, 5, 5, _, 6, 9, _],
+			[X, _, 5, 5, _, 6, _, _],
 			[X, X, X, X, X, X, X, X],
 		],
 		upgradeCost: 1000,
@@ -53,11 +64,11 @@ export const LevelData: Level[] = [
 		cellSize: 150,
 		grid: [
 			[X, X, X, X, X, X, X, X, X],
-			[X, 2, _, _, _, _, 9, _, X],
+			[X, 2, _, A, B, C, D, _, X],
 			[X, 2, _, 3, 3, 3, _, 4, X],
-			[X, 2, _, _, 9, _, _, 4, X],
+			[X, 2, _, _, _, _, _, 4, X],
 			[_, _, _, 5, 5, 5, _, _, X],
-			[X, _, 9, _, _, _, 6, 9, _],
+			[X, _, _, _, _, _, 6, _, _],
 			[X, X, X, X, X, X, X, X, X],
 		],
 		upgradeCost: 2000,
@@ -70,12 +81,12 @@ export const LevelData: Level[] = [
 		cellSize: 138,
 		grid: [
 			[X, X, X, X, X, X, X, X, X, X],
-			[X, 2, _, _, _, _, _, 9, _, X],
+			[X, 2, _, A, B, C, D, E, _, X],
 			[X, 2, _, 3, _, 3, _, 4, 4, X],
-			[X, 2, _, 3, 9, 3, _, _, _, X],
-			[X, 2, _, _, _, _, 9, 4, 4, X],
+			[X, 2, _, 3, _, 3, _, _, _, X],
+			[X, 2, _, _, _, _, _, 4, 4, X],
 			[_, _, _, 5, 5, 5, _, _, _, X],
-			[X, _, 9, _, _, _, _, 6, 9, _],
+			[X, _, _, _, _, _, _, 6, _, _],
 			[X, X, X, X, X, X, X, X, X, X],
 		],
 	},
