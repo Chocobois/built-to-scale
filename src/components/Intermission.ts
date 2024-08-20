@@ -16,6 +16,7 @@ export const enum Mode {
 export class Intermission extends Phaser.GameObjects.Container {
 	public scene: GameScene;
 	public mode: Mode;
+	public transitionProgress: number;
 
 	private graphics: Phaser.GameObjects.Graphics;
 	private cutscene: Phaser.GameObjects.Image;
@@ -75,6 +76,7 @@ export class Intermission extends Phaser.GameObjects.Container {
 		this.add(this.subtitles);
 
 		this.queuedLines = [];
+		this.transitionProgress = 0;
 
 		/* Button */
 
@@ -218,11 +220,13 @@ export class Intermission extends Phaser.GameObjects.Container {
 			to: 1,
 			ease: Phaser.Math.Easing.Quintic.InOut,
 			onUpdate: (tween, target, key, current: number) => {
+				this.transitionProgress = current;
 				let radius = current * 0.6 * this.scene.W;
 				this.redrawMask(this.scene.CX, this.scene.CY, radius);
 			},
 			onComplete: () => {
 				this.setVisible(false);
+				this.transitionProgress = 0;
 			},
 		});
 	}

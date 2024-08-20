@@ -20,6 +20,7 @@ import { TextEffect } from "@/components/TextEffect";
 import { BasicEffect } from "@/components/BasicEffect";
 import { Intermission, Mode } from "@/components/Intermission";
 import { SnapType } from "@/components/Item";
+import { Music } from "@/utils/Music";
 
 import { NavMesh } from "navmesh";
 import {
@@ -55,6 +56,10 @@ export class GameScene extends BaseScene {
 	public activeItem: ItemButton;
 	
 	public tArray: number[];
+
+	public musicBase: Phaser.Sound.WebAudioSound;
+	public musicCutscene: Phaser.Sound.WebAudioSound;
+	public musicDowntime: Phaser.Sound.WebAudioSound;
 
 	private shopClicker: Button;
 	private ownerImage: Phaser.GameObjects.Sprite;
@@ -320,6 +325,12 @@ export class GameScene extends BaseScene {
 		// this.intermission.fadeToGame(); // Comment this out to see cutscenes
 		this.tArray = [];
 		this.pauseInvButton();
+		this.musicBase = new Music(this, "m_salonbase", { volume: 0.4 });
+		this.musicDowntime = new Music(this, "m_salondowntime", { volume: 0.4 });
+		this.musicCutscene = new Music(this, "m_saloncutscene", { volume: 0.4 });
+		this.musicBase.play();
+		this.musicDowntime.play();
+		this.musicCutscene.play();
 	}
 
 	update(time: number, delta: number) {
@@ -350,6 +361,15 @@ export class GameScene extends BaseScene {
 		if (this.state === GameState.Day) {
 			this.sortDepth();
 		}
+
+		// Highlight button for tutorial
+		if (this.shopTutorialIndex == 0) {
+			this.invButton.setScale(0.5 + 0.08 * Math.sin(time / 100));
+		} else {
+			this.invButton.setScale(0.5);
+		}
+
+		this.updateMusicState();
 	}
 
 	updateEffects(t: number, d: number) {
@@ -1380,5 +1400,35 @@ export class GameScene extends BaseScene {
 			}
 		} 
 		);
+	}
+
+	updateMusicState() {
+		const clamp = Phaser.Math.Clamp;
+		const tween = this.intermission.transitionProgress;
+		const volumeModifier = 0.4;
+
+		let intendedVolume = {
+			base: 1,
+			cutscene: 0,
+			downtime: 0,
+		}
+
+		if (this.state != GameState.Day) intendedVolume = {
+			base: 0,
+			cutscene: 0,
+			downtime: 1,
+		};
+		
+		if (this.intermission.visible) {
+			intendedVolume.cutscene = 1 - tween;
+			intendedVolume.downtime *= tween;
+			intendedVolume.base *= tween;
+		}
+
+		console.debug(tween, intendedVolume)
+
+		this.musicBase.setVolume(		 clamp(intendedVolume.base,		  0, 1) * volumeModifier);
+		this.musicDowntime.setVolume(clamp(intendedVolume.downtime, 0, 1) * volumeModifier);
+		this.musicCutscene.setVolume(clamp(intendedVolume.cutscene, 0, 1) * volumeModifier);
 	}
 }

@@ -5,6 +5,27 @@ const Data = {
 		offset: 1 / (170 / 60),
 		bpm: 170,
 	},
+	m_salonbase: {
+		offset: 0,
+		bpm: 137,
+		loop: true,
+		start: 0 + overlap,
+		end: 2690801 / 48000 + overlap,
+	},
+	m_saloncutscene: {
+		offset: 0,
+		bpm: 137,
+		loop: true,
+		start: 0 + overlap,
+		end: 2690801 / 48000 + overlap,
+	},
+	m_salondowntime: {
+		offset: 0,
+		bpm: 137,
+		loop: true,
+		start: 0 + overlap,
+		end: 2690801 / 48000 + overlap,
+	},
 	m_first: {
 		offset: 0,
 		bpm: 140,
