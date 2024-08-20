@@ -532,6 +532,7 @@ export class GameScene extends BaseScene {
 		// this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.resumeInvButton();
 		this.cycleCount++;
+		this.restockShop();
 		this.setState(GameState.Shopping);
 	}
 
@@ -1310,7 +1311,9 @@ export class GameScene extends BaseScene {
 			this.shopText.setText(this.shopTutorialText[this.shopTutorialIndex]);
 			this.ownerImage.setFrame(this.shopTutorialFrames[this.shopTutorialIndex]);
 			this.ownerImage.input!.enabled = false;
+			this.sound.play("button", {volume: 0.5});
 		} else {
+			this.sound.play("button", {volume: 0.5});
 			this.completeShopTutorial();
 		}
 	}
@@ -1347,6 +1350,10 @@ export class GameScene extends BaseScene {
 
 	unveilInvButton() {
 		this.invButton.setAlpha(0.85);
+	}
+
+	restockShop(){
+		this.shopinventory.itemList.forEach((st) => (st.quant += (Math.trunc(Math.random()*10))));
 	}
 
 	sortDepth() {
