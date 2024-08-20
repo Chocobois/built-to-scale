@@ -68,15 +68,17 @@ export class ItemHandler {
                     return;
                 }
             } case 11: {
-                let r = Math.random()*3;
+                this.scene.refreshStationIDArray();
+                let rs = Math.trunc(Math.random()*this.scene.tArray.length);
+
                 //console.log(ct.itinerary);
-                if(r < 1) {
+                if(this.scene.tArray[rs] == 0) {
                     ct.itinerary.push(StationType.HornAndNails);
                     this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-30+(Math.random()*120), "+⬤", "red", 60, false, "red", 1200, 100, 0.7, 0));
-                } else if (r < 2) {
+                } else if (this.scene.tArray[rs] == 1) {
                     ct.itinerary.push(StationType.ScalePolish);
                     this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-30+(Math.random()*120), "+⬤", "yellow", 60, false, "red", 1200, 100, 0.7, 0));
-                } else if (r < 3) { 
+                } else if (this.scene.tArray[rs] == 2) { 
                     ct.itinerary.push(StationType.GoldBath);
                     this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-40, "+⬤", "blue", 60, false, "red", 1200, 100, 0.7, 0));
                 }
@@ -118,7 +120,6 @@ export class ItemHandler {
                 this.parseCustomerPreferredItem(i,ct);
                 break;
             } case 9: {
-                ct.lockPatience = true;
                 break;
             }
             break;
