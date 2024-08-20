@@ -1419,8 +1419,6 @@ export class GameScene extends BaseScene {
 				break;
 		}
 
-		console.log(intendedVolume)
-
 		this.musicBase.setVolume(intendedVolume.base * volumeModifier);
 		this.musicDowntime.setVolume(intendedVolume.downtime * volumeModifier);
 		this.musicCutscene.setVolume(intendedVolume.cutscene * volumeModifier);
