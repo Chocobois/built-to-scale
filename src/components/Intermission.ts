@@ -22,6 +22,7 @@ export class Intermission extends Phaser.GameObjects.Container {
 
 	private rect: Phaser.GameObjects.Rectangle;
 	private subtitles: Phaser.GameObjects.Text;
+	private queuedLines: string[];
 
 	private button: Button;
 
@@ -73,15 +74,18 @@ export class Intermission extends Phaser.GameObjects.Container {
 		this.subtitles.setStroke(ColorStr.White, 16);
 		this.add(this.subtitles);
 
+		this.queuedLines = [];
+
 		/* Button */
 
 		this.button = new TextButton(
 			scene,
 			scene.W - 240,
 			scene.H - 120,
-			300,
+			280,
 			120,
-			"OK"
+			">",
+			130
 		);
 		this.add(this.button);
 		this.button.on("click", this.proceed, this);
@@ -101,15 +105,62 @@ export class Intermission extends Phaser.GameObjects.Container {
 	setMode(mode: Mode) {
 		this.mode = mode;
 
+		// Set content
+		switch (mode) {
+			case Mode.IntroCutscene1:
+				this.cutscene.setTexture("cutscene_dummy1");
+				this.queuedLines = [
+					"Somewhere in Chocoland",
+					"What a nice day for a walk.",
+					"Nothing can go wrong...",
+				];
+				break;
+
+			case Mode.IntroCutscene2:
+				this.cutscene.setTexture("cutscene_dummy2");
+				this.queuedLines = [
+					"Oh no!",
+					"Not the mud...!",
+				];
+				break;
+
+			case Mode.IntroCutscene3:
+				this.cutscene.setTexture("cutscene_dummy3");
+				this.queuedLines = [
+					"Are you OK?",
+					"My scales are all dirty.",
+					"Let's get you cleaned up.",
+					"(*gasp* A customer!)",
+				];
+				break;
+
+			case Mode.NextLevelCutscene:
+				this.cutscene.setTexture("cutscene_dummy4");
+				this.queuedLines = ["Congratulations!", "Wow! A new location."];
+				break;
+
+			case Mode.TheEnd:
+				this.queuedLines = ["The End"];
+		}
+
 		// Show or hide elements
 		switch (mode) {
 			case Mode.IntroCutscene1:
 			case Mode.IntroCutscene2:
 			case Mode.IntroCutscene3:
 			case Mode.NextLevelCutscene:
+				// Fade in cutscene image
 				this.cutscene.setVisible(true);
-				this.button.setVisible(true);
-				this.subtitles.setVisible(true);
+				this.cutscene.setAlpha(0);
+				this.scene.tweens.add({
+					targets: this.cutscene,
+					alpha: { from: 0, to: 1 },
+					duration: 500,
+				});
+
+				this.button.setVisible(false);
+				this.subtitles.setVisible(false);
+				this.scene.addEvent(1000, this.showNextLine, this);
 				break;
 
 			default:
@@ -117,36 +168,26 @@ export class Intermission extends Phaser.GameObjects.Container {
 				this.button.setVisible(false);
 				this.subtitles.setVisible(false);
 		}
+	}
 
-		// Set content
-		switch (mode) {
-			case Mode.IntroCutscene1:
-				this.cutscene.setTexture("cutscene_dummy1");
-				this.subtitles.setText("Somewhere in Chocoland");
-				break;
-
-			case Mode.IntroCutscene2:
-				this.cutscene.setTexture("cutscene_dummy2");
-				this.subtitles.setText("If only my scales weren't so dirty...");
-				break;
-
-			case Mode.IntroCutscene3:
-				this.cutscene.setTexture("cutscene_dummy3");
-				this.subtitles.setText("Lets go to the Scale Salon™!");
-				break;
-
-			case Mode.NextLevelCutscene:
-				this.cutscene.setTexture("cutscene_dummy4");
-				this.subtitles.setText("Wow! A new location!");
-				break;
-
-			case Mode.TheEnd:
-				this.subtitles.setText("The End");
+	showNextLine() {
+		let line = this.queuedLines.shift();
+		if (line) {
+			this.subtitles.setText(line);
+			this.subtitles.setVisible(true);
+			this.button.setVisible(true);
 		}
 	}
 
 	proceed() {
 		this.scene.sound.play("scroll", { volume: 0.3 });
+
+		if (this.queuedLines.length > 0) {
+			this.button.setVisible(false);
+			this.subtitles.setVisible(false);
+			this.scene.addEvent(500, this.showNextLine, this);
+			return;
+		}
 
 		switch (this.mode) {
 			case Mode.IntroCutscene1:
@@ -158,7 +199,7 @@ export class Intermission extends Phaser.GameObjects.Container {
 				break;
 
 			case Mode.IntroCutscene3:
-				this.emit("close");
+				this.emit("startDay");
 				break;
 
 			case Mode.NextLevelCutscene:
