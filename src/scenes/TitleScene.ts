@@ -11,6 +11,7 @@ Mato
 Kiso
 Soulsong
 Nemi
+Dreeda
 Frassy`;
 
 const creditsRight = `code
@@ -21,6 +22,7 @@ music
 art
 art
 art
+code
 QA`;
 
 export class TitleScene extends BaseScene {
