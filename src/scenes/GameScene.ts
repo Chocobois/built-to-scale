@@ -1396,7 +1396,10 @@ export class GameScene extends BaseScene {
 	}
 
 	updateMusicState() {
+		const clamp = Phaser.Math.Clamp;
+		const tween = this.intermission.transitionProgress;
 		const volumeModifier = 0.4;
+
 		let intendedVolume = {
 			base: 1,
 			cutscene: 0,
@@ -1409,14 +1412,16 @@ export class GameScene extends BaseScene {
 			downtime: 1,
 		};
 		
-		if (this.intermission.visible) intendedVolume = {
-			base: 0,
-			cutscene: 1,
-			downtime: 0,
-		};
+		if (this.intermission.visible) {
+			intendedVolume.cutscene = 1 - tween;
+			intendedVolume.downtime *= tween;
+			intendedVolume.base *= tween;
+		}
 
-		this.musicBase.setVolume(intendedVolume.base * volumeModifier);
-		this.musicDowntime.setVolume(intendedVolume.downtime * volumeModifier);
-		this.musicCutscene.setVolume(intendedVolume.cutscene * volumeModifier);
+		console.debug(tween, intendedVolume)
+
+		this.musicBase.setVolume(		 clamp(intendedVolume.base,		  0, 1) * volumeModifier);
+		this.musicDowntime.setVolume(clamp(intendedVolume.downtime, 0, 1) * volumeModifier);
+		this.musicCutscene.setVolume(clamp(intendedVolume.cutscene, 0, 1) * volumeModifier);
 	}
 }
