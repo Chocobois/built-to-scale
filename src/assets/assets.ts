@@ -165,6 +165,7 @@ const images: Image[] = [
 	image('titlescreen/hand', 'title_hand'),
 	image('titlescreen/washbeartail', 'title_washbear_tail'),
 	image('titlescreen/washbearhand', 'title_washbear_hand'),
+	image('titlescreen/title', 'title_logo'),
 
 	//temp
 	image('temp/invwindow', 'invwindow'),
@@ -216,8 +217,7 @@ const spritesheets: SpriteSheet[] = [
 
 /* Audios */
 const audios: Audio[] = [
-	music('title', 'm_main_menu'),
-	music('first', 'm_first'),
+	music('bgm_intro', 'm_main_menu'),
 	sound('place', 'place', 0.5),
 	sound('return', 'return', 0.5),
 	sound('scroll', 'scroll', 0.5),

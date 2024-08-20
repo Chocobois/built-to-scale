@@ -3,26 +3,37 @@ import { Music } from "@/utils/Music";
 
 import { title, version } from "@/version.json";
 
-const creditsLeft = `${title} 
+const creditsLeft = `@Golenchu
+Lumie
+@LuxxArt
+@ArcticFqx
+@MatoCookies
+@KonixKun
+Soulsong
+Nemi
+Frassy`;
 
-@Handle
-@Handle
-@Handle`;
-
-const creditsRight = `
-
-role
-role
-role`;
+const creditsRight = `code
+code & art
+art
+code
+music
+art
+art
+art
+ideas`;
 
 export class TitleScene extends BaseScene {
-	public sky: Phaser.GameObjects.Image;
 	public background: Phaser.GameObjects.Image;
-	public foreground: Phaser.GameObjects.Image;
-	public character: Phaser.GameObjects.Image;
+	public chairs: Phaser.GameObjects.Image;
+	public bath: Phaser.GameObjects.Image;
+	public washbear_tail: Phaser.GameObjects.Image;
+	public washbear_hand: Phaser.GameObjects.Image;
+	public tail: Phaser.GameObjects.Image;
+	public hand: Phaser.GameObjects.Image;
+	public logo: Phaser.GameObjects.Image;
 
 	public credits: Phaser.GameObjects.Container;
-	public title: Phaser.GameObjects.Text;
 	public subtitle: Phaser.GameObjects.Text;
 	public tap: Phaser.GameObjects.Text;
 	public version: Phaser.GameObjects.Text;
@@ -40,47 +51,49 @@ export class TitleScene extends BaseScene {
 	create(): void {
 		this.fade(false, 200, 0x000000);
 
-		this.sky = this.add.image(this.CX, this.CY, "title_sky");
-		this.containToScreen(this.sky);
-		this.background = this.add.image(
-			this.CX,
-			0.9 * this.CY,
-			"title_background"
-		);
+		this.background = this.add
+			.image(0, 0, "title_background")
+			.setOrigin(0)
+			.setAlpha(0)
+			.setVisible(false);
+		this.chairs = this.add
+			.image(70 + 214, 220 + 226, "title_chairs")
+			.setAlpha(0)
+			.setVisible(false);
+		this.bath = this.add
+			.image(425 + 173, 430 + 155, "title_bath")
+			.setAlpha(0)
+			.setVisible(false);
+		this.washbear_tail = this.add
+			.image(630 + 156, 590 + 190, "title_washbear_tail")
+			.setAlpha(0)
+			.setVisible(false);
+		this.tail = this.add.image(0, 0, "title_tail").setAlpha(0).setOrigin(0);
+		this.hand = this.add.image(this.W, 0, "title_hand").setAlpha(0).setOrigin(1, 0);
+		this.washbear_hand = this.add
+			.image(1180 + 195, 600 + 240, "title_washbear_hand")
+			.setAlpha(0)
+			.setVisible(false);
+		this.logo = this.add
+			.image(this.CX, 270, "title_logo")
+			.setScale(2)
+			.setAlpha(0)
+			.setVisible(false);
+
 		this.containToScreen(this.background);
-		this.foreground = this.add.image(this.CX, this.CY, "title_foreground");
-		this.containToScreen(this.foreground);
-		this.character = this.add.image(this.CX, this.CY, "title_character");
-		this.containToScreen(this.character);
 
-		this.background.setVisible(false);
-		this.background.setAlpha(0);
-		this.background.y += 4000;
-		this.foreground.y += 1000;
-		this.character.y += 1000;
-
-		this.title = this.addText({
-			x: 0.25 * this.W,
-			y: 0.7 * this.H,
-			size: 160,
-			color: "#000",
-			text: "Game Title",
-		});
-		this.title.setOrigin(0.5);
-		this.title.setStroke("#FFF", 8);
-		this.title.setPadding(2);
-		this.title.setVisible(false);
-		this.title.setAlpha(0);
+		this.tail.x -= 400;
+		this.hand.x += 400;
 
 		this.subtitle = this.addText({
-			x: 0.25 * this.W,
+			x: this.CX,
 			y: 0.87 * this.H,
 			size: 120,
 			color: "#000",
 			text: "Tap to start",
 		});
 		this.subtitle.setOrigin(0.5);
-		this.subtitle.setStroke("#FFF", 3);
+		this.subtitle.setStroke("#FFF", 16);
 		this.subtitle.setPadding(2);
 		this.subtitle.setVisible(false);
 		this.subtitle.setAlpha(0);
@@ -94,7 +107,7 @@ export class TitleScene extends BaseScene {
 		});
 		this.tap.setOrigin(0.5);
 		this.tap.setAlpha(-1);
-		this.tap.setStroke("#FFF", 4);
+		this.tap.setStroke("#FFF", 16);
 		this.tap.setPadding(2);
 
 		this.version = this.addText({
@@ -106,7 +119,7 @@ export class TitleScene extends BaseScene {
 		});
 		this.version.setOrigin(1, 1);
 		this.version.setAlpha(-1);
-		this.version.setStroke("#FFF", 4);
+		this.version.setStroke("#FFF", 6);
 		this.version.setPadding(2);
 
 		this.credits = this.add.container(0, 0);
@@ -114,39 +127,40 @@ export class TitleScene extends BaseScene {
 		this.credits.setAlpha(0);
 
 		let credits1 = this.addText({
-			x: 0.65 * this.W,
+			x: 0.75 * this.W,
 			y: 0,
-			size: 40,
+			size: 35,
 			color: "#c2185b",
 			text: creditsLeft,
 		});
-		credits1.setStroke("#FFF", 10);
+		credits1.setStroke("#FFF", 8);
 		credits1.setPadding(2);
 		credits1.setLineSpacing(0);
 		this.credits.add(credits1);
 
 		let credits2 = this.addText({
-			x: 0.85 * this.W,
+			x: this.W,
 			y: 0,
-			size: 40,
+			size: 35,
 			color: "#c2185b",
 			text: creditsRight,
 		});
-		credits2.setStroke("#FFF", 10);
+		credits2.setOrigin(1, 0);
+		credits2.setStroke("#FFF", 8);
 		credits2.setPadding(2);
 		credits2.setLineSpacing(0);
 		this.credits.add(credits2);
 
 		// Music
 		if (!this.musicTitle) {
-			this.musicTitle = new Music(this, "m_first", { volume: 0.4 });
+			this.musicTitle = new Music(this, "m_main_menu", { volume: 0.4 });
 			this.musicTitle.on("bar", this.onBar, this);
 			this.musicTitle.on("beat", this.onBeat, this);
 
 			// this.select = this.sound.add("dayShift", { volume: 0.8, rate: 1.0 }) as Phaser.Sound.WebAudioSound;
 			// this.select2 = this.sound.add("nightShift", { volume: 0.8, rate: 1.0 }) as Phaser.Sound.WebAudioSound;
 		}
-		this.musicTitle.play();
+		this.musicTitle.play({ loop: false });
 
 		// Input
 
@@ -167,15 +181,30 @@ export class TitleScene extends BaseScene {
 
 	update(time: number, delta: number) {
 		if (this.background.visible) {
-			this.background.y += 0.02 * (this.CY - this.background.y);
-			this.foreground.y += 0.025 * (this.CY - this.foreground.y);
-			this.character.y += 0.02 * (this.CY - this.character.y);
+			this.tail.x += 0.03 * (0 - this.tail.x);
+			this.hand.x += 0.03 * (this.W - this.hand.x);
 
-			this.background.alpha += 0.03 * (1 - this.background.alpha);
-			this.character.scaleX = Math.sin((3 * time) / 1000);
+			this.tail.alpha += 0.05 * (1 - this.tail.alpha);
+			this.hand.alpha += 0.05 * (1 - this.hand.alpha);
+			if (this.background.visible)
+				this.background.alpha += 0.1 * (1 - this.background.alpha);
+			if (this.chairs.visible)
+				this.chairs.alpha += 0.1 * (1 - this.chairs.alpha);
+			if (this.bath.visible) this.bath.alpha += 0.1 * (1 - this.bath.alpha);
+			if (this.washbear_tail.visible)
+				this.washbear_tail.alpha += 0.1 * (1 - this.washbear_tail.alpha);
+			if (this.washbear_hand.visible)
+				this.washbear_hand.alpha += 0.1 * (1 - this.washbear_hand.alpha);
+			if (this.tail.visible) this.tail.alpha += 0.1 * (1 - this.tail.alpha);
+			if (this.hand.visible) this.hand.alpha += 0.1 * (1 - this.hand.alpha);
+			if (this.logo.visible) this.logo.alpha += 0.1 * (1 - this.logo.alpha);
 
-			this.title.alpha +=
-				0.02 * ((this.title.visible ? 1 : 0) - this.title.alpha);
+			// Wobble
+			this.washbear_hand.setScale(1, 1 + 0.02 * Math.sin((3 * time) / 1000));
+			this.washbear_tail.setScale(1, 1 - 0.02 * Math.sin((3 * time) / 1000));
+			this.bath.setScale(1, 1 + 0.02 * Math.cos((3 * time) / 1000));
+			this.chairs.setScale(1, 1 - 0.02 * Math.cos((3 * time) / 1000));
+
 			this.subtitle.alpha +=
 				0.02 * ((this.subtitle.visible ? 1 : 0) - this.subtitle.alpha);
 			this.version.alpha +=
@@ -204,8 +233,6 @@ export class TitleScene extends BaseScene {
 		if (!this.background.visible) {
 			this.onBar(1);
 		} else if (!this.subtitle.visible) {
-			this.title.setVisible(true);
-			this.title.setAlpha(1);
 			this.subtitle.setVisible(true);
 			this.subtitle.setAlpha(1);
 		} else if (!this.isStarting) {
@@ -227,10 +254,12 @@ export class TitleScene extends BaseScene {
 	}
 
 	onBar(bar: number) {
-		if (bar >= 2) {
-			this.title.setVisible(true);
-		}
-		if (bar >= 4) {
+		if (bar >= 3) this.chairs.setVisible(true);
+		if (bar >= 4) this.bath.setVisible(true);
+		if (bar >= 7) this.washbear_tail.setVisible(true);
+		if (bar >= 8) this.washbear_hand.setVisible(true);
+		if (bar >= 10) this.logo.setVisible(true);
+		if (bar >= 14) {
 			this.subtitle.setVisible(true);
 			this.credits.setVisible(true);
 		}
