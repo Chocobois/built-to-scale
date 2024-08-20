@@ -65,16 +65,61 @@ const images: Image[] = [
 	image('characters/smallCWalk2', 'small_customer_walk2'),
 	image('characters/smallCWalk3', 'small_customer_walk3'),
 	image('characters/smallCSit1', 'small_customer_sit1'),
+
+	image('characters/smallCWalk1_red', 'small_customer_walk1_red'),
+	image('characters/smallCWalk2_red', 'small_customer_walk2_red'),
+	image('characters/smallCWalk3_red', 'small_customer_walk3_red'),
+	image('characters/smallCSit1_red', 'small_customer_sit1_red'),
+
+	image('characters/smallCWalk1_aqua', 'small_customer_walk1_aqua'),
+	image('characters/smallCWalk2_aqua', 'small_customer_walk2_aqua'),
+	image('characters/smallCWalk3_aqua', 'small_customer_walk3_aqua'),
+	image('characters/smallCSit1_aqua', 'small_customer_sit1_aqua'),
+
+	image('characters/smallCWalk1_green', 'small_customer_walk1_green'),
+	image('characters/smallCWalk2_green', 'small_customer_walk2_green'),
+	image('characters/smallCWalk3_green', 'small_customer_walk3_green'),
+	image('characters/smallCSit1_green', 'small_customer_sit1_green'),
 	// Medium size customers
 	image('characters/medCWalk1', 'medium_customer_walk1'),
 	image('characters/medCWalk2', 'medium_customer_walk2'),
 	image('characters/medCWalk3', 'medium_customer_walk3'),
 	image('characters/medCSit1', 'medium_customer_sit1'),
+
+	image('characters/medCWalk1_red', 'med_customer_walk1_red'),
+	image('characters/medCWalk2_red', 'med_customer_walk2_red'),
+	image('characters/medCWalk3_red', 'med_customer_walk3_red'),
+	image('characters/medCSit1_red', 'med_customer_sit1_red'),
+
+	image('characters/medCWalk1_aqua', 'med_customer_walk1_aqua'),
+	image('characters/medCWalk2_aqua', 'med_customer_walk2_aqua'),
+	image('characters/medCWalk3_aqua', 'med_customer_walk3_aqua'),
+	image('characters/medCSit1_aqua', 'med_customer_sit1_aqua'),
+
+	image('characters/medCWalk1_green', 'med_customer_walk1_green'),
+	image('characters/medCWalk2_green', 'med_customer_walk2_green'),
+	image('characters/medCWalk3_green', 'med_customer_walk3_green'),
+	image('characters/medCSit1_green', 'med_customer_sit1_green'),
 	// Large size customers
 	image('characters/largeCWalk1', 'large_customer_walk1'),
 	image('characters/largeCWalk2', 'large_customer_walk2'),
 	image('characters/largeCWalk3', 'large_customer_walk3'),
 	image('characters/largeCSit1', 'large_customer_sit1'),
+
+	image('characters/largeCWalk1_red', 'large_customer_walk1_red'),
+	image('characters/largeCWalk2_red', 'large_customer_walk2_red'),
+	image('characters/largeCWalk3_red', 'large_customer_walk3_red'),
+	image('characters/largeCSit1_red', 'large_customer_sit1_red'),
+
+	image('characters/largeCWalk1_aqua', 'large_customer_walk1_aqua'),
+	image('characters/largeCWalk2_aqua', 'large_customer_walk2_aqua'),
+	image('characters/largeCWalk3_aqua', 'large_customer_walk3_aqua'),
+	image('characters/largeCSit1_aqua', 'large_customer_sit1_aqua'),
+
+	image('characters/largeCWalk1_green', 'large_customer_walk1_green'),
+	image('characters/largeCWalk2_green', 'large_customer_walk2_green'),
+	image('characters/largeCWalk3_green', 'large_customer_walk3_green'),
+	image('characters/largeCSit1_green', 'large_customer_sit1_green'),
 	// Sprite
 	image('characters/moneybagSprite', 'moneybag_sprite'),
 
@@ -108,12 +153,18 @@ const images: Image[] = [
 	image('ui/sad', 'sad'),
 	image('ui/timer', 'timer'),
 	image('ui/plus', 'plus'),
+	image('ui/wax', 'wax'),
+	image('ui/nail', 'nail'),
+	image('ui/bath', 'bath'),
 
 	// Titlescreen
-	image('titlescreen/sky', 'title_sky'),
 	image('titlescreen/background', 'title_background'),
-	image('titlescreen/foreground', 'title_foreground'),
-	image('titlescreen/character', 'title_character'),
+	image('titlescreen/backgroundsitting', 'title_chairs'),
+	image('titlescreen/backgroundbath', 'title_bath'),
+	image('titlescreen/tail', 'title_tail'),
+	image('titlescreen/hand', 'title_hand'),
+	image('titlescreen/washbeartail', 'title_washbear_tail'),
+	image('titlescreen/washbearhand', 'title_washbear_hand'),
 
 	//temp
 	image('temp/invwindow', 'invwindow'),
@@ -130,6 +181,7 @@ const images: Image[] = [
 	image('temp/h4', 'h4'),
 	image('temp/h5', 'h5'),
 	image('temp/h6', 'h6'),
+	image('temp/blanksq', 'blanksq'),
 
 ];
 
