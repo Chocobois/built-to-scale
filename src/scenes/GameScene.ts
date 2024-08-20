@@ -180,8 +180,9 @@ export class GameScene extends BaseScene {
 
 		this.intermission = new Intermission(this);
 		this.intermission.setDepth(10000);
-		this.intermission.on("close", () => {
+		this.intermission.on("startDay", () => {
 			this.intermission.fadeToGame();
+			this.startDay();
 		});
 		this.intermission.on("nextLevel", () => {
 			const nextLevel = {

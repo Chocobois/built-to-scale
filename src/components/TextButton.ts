@@ -10,7 +10,7 @@ export class TextButton extends Button {
 	private background: RoundRectangle;
 	private text: Phaser.GameObjects.Text;
 
-	constructor(scene: GameScene, x: number, y: number, width: number, height: number, text: string) {
+	constructor(scene: GameScene, x: number, y: number, width: number, height: number, text: string, textSize: number = 48) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
@@ -32,7 +32,7 @@ export class TextButton extends Button {
 		this.add(this.background);
 
 		this.text = this.scene.addText({
-			size: 48,
+			size: textSize,
 			color: "#FFFFFF",
 			text,
 		});
