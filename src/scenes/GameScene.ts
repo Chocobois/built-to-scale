@@ -1310,7 +1310,9 @@ export class GameScene extends BaseScene {
 			this.shopText.setText(this.shopTutorialText[this.shopTutorialIndex]);
 			this.ownerImage.setFrame(this.shopTutorialFrames[this.shopTutorialIndex]);
 			this.ownerImage.input!.enabled = false;
+			this.sound.play("button", {volume: 0.5});
 		} else {
+			this.sound.play("button", {volume: 0.5});
 			this.completeShopTutorial();
 		}
 	}
