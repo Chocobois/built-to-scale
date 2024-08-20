@@ -63,6 +63,14 @@ export class PatienceTimer extends Phaser.GameObjects.Container {
             this.sparks.setFrame(1);
         }
 
+        if(this.critical) {
+            this.bar.fillColor = 0xFF0000;
+            this.sparks.setTint(0xFF0000);
+        } else {
+            this.bar.fillColor = 0x00FF00;
+            this.sparks.setTint(0x00FF00);
+        }
+
 
 
         if(this.veiled) {
