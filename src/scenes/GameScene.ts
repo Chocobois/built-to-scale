@@ -22,7 +22,10 @@ import { Intermission, Mode } from "@/components/Intermission";
 import { SnapType } from "@/components/Item";
 
 import { NavMesh } from "navmesh";
-import { centerOnSubdividedCoord, GenerateNavMesh } from "@/utils/NavMeshHelper";
+import {
+	centerOnSubdividedCoord,
+	GenerateNavMesh,
+} from "@/utils/NavMeshHelper";
 import { Button } from "@/components/elements/Button";
 import { ShopInventory } from "@/components/ShopInventory";
 
@@ -57,31 +60,46 @@ export class GameScene extends BaseScene {
 	private shopBubble: Phaser.GameObjects.Image;
 	private shopText: Phaser.GameObjects.Text;
 
-	private noivern: string[] = ["Like I said, the prices are absolutely fair!", "My old job? I used to be a turret engineer~", 
-	"If you encounter a special customer, use clues to figure out their needs!", "Have you heard of widgets? I might have one in stock.",
-	"It's alawys so hot in the dragonlands...", "Different customers will have different preferences!",
-	"That one's popular! Why not pick up a few for your salon?", "Some items can be only given to customers. Others are only equipped at stations.",
-	"Happy customers tip more! Give them things they like and tend to them quickly!", "Don't forget to upgrade your stations! A well equipped salon succeeds.",
-	"My favorite items? A tasty hot dog and a box of milk! And I love the widgets too!", "How's the weather been lately? I think it's lovely outside.",
-	"I saw lots of happy people by your salon! I hope it's doing well.", "Buy a lot and buy often! Think of it as an investment!"]
+	private noivern: string[] = [
+		"Like I said, the prices are absolutely fair!",
+		"My old job? I used to be a turret engineer~",
+		"If you encounter a special customer, use clues to figure out their needs!",
+		"Have you heard of widgets? I might have one in stock.",
+		"It's alawys so hot in the dragonlands...",
+		"Different customers will have different preferences!",
+		"That one's popular! Why not pick up a few for your salon?",
+		"Some items can be only given to customers. Others are only equipped at stations.",
+		"Happy customers tip more! Give them things they like and tend to them quickly!",
+		"Don't forget to upgrade your stations! A well equipped salon succeeds.",
+		"My favorite items? A tasty hot dog and a box of milk! And I love the widgets too!",
+		"How's the weather been lately? I think it's lovely outside.",
+		"I saw lots of happy people by your salon! I hope it's doing well.",
+		"Buy a lot and buy often! Think of it as an investment!",
+	];
 	private viewedShopTutorial: boolean = false;
-	private shopTutorialText: string[] = ["Hey, going to leave already? Click the left tab and drop by!", "First time? Welcome to my little otter shop!", 
-	"You can pick up all kinds of snacks, trinkets, and widgets here!", "They might be of help for your customers and stations!",
-	"I left some notes in the descriptions too, if you need any help.", "And you can hit the brown arrow to browse the other shelves!",
-	"The prices are totally fair, but make sure you have enough money!", "Once you're done, you can hit the tab again to close the shop!",
-	"Oh, and it works for your inventory too during the day!", "I'll look forward to your visits!"];
+	private shopTutorialText: string[] = [
+		"Hey, going to leave already? Click the left tab and drop by!",
+		"First time? Welcome to my little otter shop!",
+		"You can pick up all kinds of snacks, trinkets, and widgets here!",
+		"They might be of help for your customers and stations!",
+		"I left some notes in the descriptions too, if you need any help.",
+		"And you can hit the brown arrow to browse the other shelves!",
+		"The prices are totally fair, but make sure you have enough money!",
+		"Once you're done, you can hit the tab again to close the shop!",
+		"Oh, and it works for your inventory too during the day!",
+		"I'll look forward to your visits!",
+	];
 	private shopTutorialFrames: number[] = [0, 0, 1, 1, 2, 0, 2, 0, 0, 1];
 	private shopTutorialIndex: number = 1;
 	private shopTutorialInitialized: boolean = false;
 	private tutorialTimer: number = 0;
-	private canProceed: boolean[] = [false,false,false];
+	private canProceed: boolean[] = [false, false, false];
 	private dinonugget: number = 0;
 	private shopOpenCheck: boolean = false;
 	private shopOwnerState: number = -1;
 	private proceedButton: Button;
 	private hitRectangle: Phaser.GameObjects.Rectangle;
 	private cycleCount: number = 0;
-
 
 	public effects: Effect[];
 	private navmesh: NavMesh;
@@ -243,25 +261,25 @@ export class GameScene extends BaseScene {
 		});
 
 		//shop
-		this.shopClicker = new Button(this,1460,540);
+		this.shopClicker = new Button(this, 1460, 540);
 		this.add.existing(this.shopClicker);
 
-		this.ownerImage = new Phaser.GameObjects.Sprite(this,0,0,"otter");
-		this.ownerImage.setOrigin(0.5,0.5);
+		this.ownerImage = new Phaser.GameObjects.Sprite(this, 0, 0, "otter");
+		this.ownerImage.setOrigin(0.5, 0.5);
 		this.shopClicker.add(this.ownerImage);
 
 		this.shopClicker.bindInteractive(this.ownerImage);
-		this.shopClicker.on("click", ()=> this.proceedShopTutorial());
+		this.shopClicker.on("click", () => this.proceedShopTutorial());
 		this.ownerImage.input!.enabled = false;
 		this.shopSpeech = new Phaser.GameObjects.Container(this, 1010, 450);
 		this.add.existing(this.shopSpeech);
-		this.shopBubble = new Phaser.GameObjects.Image(this,0,0,"bubble");
+		this.shopBubble = new Phaser.GameObjects.Image(this, 0, 0, "bubble");
 		this.shopBubble.setScale(-3.5, 2.5);
-		this.shopBubble.setOrigin(0.5,0.5);
+		this.shopBubble.setOrigin(0.5, 0.5);
 		this.shopSpeech.add(this.shopBubble);
 		this.shopClicker.setDepth(1050);
 		this.shopSpeech.setDepth(1045);
-        this.shopText = this.addText({
+		this.shopText = this.addText({
 			x: 0,
 			y: -20,
 			size: 40,
@@ -269,11 +287,18 @@ export class GameScene extends BaseScene {
 			text: "",
 		});
 		this.shopText.setWordWrapWidth(380);
-		this.shopText.setOrigin(0.5,0.5);
+		this.shopText.setOrigin(0.5, 0.5);
 		this.shopSpeech.add(this.shopText);
-		this.proceedButton = new Button(this,960,540);
-		this.hitRectangle = new Phaser.GameObjects.Rectangle(this,0,0,1980,1100,0x000000);
-		this.hitRectangle.setOrigin(0.5,0.5);
+		this.proceedButton = new Button(this, 960, 540);
+		this.hitRectangle = new Phaser.GameObjects.Rectangle(
+			this,
+			0,
+			0,
+			1980,
+			1100,
+			0x000000
+		);
+		this.hitRectangle.setOrigin(0.5, 0.5);
 		this.hitRectangle.setAlpha(0.001);
 		this.proceedButton.add(this.hitRectangle);
 		this.proceedButton.bindInteractive(this.hitRectangle);
@@ -293,8 +318,8 @@ export class GameScene extends BaseScene {
 	}
 
 	update(time: number, delta: number) {
-		if(!this.viewedShopTutorial || this.shopOwnerState == 2){
-			this.updateShopTutorial(time,delta);
+		if (!this.viewedShopTutorial || this.shopOwnerState == 2) {
+			this.updateShopTutorial(time, delta);
 		}
 		if (this.browsing || this.paused) {
 			this.activeItem.update(time, delta);
@@ -451,9 +476,8 @@ export class GameScene extends BaseScene {
 
 	// Start a new day
 	startDay() {
-		if((this.cycleCount > 0))
-		{
-			if((!this.viewedShopTutorial)) {
+		if (this.cycleCount > 0) {
+			if (!this.viewedShopTutorial) {
 				this.beginShopTutorial(0);
 				return;
 			}
@@ -481,12 +505,13 @@ export class GameScene extends BaseScene {
 
 			onStart: () => {
 				this.attemptSpawnCustomer();
+				this.sound.play("endday", { volume: 0.4 });
 			},
 			onUpdate: (tween) => {
 				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
 			},
 			onComplete: () => {
-				this.sound.play("endday");
+				this.sound.play("endday", { volume: 0.4 });
 			},
 		});
 	}
@@ -727,18 +752,6 @@ export class GameScene extends BaseScene {
 			}
 		});
 
-		/*
-
-		customer.on("over", () => {
-			customer.toggleTimer();
-			this.sound.play("meme_explosion_sound");
-		});
-
-		customer.on("out", () => {
-			customer.untoggleTimer();
-		});
-		*/
-
 		// Customer leaving the game
 		customer.on("offscreen", () => {
 			this.customers = this.customers.filter((c) => c !== customer);
@@ -923,8 +936,8 @@ export class GameScene extends BaseScene {
 		customer.nextActivity();
 	}
 
-	togglePanel(){
-		if(this.state === GameState.Shopping) {
+	togglePanel() {
+		if (this.state === GameState.Shopping) {
 			this.toggleShop();
 		} else {
 			this.toggleInventory();
@@ -944,26 +957,24 @@ export class GameScene extends BaseScene {
 		}
 	}
 
-	toggleShop(){
+	toggleShop() {
 		this.shopinventory.toggle();
 		if (this.shopinventory.isOpen) {
 			this.invButton.setPosition(714, 540);
 			this.invButton.toggleForward();
 			this.openInventory();
 			//console.log("VARIABLE STATE: "+this.shopOpenCheck)
-			if(this.shopTutorialInitialized == false) {
+			if (this.shopTutorialInitialized == false) {
 				this.beginShopTutorial(1);
 				this.pauseInvButton();
 			}
-			if(this.shopOpenCheck) {
+			if (this.shopOpenCheck) {
 				this.shopOpenCheck = false;
 				this.pauseInvButton();
 				this.proceedShopTutorial();
 			}
 			//console.log(this.invButton);
 			//this.pauseInvButton();
-
-
 		} else {
 			this.invButton.setPosition(64, 540);
 			this.invButton.toggleBackward();
@@ -1009,10 +1020,10 @@ export class GameScene extends BaseScene {
 		let s = this.getClosestStationToItem(this.activeItem);
 		if (s) {
 			s.applyItem(this.activeItem.id, this.activeItem.sprname);
-			this.sound.play("place");
+			this.sound.play("place", { volume: 0.4 });
 		} else {
 			this.returnItem(this.activeItem.id);
-			this.sound.play("return");
+			this.sound.play("return", { volume: 0.4 });
 		}
 		this.activeItem.destroy();
 		this.activeItem = new ItemButton(
@@ -1031,10 +1042,10 @@ export class GameScene extends BaseScene {
 		let cs = this.getClosestCustomerToItem(this.activeItem);
 		if (cs) {
 			cs.applyItem(this.activeItem.id, this.activeItem.sprname);
-			this.sound.play("place");
+			this.sound.play("place", { volume: 0.4 });
 		} else {
 			this.returnItem(this.activeItem.id);
-			this.sound.play("return");
+			this.sound.play("return", { volume: 0.4 });
 		}
 		this.activeItem.destroy();
 		this.activeItem = new ItemButton(
@@ -1063,24 +1074,23 @@ export class GameScene extends BaseScene {
 		this.inventory.returnItem(id);
 	}
 
-	buyItem(id: number, qt:number) {
+	buyItem(id: number, qt: number) {
 		this.inventory.buyItem(id, qt);
 	}
 
-
-	pauseInvButton(){
+	pauseInvButton() {
 		this.invButton.spr.input!.enabled = false;
 		this.invButton.setAlpha(0.34);
 	}
 
-	resumeInvButton(){
+	resumeInvButton() {
 		this.invButton.spr.input!.enabled = true;
 		this.invButton.setAlpha(0.85);
 	}
 
 	parseCustomerItems(i: number, ct: Customer) {
 		this.iHandler.processCustomerItem(this.inventory.itemList[i], ct);
-		this.sound.play(this.inventory.itemList[i].sound);
+		this.sound.play(this.inventory.itemList[i].sound, { volume: 0.4 });
 	}
 
 	getClosestCustomerToItem(item: ItemButton): Customer | null {
@@ -1133,10 +1143,10 @@ export class GameScene extends BaseScene {
 		return closestStation;
 	}
 
-	removeMoney(n: number){
+	removeMoney(n: number) {
 		this.money -= n;
 		this.ui.setMoney(this.money);
-		this.sound.play("cashmoney");
+		this.sound.play("cashmoney", { volume: 0.4 });
 		/*
 		this.addEffect(
 			new TextEffect(
@@ -1156,7 +1166,7 @@ export class GameScene extends BaseScene {
 		);*/
 	}
 
-	beginShopTutorial(n: number){
+	beginShopTutorial(n: number) {
 		this.shopTutorialIndex = n;
 		this.shopTutorialInitialized = false;
 		this.ownerImage.input!.enabled = false;
@@ -1166,75 +1176,77 @@ export class GameScene extends BaseScene {
 		this.shopSpeech.setVisible(true);
 		this.shopSpeech.setAlpha(0);
 		this.tutorialTimer = 1000;
-		if(n > 0) {
+		if (n > 0) {
 			this.pauseInvButton();
 		}
 	}
 
-	updateShopTutorial(t: number, d: number){
-		
-		if(this.dinonugget > 0) {
+	updateShopTutorial(t: number, d: number) {
+		if (this.dinonugget > 0) {
 			this.dinonugget -= d;
 			//console.log("DINO NUGGET");
-			if(this.dinonugget <= 0) {
+			if (this.dinonugget <= 0) {
 				this.shopClicker.setAlpha(0);
 				this.shopSpeech.setAlpha(0);
 				this.shopSpeech.setVisible(false);
 				this.shopClicker.setVisible(false);
-				this.shopOwnerState = -1
+				this.shopOwnerState = -1;
 			} else {
-				this.shopClicker.setAlpha(this.dinonugget/300);
-				this.shopSpeech.setAlpha(this.dinonugget/300);
+				this.shopClicker.setAlpha(this.dinonugget / 300);
+				this.shopSpeech.setAlpha(this.dinonugget / 300);
 			}
 		}
-		if(this.viewedShopTutorial){
+		if (this.viewedShopTutorial) {
 			return;
 		}
-		if(!this.shopTutorialInitialized) {
-			if(this.tutorialTimer > 0) {
-				if((this.tutorialTimer > 300)) {
+		if (!this.shopTutorialInitialized) {
+			if (this.tutorialTimer > 0) {
+				if (this.tutorialTimer > 300) {
 					this.tutorialTimer -= d;
-					if(this.tutorialTimer <= 300) {
+					if (this.tutorialTimer <= 300) {
 						this.shopClicker.setPosition(1460, 540);
 					} else {
-						this.shopClicker.setPosition(1460,1480+-940*(1-((this.tutorialTimer-300)/700)));
+						this.shopClicker.setPosition(
+							1460,
+							1480 + -940 * (1 - (this.tutorialTimer - 300) / 700)
+						);
 					}
-				} else if (this.tutorialTimer <= 300){
+				} else if (this.tutorialTimer <= 300) {
 					this.tutorialTimer -= d;
-					if(this.tutorialTimer <= 0) {
+					if (this.tutorialTimer <= 0) {
 						this.shopSpeech.setAlpha(1);
 						this.shopTutorialInitialized = true;
 						this.ownerImage.input!.enabled = true;
-						if(this.shopTutorialIndex == 0){
+						if (this.shopTutorialIndex == 0) {
 							this.shopOpenCheck = true;
 						}
-						this.canProceed = [true,false,false];
+						this.canProceed = [true, false, false];
 					}
-					this.shopSpeech.setAlpha(1-(this.tutorialTimer/300));
+					this.shopSpeech.setAlpha(1 - this.tutorialTimer / 300);
 				}
 			}
 		} else if (!this.viewedShopTutorial) {
-			if(this.tutorialTimer > 0) {
+			if (this.tutorialTimer > 0) {
 				this.tutorialTimer -= d;
-				if(this.tutorialTimer <= 0){
+				if (this.tutorialTimer <= 0) {
 					this.shopSpeech.setAlpha(1);
-					this.canProceed = [true,false,false];
+					this.canProceed = [true, false, false];
 					this.ownerImage.input!.enabled = true;
 				} else {
-					this.shopSpeech.setAlpha(1-(this.tutorialTimer/300));
+					this.shopSpeech.setAlpha(1 - this.tutorialTimer / 300);
 				}
 			}
 		}
 	}
 
-	proceedShopTutorial(){
-		if(this.shopOpenCheck || (!this.canProceed)) {
+	proceedShopTutorial() {
+		if (this.shopOpenCheck || !this.canProceed) {
 			return;
 		}
 		this.shopTutorialIndex++;
-		if(this.shopTutorialIndex < this.shopTutorialText.length) {
-			this.canProceed=[false,false,false];
-			this.tutorialTimer=300;
+		if (this.shopTutorialIndex < this.shopTutorialText.length) {
+			this.canProceed = [false, false, false];
+			this.tutorialTimer = 300;
 			this.shopSpeech.setAlpha(0);
 			this.shopText.setText(this.shopTutorialText[this.shopTutorialIndex]);
 			this.ownerImage.setFrame(this.shopTutorialFrames[this.shopTutorialIndex]);
@@ -1244,29 +1256,29 @@ export class GameScene extends BaseScene {
 		}
 	}
 
-	completeShopTutorial(){
-		this.canProceed=[false,false,false];
+	completeShopTutorial() {
+		this.canProceed = [false, false, false];
 		this.ownerImage.input!.enabled = false;
 		this.viewedShopTutorial = true;
-		this.sound.play("meme_explosion_sound");
+		this.sound.play("meme_explosion_sound", { volume: 0.4 });
 		this.dinonugget = 300;
 		this.shopOwnerState = 2;
 		this.resumeInvButton();
 	}
 
-	pauseAllClickables(){
+	pauseAllClickables() {
 		this.stations.forEach((s) => s.pauseClickable());
 		this.customers.forEach((c) => c.pauseClickable());
 		this.employees.forEach((e) => e.pauseClickable());
 	}
 
-	resumeAllClickables(){
+	resumeAllClickables() {
 		this.stations.forEach((s) => s.resumeClickable());
 		this.customers.forEach((c) => c.resumeClickable());
 		this.employees.forEach((e) => e.resumeClickable());
 	}
 
-	getAmountOwned(id: number){
+	getAmountOwned(id: number) {
 		return this.inventory.itemList[id].quant;
 	}
 
