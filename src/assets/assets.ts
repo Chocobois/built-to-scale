@@ -24,9 +24,18 @@ const images: Image[] = [
 	image('characters/workerWalkDown1', 'workerWalk1'),
 	image('characters/workerWalkDown2', 'workerWalk2'),
 	image('characters/workerWalkDown3', 'workerWalk3'),
-	// WORKER WORKING ANIMATION
 	image('characters/workerWorking', 'workerWork1'),
 	image('characters/workerWorking2', 'workerWork2'),
+
+	// ALT WORKER SKINS
+	// Skin 1
+	image('characters/workerAlt1', 'workerAlt1'),
+	image('characters/workerAlt1WalkDown1', 'workerAlt1Walk1'),
+	image('characters/workerAlt1WalkDown2', 'workerAlt1Walk2'),
+	image('characters/workerAlt1WalkDown3', 'workerAlt1Walk3'),
+	image('characters/workerAlt1Working', 'workerAlt1Work1'),
+	image('characters/workerAlt1Working2', 'workerAlt1Work2'),
+
 	// Small size customers
 	image('characters/smallCWalk1', 'small_customer_walk1'),
 	image('characters/smallCWalk2', 'small_customer_walk2'),
