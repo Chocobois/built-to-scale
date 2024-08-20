@@ -153,6 +153,9 @@ const images: Image[] = [
 	image('ui/sad', 'sad'),
 	image('ui/timer', 'timer'),
 	image('ui/plus', 'plus'),
+	image('ui/wax', 'wax'),
+	image('ui/nail', 'nail'),
+	image('ui/bath', 'bath'),
 
 	// Titlescreen
 	image('titlescreen/background', 'title_background'),
