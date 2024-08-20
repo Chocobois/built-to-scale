@@ -53,6 +53,8 @@ export class GameScene extends BaseScene {
 	private invButton: ToggleButton;
 	private iHandler: ItemHandler;
 	public activeItem: ItemButton;
+	
+	public tArray: number[];
 
 	private shopClicker: Button;
 	private ownerImage: Phaser.GameObjects.Sprite;
@@ -201,14 +203,14 @@ export class GameScene extends BaseScene {
 			this,
 			-650,
 			0,
-			[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+			[99, 5, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]
 		);
 
 		this.shopinventory = new ShopInventory(
 			this,
 			-650,
 			0,
-			[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+			[99, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1]
 		);
 		this.shopinventory.setDepth(2500);
 
@@ -314,7 +316,7 @@ export class GameScene extends BaseScene {
 		this.setState(GameState.Shopping);
 		// this.startDay();
 		// this.intermission.fadeToGame(); // Comment this out to see cutscenes
-
+		this.tArray = [];
 		this.pauseInvButton();
 	}
 
@@ -482,6 +484,10 @@ export class GameScene extends BaseScene {
 				this.beginShopTutorial(0);
 				return;
 			}
+		} else {
+			if(this.shopinventory.isOpen){
+				this.toggleShop();
+			}
 		}
 		this.setState(GameState.Day);
 		this.day += 1;
@@ -572,9 +578,21 @@ export class GameScene extends BaseScene {
 
 		this.stations.forEach((s) => {
 			if (s.hasBeenPurchased) {
-				if (s.stationTier >= 1) this.customerSpawnPool.push(CustomerId.Small);
-				if (s.stationTier >= 2) this.customerSpawnPool.push(CustomerId.Medium);
-				if (s.stationTier >= 3) this.customerSpawnPool.push(CustomerId.Large);
+				if (s.stationTier >= 1) {
+					this.customerSpawnPool.push(CustomerId.SmallRed);
+					this.customerSpawnPool.push(CustomerId.SmallAqua);
+					this.customerSpawnPool.push(CustomerId.SmallGreen);
+				}
+				if (s.stationTier >= 2) {
+					this.customerSpawnPool.push(CustomerId.MediumRed);
+					this.customerSpawnPool.push(CustomerId.MediumAqua);
+					this.customerSpawnPool.push(CustomerId.MediumGreen);
+				}
+				if (s.stationTier >= 3) {
+					this.customerSpawnPool.push(CustomerId.LargeRed);
+					this.customerSpawnPool.push(CustomerId.LargeAqua);
+					this.customerSpawnPool.push(CustomerId.LargeGreen);
+				}
 			}
 		});
 
@@ -671,6 +689,8 @@ export class GameScene extends BaseScene {
 	addCustomer(id: CustomerId) {
 		const customer = new Customer(this, 0, 0, id, this.board.size);
 		this.customers.push(customer);
+
+
 
 		// Place in available waiting seat
 		const seat = this.getAvailableWaitingSeat(id);
@@ -1332,5 +1352,19 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setDepth(s.y / 50 + 0));
 		this.employees.forEach((e) => e.setDepth(e.y / 50 + 1));
 		this.customers.forEach((c) => c.setDepth(c.y / 50 + (c.dragged ? 100 : 1)));
+	}
+
+	refreshStationIDArray(){
+		this.tArray = [];
+		this.stations.forEach((st) => {
+			if(st.stationType == StationType.HornAndNails) {
+				this.tArray.push(0);
+			} else if (st.stationType == StationType.ScalePolish) {
+				this.tArray.push(1);
+			} else if (st.stationType == StationType.GoldBath) {
+				this.tArray.push(2);
+			}
+		} 
+		);
 	}
 }

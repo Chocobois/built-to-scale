@@ -34,7 +34,6 @@ export class Customer extends Button {
 	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
 	public hasEnteredShop: boolean = false;
-
 	public hasCompleted: boolean = false;
 
 	// Happiness variables
@@ -69,6 +68,7 @@ export class Customer extends Button {
 	private thoughtBubble: ThoughtBubble;
 	private angryImage: Phaser.GameObjects.Sprite;
 	private patienceTimer: Timer;
+	private spriteList: string[];
 
 	public itemList: number[];
 	public sprList: Phaser.GameObjects.Sprite[];
@@ -113,7 +113,7 @@ export class Customer extends Button {
 		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
 		this.add(this.spriteCont);
 
-		this.sprite = this.scene.add.sprite(0, 0, this.spriteKeys.sit);
+		this.sprite = this.scene.add.sprite(0, 0, (this.spriteKeys.sit));
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
@@ -189,7 +189,7 @@ export class Customer extends Button {
 		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
 
 		this.sprite.setTint(
-			interpolateColor(0xff0000, this.customColor, 2 * this.patience)
+			interpolateColor(0xff0000, 0xFFFFFF, 2 * this.patience)
 		);
 
 		if (this.isWaiting) {
@@ -677,6 +677,14 @@ export class Customer extends Button {
 		} else {
 			this.sprite.input!.enabled = true;
 		}
+	}
+
+	getColorTags(){
+
+	}
+
+	getColorAntiTags(){
+
 	}
 
 	/* Getters */
