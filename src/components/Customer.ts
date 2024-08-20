@@ -32,6 +32,7 @@ export class Customer extends Button {
 	// Requests
 	public itinerary: StationType[]; // List of stations to visit
 	public requestedStation: StationType | null;
+	public hasEnteredShop: boolean = false;
 
 	public hasCompleted: boolean = false;
 
@@ -62,6 +63,7 @@ export class Customer extends Button {
 	private cellSize: number;
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
+	// private graphics: Phaser.GameObjects.Graphics;
 	private thoughtBubble: ThoughtBubble;
 	private angryImage: Phaser.GameObjects.Sprite;
 	private patienceTimer: Timer;
@@ -111,6 +113,8 @@ export class Customer extends Button {
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
+
+		// this.graphics = this.scene.add.graphics();
 
 		const s = this.spriteSize;
 		this.angryImage = this.scene.add.sprite(-0.2 * s, -0.5 * s, "anger");
@@ -257,7 +261,7 @@ export class Customer extends Button {
 	onDragStart(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
 		this.emit("pickup");
 		this.dragged = true;
-		this.sprite.setTexture(this.spriteKeys.walk1);
+		this.sprite.setTexture(this.spriteKeys.sit);
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -302,9 +306,56 @@ export class Customer extends Button {
 		this.testTimer.unlockTimer();
 	}
 
-	snapTo(x: number, y: number) {
+	snapTo(x: number, y: number, instant: boolean = false) {
 		this.dragX = x;
 		this.dragY = y;
+
+		if (instant) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	walk(path: Phaser.Curves.Path) {
+		// Debug draw path
+		// this.graphics.clear();
+		// this.graphics.lineStyle(8, 0xff0000);
+		// path.draw(this.graphics);
+		// this.graphics.fillStyle(0xff0000);
+		// this.graphics.fillCircle(path.getPoint(0).x, path.getPoint(0).y, 12);
+		// this.graphics.fillCircle(path.getPoint(1).x, path.getPoint(1).y, 12);
+
+		const distance = path.getLength();
+
+		// Add tween to move from current position to the target
+		this.scene.tweens.addCounter({
+			duration: (10 * distance) / this.walkSpeed,
+			ease: "Linear",
+
+			onUpdate: ({ progress }) => {
+				const pos = path.getPoint(progress);
+				this.dragX = pos.x;
+				this.dragY = pos.y;
+
+				const count = this.spriteKeys.walk.length;
+				const index = Math.floor((progress * distance) / 50) % count;
+				const frame = this.spriteKeys.walk[index];
+				this.sprite.setTexture(frame);
+				this.sprite.flipX = this.dragX < this.x + 0.1;
+			},
+
+			onComplete: () => {
+				const pos = path.getPoint(1);
+				this.dragX = pos.x;
+				this.dragY = pos.y;
+
+				// this.graphics.clear();
+				this.sprite.setTexture(this.spriteKeys.sit);
+				this.sprite.flipX = false;
+				this.hasEnteredShop = true;
+				this.emit("seated");
+			},
+		});
 	}
 
 	setStation(station: Station | null) {
@@ -578,7 +629,11 @@ export class Customer extends Button {
 	/* Getters */
 
 	get isWaiting(): boolean {
-		return this.currentStation !== null && this.currentEmployee === null;
+		return (
+			this.hasEnteredShop &&
+			this.currentStation !== null &&
+			this.currentEmployee === null
+		);
 	}
 
 	get spriteKeys() {

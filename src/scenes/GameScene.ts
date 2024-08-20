@@ -533,8 +533,7 @@ export class GameScene extends BaseScene {
 
 	// Add new customer
 	addCustomer(id: CustomerId) {
-		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(this, coord.x, coord.y, id, this.board.size);
+		const customer = new Customer(this, 0, 0, id, this.board.size);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
@@ -542,13 +541,39 @@ export class GameScene extends BaseScene {
 		if (seat) {
 			seat.setCustomer(customer);
 			customer.setStation(seat);
-			customer.snapTo(seat.x, seat.y);
+			// customer.snapTo(seat.x, seat.y);
+
+			// Pathfinding to seat
+			const startY = LevelData[this.level].height - 3;
+			const startCoord = this.board.gridToCoord(0, startY);
+			const start = this.board.coordToNav(startCoord.x, startCoord.y);
+			const goal = this.board.coordToNav(seat.x, seat.y);
+
+			// Starting location outside of screen
+			customer.snapTo(startCoord.x - 2 * this.board.size, startCoord.y, true);
+
+			const navPath = this.navmesh.findPath(start, goal);
+			if (navPath) {
+				const points = navPath.map((pos) =>
+					this.board.navGridToCoord(pos.x, pos.y)
+				);
+				const path = new Phaser.Curves.Path();
+				path.moveTo(customer.x, customer.y);
+				points.forEach((point) => path.lineTo(point.x, point.y));
+
+				customer.walk(path);
+			} else {
+				// Snap to station if pathfinding fails
+				console.warn("No path found", start, "->", goal);
+			}
 		} else {
 			console.error("Whoops");
 		}
 
-		// Set list of activities for customer
-		this.setCustomerItinerary(customer);
+		// Customer getting seated
+		customer.on("seated", () => {
+			this.setCustomerItinerary(customer);
+		});
 
 		// Picking up a customer
 		customer.on("pickup", () => {

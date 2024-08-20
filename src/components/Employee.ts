@@ -17,7 +17,7 @@ export class Employee extends Button {
 	private cellSize: number;
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
-	private graphics: Phaser.GameObjects.Graphics;
+	// private graphics: Phaser.GameObjects.Graphics;
 
 	public startX: number;
 	public startY: number;
@@ -52,7 +52,7 @@ export class Employee extends Button {
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
 
-		this.graphics = this.scene.add.graphics();
+		// this.graphics = this.scene.add.graphics();
 
 		// Make employee clickable during shopping
 		this.bindInteractive(this.sprite);
@@ -82,12 +82,12 @@ export class Employee extends Button {
 
 	walk(path: Phaser.Curves.Path) {
 		// Debug draw path
-		this.graphics.clear();
-		this.graphics.lineStyle(8, 0xff0000);
-		path.draw(this.graphics);
-		this.graphics.fillStyle(0xff0000);
-		this.graphics.fillCircle(path.getPoint(0).x, path.getPoint(0).y, 12);
-		this.graphics.fillCircle(path.getPoint(1).x, path.getPoint(1).y, 12);
+		// this.graphics.clear();
+		// this.graphics.lineStyle(8, 0xff0000);
+		// path.draw(this.graphics);
+		// this.graphics.fillStyle(0xff0000);
+		// this.graphics.fillCircle(path.getPoint(0).x, path.getPoint(0).y, 12);
+		// this.graphics.fillCircle(path.getPoint(1).x, path.getPoint(1).y, 12);
 
 		const distance = path.getLength();
 
@@ -110,7 +110,7 @@ export class Employee extends Button {
 				const pos = path.getPoint(1);
 				this.setPosition(pos.x, pos.y);
 
-				this.graphics.clear();
+				// this.graphics.clear();
 				this.sprite.setTexture(this.spriteKeys.idle);
 				this.emit("walkend");
 			},

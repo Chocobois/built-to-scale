@@ -17,6 +17,15 @@ const stationMask = [
 	[_, X, X, X, X, X, _],
 	[_, X, X, X, X, X, _],
 ];
+const seatMask = [
+	[X, X, X, X, X, X, X],
+	[X, X, X, X, X, X, X],
+	[X, X, X, X, X, X, X],
+	[X, X, X, _, _, _, _],
+	[X, X, X, X, X, X, X],
+	[X, X, X, X, X, X, X],
+	[X, X, X, X, X, X, X],
+];
 
 function stationToGrid(board: Board, station: Station) {
 	const { x, y } = board.coordToGrid(station.x, station.y);
@@ -60,6 +69,15 @@ export function GenerateNavMesh(board: Board, level: Level) {
 								x < level.width - 1
 							) {
 								nav[y * subdivision + sy][x * subdivision + sx] = true;
+							}
+						}
+					}
+					break;
+				case BlockType.WaitingSeat:
+					for (let sy = 0; sy < seatMask.length; sy++) {
+						for (let sx = 0; sx < seatMask.length; sx++) {
+							if (!seatMask[sy][sx]) {
+								nav[y * subdivision + sy][x * subdivision + sx] = false;
 							}
 						}
 					}
