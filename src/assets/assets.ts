@@ -36,6 +36,30 @@ const images: Image[] = [
 	image('characters/workerAlt1Working', 'workerAlt1Work1'),
 	image('characters/workerAlt1Working2', 'workerAlt1Work2'),
 
+	// Skin 2
+	image('characters/workerAlt2', 'workerAlt2'),
+	image('characters/workerAlt2WalkDown1', 'workerAlt2Walk1'),
+	image('characters/workerAlt2WalkDown2', 'workerAlt2Walk2'),
+	image('characters/workerAlt2WalkDown3', 'workerAlt2Walk3'),
+	image('characters/workerAlt2Working', 'workerAlt2Work1'),
+	image('characters/workerAlt2Working2', 'workerAlt2Work2'),
+
+	// Skin 3
+	image('characters/workerAlt3', 'workerAlt3'),
+	image('characters/workerAlt3WalkDown1', 'workerAlt3Walk1'),
+	image('characters/workerAlt3WalkDown2', 'workerAlt3Walk2'),
+	image('characters/workerAlt3WalkDown3', 'workerAlt3Walk3'),
+	image('characters/workerAlt3Working', 'workerAlt3Work1'),
+	image('characters/workerAlt3Working2', 'workerAlt3Work2'),
+	
+	// Skin 4
+	image('characters/workerAlt4', 'workerAlt4'),
+	image('characters/workerAlt4WalkDown1', 'workerAlt4Walk1'),
+	image('characters/workerAlt4WalkDown2', 'workerAlt4Walk2'),
+	image('characters/workerAlt4WalkDown3', 'workerAlt4Walk3'),
+	image('characters/workerAlt4Working', 'workerAlt4Work1'),
+	image('characters/workerAlt4Working2', 'workerAlt4Work2'),
+
 	// Small size customers
 	image('characters/smallCWalk1', 'small_customer_walk1'),
 	image('characters/smallCWalk2', 'small_customer_walk2'),
