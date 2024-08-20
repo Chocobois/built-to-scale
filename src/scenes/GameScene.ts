@@ -362,6 +362,13 @@ export class GameScene extends BaseScene {
 			this.sortDepth();
 		}
 
+		// Highlight button for tutorial
+		if (this.shopTutorialIndex == 0) {
+			this.invButton.setScale(0.5 + 0.08 * Math.sin(time / 100));
+		} else {
+			this.invButton.setScale(0.5);
+		}
+
 		this.updateMusicState();
 	}
 
@@ -541,9 +548,15 @@ export class GameScene extends BaseScene {
 	endDay() {
 		this.customerSpawnTimer.destroy();
 
+		// Return employees to their starting positions
+		this.employees.forEach((e) => {
+			const path = new Phaser.Curves.Path();
+			path.moveTo(e.x, e.y);
+			path.lineTo(e.startX, e.startY);
+			e.walk(path);
+		});
+
 		//this.stations.forEach((s) => s.returnItems());
-		// Fix this later
-		// this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.resumeInvButton();
 		this.cycleCount++;
 		this.restockShop();

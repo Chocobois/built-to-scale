@@ -3,14 +3,15 @@ import { Music } from "@/utils/Music";
 
 import { title, version } from "@/version.json";
 
-const creditsLeft = `@Golenchu
+const creditsLeft = `Golen
 Lumie
-@LuxxArt
-@ArcticFqx
-@MatoCookies
-@KonixKun
+Luxx
+ArcticFqx
+Mato
+Kiso
 Soulsong
 Nemi
+Dreeda
 Frassy`;
 
 const creditsRight = `code
@@ -21,7 +22,8 @@ music
 art
 art
 art
-ideas`;
+code
+QA`;
 
 export class TitleScene extends BaseScene {
 	public background: Phaser.GameObjects.Image;
@@ -127,9 +129,9 @@ export class TitleScene extends BaseScene {
 		this.credits.setAlpha(0);
 
 		let credits1 = this.addText({
-			x: 0.75 * this.W,
+			x: 0.76 * this.W,
 			y: 0,
-			size: 35,
+			size: 40,
 			color: "#c2185b",
 			text: creditsLeft,
 		});
@@ -141,7 +143,7 @@ export class TitleScene extends BaseScene {
 		let credits2 = this.addText({
 			x: this.W,
 			y: 0,
-			size: 35,
+			size: 40,
 			color: "#c2185b",
 			text: creditsRight,
 		});
