@@ -35,6 +35,7 @@ export class PatienceTimer extends Phaser.GameObjects.Container {
         this.sparks = new Phaser.GameObjects.Sprite(this.scene,0,64,"defaultspark");
         this.sparks.setTint(0x00FF00);
         this.sparks.setScale(0.5);
+        this.anger.setVisible(false);
         
         this.add(this.bar);
         this.add(this.sparks);

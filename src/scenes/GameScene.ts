@@ -679,29 +679,7 @@ export class GameScene extends BaseScene {
 			customer.setStation(seat);
 			// customer.snapTo(seat.x, seat.y);
 
-			// Pathfinding to seat
-			const startY = LevelData[this.level].height - 3;
-			const startCoord = this.board.gridToCoord(0, startY);
-			const start = this.board.coordToNav(startCoord.x, startCoord.y);
-			const goal = this.board.coordToNav(seat.x, seat.y);
-
-			// Starting location outside of screen
-			customer.snapTo(startCoord.x - 2 * this.board.size, startCoord.y, true);
-
-			const navPath = this.navmesh.findPath(start, goal);
-			if (navPath) {
-				const points = navPath.map((pos) =>
-					this.board.navGridToCoord(pos.x, pos.y)
-				);
-				const path = new Phaser.Curves.Path();
-				path.moveTo(customer.x, customer.y);
-				points.forEach((point) => path.lineTo(point.x, point.y));
-
-				customer.walk(path);
-			} else {
-				// Snap to station if pathfinding fails
-				console.warn("No path found", start, "->", goal);
-			}
+			this.moveCustomerToSeat(customer, seat);
 		} else {
 			console.error("Whoops");
 		}
@@ -905,6 +883,58 @@ export class GameScene extends BaseScene {
 			}
 		} else {
 			this.sound.play("squish1", { volume: 0.6 });
+		}
+	}
+
+	moveCustomerToSeat(customer: Customer, seat: Station) {
+		// Pathfinding to seat
+		const startY = LevelData[this.level].height - 3;
+		const startCoord = this.board.gridToCoord(0, startY);
+		const start = this.board.coordToNav(startCoord.x, startCoord.y);
+		const goal = this.board.coordToNav(seat.x, seat.y);
+
+		// Starting location outside of screen
+		customer.snapTo(startCoord.x - 2 * this.board.size, startCoord.y, true);
+
+		const navPath = this.navmesh.findPath(start, goal);
+		if (navPath) {
+			const points = navPath.map((pos) =>
+				this.board.navGridToCoord(pos.x, pos.y)
+			);
+			const path = new Phaser.Curves.Path();
+			path.moveTo(customer.x, customer.y);
+			points.forEach((point) => path.lineTo(point.x, point.y));
+
+			customer.walk(path);
+		} else {
+			const path = new Phaser.Curves.Path();
+			path.moveTo(customer.x, customer.y);
+			path.lineTo(seat.x, seat.y);
+		}
+	}
+
+	moveCustomerToEntrance(customer: Customer) {
+		// Pathfinding to left entrance
+		const doorY = LevelData[this.level].height - 3;
+		const doorCoord = this.board.gridToCoord(0, doorY);
+		const goal = this.board.coordToNav(doorCoord.x, doorCoord.y);
+		const start = this.board.coordToNav(customer.x, customer.y);
+
+		const navPath = this.navmesh.findPath(start, goal);
+		if (navPath) {
+			const points = navPath.map((pos) =>
+				this.board.navGridToCoord(pos.x, pos.y)
+			);
+			const path = new Phaser.Curves.Path();
+			path.moveTo(customer.x, customer.y);
+			points.forEach((point) => path.lineTo(point.x, point.y));
+			path.lineTo(-this.board.size, doorCoord.y);
+
+			customer.walk(path);
+		} else {
+			const path = new Phaser.Curves.Path();
+			path.moveTo(customer.x, customer.y);
+			path.lineTo(doorCoord.x, doorCoord.y);
 		}
 	}
 
