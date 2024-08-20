@@ -54,5 +54,6 @@ export class TextButton extends Button {
 	setEnabled(enabled: boolean) {
 		this.setAlpha(enabled ? 1 : 0.5);
 		this.border.input!.enabled = enabled;
+		this.background.setColor(enabled ? Color.Green700 : Color.Gray500);
 	}
 }

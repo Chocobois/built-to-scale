@@ -55,3 +55,8 @@ export function colorToString(color: number): string {
 export function colorToNumber(color: string): number {
 	return Phaser.Display.Color.HexStringToColor(color).color;
 }
+
+// Add commas to number
+export function numberWithCommas(x: number) {
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

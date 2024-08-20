@@ -5,6 +5,7 @@ import { Station } from "./Station";
 import { Employee } from "./Employee";
 import { StationData } from "./StationData";
 import { EmployeeData } from "./EmployeeData";
+import { numberWithCommas } from "@/utils/functions";
 
 export class UpgradeOverlay extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -132,7 +133,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		const canAfford = station.upgradeCost <= this.scene.money;
 		this.buyButton.setEnabled(canAfford);
 		this.buyButton.setVisible(!!station.upgradeTo || !station.hasBeenPurchased);
-		this.buyButton.setText(`$${station.upgradeCost}`);
+		this.buyButton.setText(`$${numberWithCommas(station.upgradeCost)}`);
 
 		this.open();
 	}
@@ -180,7 +181,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.buyButton.setVisible(
 			!!employee.upgradeTo || !employee.hasBeenPurchased
 		);
-		this.buyButton.setText(`$${employee.upgradeCost}`);
+		this.buyButton.setText(`$${numberWithCommas(employee.upgradeCost)}`);
 
 		this.open();
 	}
