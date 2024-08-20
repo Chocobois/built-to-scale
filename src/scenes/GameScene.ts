@@ -362,6 +362,13 @@ export class GameScene extends BaseScene {
 			this.sortDepth();
 		}
 
+		// Highlight button for tutorial
+		if (this.shopTutorialIndex == 0) {
+			this.invButton.setScale(0.5 + 0.08 * Math.sin(time / 100));
+		} else {
+			this.invButton.setScale(0.5);
+		}
+
 		this.updateMusicState();
 	}
 
