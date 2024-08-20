@@ -41,13 +41,13 @@ export class ThoughtBubble extends Phaser.GameObjects.Container {
 		if (type !== null) {
 			switch(StationTypeData[type].color) {
 				case 0xff0000: {
-					this.image.setTexture("nail_1");
+					this.image.setTexture("nail");
 					break;
 				} case 0xffff00: {
-					this.image.setTexture("wax_1");
+					this.image.setTexture("wax");
 					break;
 				} case 0x0000ff: {
-					this.image.setTexture("bath_1");
+					this.image.setTexture("bath");
 					break;
 				}
 			}
