@@ -185,6 +185,8 @@ const audios: Audio[] = [
 	sound('bite', 'bite', 0.5),
 	sound('doink', 'doink', 0.5),
 	sound('slurp', 'slurp', 0.5),
+	sound('pickupcustomer', 'pickup', 0.5),
+	sound('dropcustomer', 'drop', 0.5),
 	sound('tree/meme_explosion_sound', 'meme_explosion_sound', 0.5),
 ];
 

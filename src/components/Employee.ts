@@ -80,6 +80,11 @@ export class Employee extends Button {
 		}
 
 		this.currentCustomer = customer;
+		if(this.currentCustomer){
+			if(this.currentCustomer.currentStation) {
+				this.currentCustomer.currentStation.taskHaste*=this.workSpeed;
+			}
+		}
 	}
 
 	walk(path: Phaser.Curves.Path) {
