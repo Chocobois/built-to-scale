@@ -2,8 +2,8 @@ const overlap = 2;
 
 const Data = {
 	m_main_menu: {
-		offset: 0.424,
-		bpm: 60,
+		offset: 1 / (170 / 60),
+		bpm: 170,
 	},
 	m_first: {
 		offset: 0,
