@@ -175,6 +175,7 @@ const images: Image[] = [
 	image('temp/h4', 'h4'),
 	image('temp/h5', 'h5'),
 	image('temp/h6', 'h6'),
+	image('temp/blanksq', 'blanksq'),
 
 ];
 
