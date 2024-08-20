@@ -34,9 +34,13 @@ const images: Image[] = [
 	image('characters/smallCSit1', 'small_customer_sit1'),
 	// Medium size customers
 	image('characters/medCWalk1', 'medium_customer_walk1'),
+	image('characters/medCWalk2', 'medium_customer_walk2'),
+	image('characters/medCWalk3', 'medium_customer_walk3'),
 	image('characters/medCSit1', 'medium_customer_sit1'),
 	// Large size customers
 	image('characters/largeCWalk1', 'large_customer_walk1'),
+	image('characters/largeCWalk2', 'large_customer_walk2'),
+	image('characters/largeCWalk3', 'large_customer_walk3'),
 	image('characters/largeCSit1', 'large_customer_sit1'),
 	// Sprite
 	image('characters/moneybagSprite', 'moneybag_sprite'),
