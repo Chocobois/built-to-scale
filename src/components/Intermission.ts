@@ -23,7 +23,7 @@ export class Intermission extends Phaser.GameObjects.Container {
 
 	private rect: Phaser.GameObjects.Rectangle;
 	private subtitles: Phaser.GameObjects.Text;
-	private queuedLines: {text: string; tint?: number}[];
+	private queuedLines: { text: string; tint?: number }[];
 
 	private button: Button;
 
@@ -112,37 +112,40 @@ export class Intermission extends Phaser.GameObjects.Container {
 			case Mode.IntroCutscene1:
 				this.cutscene.setTexture("cutscene_dummy1");
 				this.queuedLines = [
-					{text:"Somewhere in Chocoland"},
-					{text:"What a nice day for a walk.", tint:0xFFF69B},
-					{text:"Nothing can go wrong...", tint:0xFFB8AA},
+					{ text: "Somewhere in Chocoland" },
+					{ text: "What a nice day for a walk.", tint: 0xfff69b },
+					{ text: "Nothing can go wrong...", tint: 0xffb8aa },
 				];
 				break;
 
 			case Mode.IntroCutscene2:
 				this.cutscene.setTexture("cutscene_dummy2");
 				this.queuedLines = [
-					{text:"Oh no!", tint:0xFFB8AA},
-					{text:"Not the mud...!", tint:0xFFB8AA},
+					{ text: "Oh no!", tint: 0xffb8aa },
+					{ text: "Not the mud...!", tint: 0xffb8aa },
 				];
 				break;
 
 			case Mode.IntroCutscene3:
 				this.cutscene.setTexture("cutscene_dummy3");
 				this.queuedLines = [
-					{text:"Are you OK?", tint:0xFFF69B},
-					{text:"My scales are all dirty.", tint:0xFFB8AA},
-					{text:"Let's get you cleaned up.", tint:0xFFF69B},
-					{text:"(*gasp* A customer!)", tint:0xFFD34F},
+					{ text: "Are you OK?", tint: 0xfff69b },
+					{ text: "My scales are all dirty.", tint: 0xffb8aa },
+					{ text: "Let's get you cleaned up.", tint: 0xfff69b },
+					{ text: "(*gasp* A customer!)", tint: 0xffd34f },
 				];
 				break;
 
 			case Mode.NextLevelCutscene:
 				this.cutscene.setTexture("cutscene_dummy4");
-				this.queuedLines = [{text:"Congratulations!"}, {text:"Wow! A new location."}];
+				this.queuedLines = [
+					{ text: "Wow! A new location." },
+					{ text: "Congratulations!" },
+				];
 				break;
 
 			case Mode.TheEnd:
-				this.queuedLines = [{text:"The End"}];
+				this.queuedLines = [{ text: "The End" }];
 		}
 
 		// Show or hide elements
