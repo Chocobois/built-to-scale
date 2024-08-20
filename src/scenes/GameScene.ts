@@ -758,7 +758,11 @@ export class GameScene extends BaseScene {
 			customer.destroy();
 
 			// Open overlay if no more customers
-			if (this.customers.length === 0) {
+			if (
+				this.state == GameState.Day &&
+				this.timeOfDay >= 100 &&
+				this.customers.length === 0
+			) {
 				this.endDay();
 			}
 		});
@@ -899,7 +903,7 @@ export class GameScene extends BaseScene {
 				closestEmployee.walk(path);
 			}
 		} else {
-			this.sound.play("sqk", { volume: 0.6 });
+			this.sound.play("squish1", { volume: 0.6 });
 		}
 	}
 

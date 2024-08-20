@@ -176,6 +176,7 @@ export class Customer extends Button {
 		this.sprList = [];
 
 		this.bindInteractive(this.sprite, true);
+		this.sprite.input!.enabled = false;
 	}
 
 	update(time: number, delta: number) {
@@ -385,6 +386,7 @@ export class Customer extends Button {
 				this.sprite.setTexture(this.spriteKeys.sit);
 				this.sprite.flipX = false;
 				this.hasEnteredShop = true;
+				this.sprite.input!.enabled = true;
 				this.scene.sound.play("letgo1", { volume: 0.2 });
 				this.emit("seated");
 			},
