@@ -549,12 +549,12 @@ export class GameScene extends BaseScene {
 		this.customerSpawnTimer.destroy();
 
 		// Return employees to their starting positions
-		this.employees.forEach((e) => {
-			const path = new Phaser.Curves.Path();
-			path.moveTo(e.x, e.y);
-			path.lineTo(e.startX, e.startY);
-			e.walk(path);
-		});
+		// this.employees.forEach((e) => {
+		// 	const path = new Phaser.Curves.Path();
+		// 	path.moveTo(e.x, e.y);
+		// 	path.lineTo(e.startX, e.startY);
+		// 	e.walk(path);
+		// });
 
 		//this.stations.forEach((s) => s.returnItems());
 		this.resumeInvButton();
