@@ -176,6 +176,7 @@ export class Customer extends Button {
 		this.sprList = [];
 
 		this.bindInteractive(this.sprite, true);
+		this.sprite.input!.enabled = false;
 	}
 
 	update(time: number, delta: number) {
@@ -234,10 +235,10 @@ export class Customer extends Button {
 						);
 						this.emit("pay", this.moneySpent);
 					} else {
-						this.scene.sound.play("rip", { volume: 0.4 });
+						this.scene.sound.play("rip", { volume: 0.3 });
 					}
 				} else {
-					this.scene.sound.play("rip", { volume: 0.4 });
+					this.scene.sound.play("rip", { volume: 0.3 });
 				}
 				this.leave();
 				this.thoughtBubble.showSymbol("sad");
@@ -268,7 +269,7 @@ export class Customer extends Button {
 			}
 		}
 		if (this.playFail) {
-			this.scene.sound.play("rip", { volume: 0.4 });
+			this.scene.sound.play("rip", { volume: 0.3 });
 			this.playFail = false;
 		}
 	}
@@ -385,6 +386,7 @@ export class Customer extends Button {
 				this.sprite.setTexture(this.spriteKeys.sit);
 				this.sprite.flipX = false;
 				this.hasEnteredShop = true;
+				this.sprite.input!.enabled = true;
 				this.scene.sound.play("letgo1", { volume: 0.2 });
 				this.emit("seated");
 			},
@@ -420,7 +422,7 @@ export class Customer extends Button {
 			this.untoggleTimer();
 			this.lockTimer();
 		}
-		this.thoughtBubble.showSymbol(Phaser.Math.RND.pick(["happy", "love"]));
+		this.thoughtBubble.showSymbol("love");
 	}
 
 	setAction(temp: boolean) {
@@ -511,6 +513,8 @@ export class Customer extends Button {
 				this.emit("offscreen");
 			},
 		});
+
+		// this.scene.moveCustomerToEntrance(this);
 	}
 	recheckHappiness() {
 		if (this.hasCompleted) {

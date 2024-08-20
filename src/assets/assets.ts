@@ -225,6 +225,8 @@ const audios: Audio[] = [
 	sound('goldbath', 'goldbath', 0.5),
 	sound('fail', 'rip', 0.5),
 	sound('sqk', 'sqk', 0.5),
+	sound('squish1', 'squish1', 0.5),
+	sound('squish2', 'squish2', 0.5),
 	sound('endday', 'endday', 0.5),
 	sound('chomp', 'chomp', 0.5),
 	sound('bite', 'bite', 0.5),
