@@ -1,6 +1,7 @@
 import { GameScene } from "@/scenes/GameScene";
 import { RoundRectangle } from "./elements/RoundRectangle";
 import { TextButton } from "./TextButton";
+import { Color } from "@/utils/colors";
 
 export class SummaryOverlay extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -8,7 +9,8 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 	private background: Phaser.GameObjects.Rectangle;
 	private panel: RoundRectangle;
 	private dayText: Phaser.GameObjects.Text;
-	private moneyText: Phaser.GameObjects.Text;
+	private statsLeftText: Phaser.GameObjects.Text;
+	private statsRightText: Phaser.GameObjects.Text;
 	private okButton: TextButton;
 
 	constructor(scene: GameScene) {
@@ -35,30 +37,39 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 		});
 		this.add(this.panel);
 
-		const panelWidth = 300;
-		const panelHeight = 400;
-
 		this.dayText = this.scene.addText({
 			x: 0,
 			y: -300,
-			size: 60,
+			size: 90,
 			color: "#FFFFFF",
-			text: "Day 1",
 		});
 		this.dayText.setOrigin(0.5);
-		this.dayText.setStroke("black", 4);
+		this.dayText.setStroke("black", 8);
 		this.panel.add(this.dayText);
 
-		this.moneyText = this.scene.addText({
-			x: 0,
-			y: -100,
-			size: 40,
+		let rect = this.scene.add.rectangle(0, 0, 2, 380, 0, 0.5);
+		this.panel.add(rect);
+
+		this.statsLeftText = this.scene.addText({
+			x: -30,
+			y: 0,
+			size: 60,
 			color: "#FFFFFF",
-			text: "Money earned: $123\nCustomers served: 12\nAngry customers: 1",
 		});
-		this.moneyText.setStroke("black", 4);
-		this.moneyText.setOrigin(0.5);
-		this.panel.add(this.moneyText);
+		this.statsLeftText.setStroke("black", 6);
+		this.statsLeftText.setOrigin(1, 0.5);
+		this.statsLeftText.setAlign("right");
+		this.panel.add(this.statsLeftText);
+
+		this.statsRightText = this.scene.addText({
+			x: 30,
+			y: 0,
+			size: 60,
+			color: "#FFFFFF",
+		});
+		this.statsRightText.setStroke("black", 6);
+		this.statsRightText.setOrigin(0, 0.5);
+		this.panel.add(this.statsRightText);
 
 		this.okButton = new TextButton(scene, 0, 300, 200, 100, "OK");
 		this.panel.add(this.okButton);
@@ -75,6 +86,7 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 		day: number,
 		dailyStats: {
 			money: number;
+			tip: number;
 			happyCustomers: number;
 			angryCustomers: number;
 		}
@@ -87,12 +99,23 @@ export class SummaryOverlay extends Phaser.GameObjects.Container {
 			duration: 200,
 		});
 
-		let text = "";
-		text += `Money earned: $${dailyStats.money}\n`;
-		text += `Customers served: ${dailyStats.happyCustomers}\n`;
-		text += `Angry customers: ${dailyStats.angryCustomers}`;
-		this.moneyText.setText(text);
 		this.dayText.setText(`Day ${day}`);
+
+		let text = "";
+		text += `Earnings\n`;
+		text += `Tips\n`;
+		text += `\n`;
+		text += `Customers\n`;
+		text += `Angered`;
+		this.statsLeftText.setText(text);
+
+		text = "";
+		text += `$${dailyStats.money}\n`;
+		text += `$${dailyStats.tip}\n`;
+		text += `\n`;
+		text += `${dailyStats.happyCustomers}\n`;
+		text += `${dailyStats.angryCustomers}`;
+		this.statsRightText.setText(text);
 
 		this.scene.sound.play("flail", { volume: 0.3 });
 	}

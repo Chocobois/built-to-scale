@@ -120,7 +120,7 @@ export interface EmployeeInterface {
 export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	[EmployeeId.RaccoonGrayTier1]: {
 		type: EmployeeType.RaccoonGray,
-		name: "Raccoon employee",
+		name: "Washbear employee",
 		tier: 1,
 		walkSpeed: 2,
 		workSpeed: 1,
@@ -129,7 +129,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonGrayTier2]: {
 		type: EmployeeType.RaccoonGray,
-		name: "Raccoon employee",
+		name: "Washbear employee",
 		tier: 2,
 		walkSpeed: 3,
 		workSpeed: 1.25,
@@ -138,7 +138,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonGrayTier3]: {
 		type: EmployeeType.RaccoonGray,
-		name: "Raccoon employee",
+		name: "Washbear employee",
 		tier: 3,
 		walkSpeed: 4,
 		workSpeed: 1.5,
@@ -147,7 +147,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 
 	[EmployeeId.RaccoonBrownTier1]: {
 		type: EmployeeType.RaccoonBrown,
-		name: "Raccoon employee",
+		name: "Tanuki employee",
 		tier: 1,
 		walkSpeed: 2.5,
 		workSpeed: 1,
@@ -156,7 +156,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonBrownTier2]: {
 		type: EmployeeType.RaccoonBrown,
-		name: "Raccoon employee",
+		name: "Tanuki employee",
 		tier: 2,
 		walkSpeed: 4,
 		workSpeed: 1.125,
@@ -165,7 +165,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonBrownTier3]: {
 		type: EmployeeType.RaccoonBrown,
-		name: "Raccoon employee",
+		name: "Tanuki employee",
 		tier: 3,
 		walkSpeed: 5.5,
 		workSpeed: 1.25,
@@ -174,7 +174,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 
 	[EmployeeId.RaccoonYellowTier1]: {
 		type: EmployeeType.RaccoonYellow,
-		name: "Raccoon employee",
+		name: "Bunny employee",
 		tier: 1,
 		walkSpeed: 1,
 		workSpeed: 1,
@@ -183,7 +183,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonYellowTier2]: {
 		type: EmployeeType.RaccoonYellow,
-		name: "Raccoon employee",
+		name: "Bunny employee",
 		tier: 2,
 		walkSpeed: 2.5,
 		workSpeed: 1.5,
@@ -192,7 +192,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonYellowTier3]: {
 		type: EmployeeType.RaccoonYellow,
-		name: "Raccoon employee",
+		name: "Bunny employee",
 		tier: 3,
 		walkSpeed: 4,
 		workSpeed: 2,
@@ -201,7 +201,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 
 	[EmployeeId.RaccoonPurpleTier1]: {
 		type: EmployeeType.RaccoonPurple,
-		name: "Raccoon employee",
+		name: "Kobold employee",
 		tier: 1,
 		walkSpeed: 2,
 		workSpeed: 1,
@@ -210,7 +210,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonPurpleTier2]: {
 		type: EmployeeType.RaccoonPurple,
-		name: "Raccoon employee",
+		name: "Kobold employee",
 		tier: 2,
 		walkSpeed: 3.5,
 		workSpeed: 1.5,
@@ -219,7 +219,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonPurpleTier3]: {
 		type: EmployeeType.RaccoonPurple,
-		name: "Raccoon employee",
+		name: "Kobold employee",
 		tier: 3,
 		walkSpeed: 6,
 		workSpeed: 2,
@@ -228,7 +228,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 
 	[EmployeeId.RaccoonGreenTier1]: {
 		type: EmployeeType.RaccoonGreen,
-		name: "Raccoon employee",
+		name: "Cat employee",
 		tier: 4,
 		walkSpeed: 3,
 		workSpeed: 1,
@@ -237,7 +237,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonGreenTier2]: {
 		type: EmployeeType.RaccoonGreen,
-		name: "Raccoon employee",
+		name: "Cat employee",
 		tier: 2,
 		walkSpeed: 6,
 		workSpeed: 2,
@@ -246,7 +246,7 @@ export const EmployeeData: { [key in EmployeeId]: EmployeeInterface } = {
 	},
 	[EmployeeId.RaccoonGreenTier3]: {
 		type: EmployeeType.RaccoonGreen,
-		name: "Raccoon employee",
+		name: "Cat employee",
 		tier: 3,
 		walkSpeed: 9,
 		workSpeed: 3,

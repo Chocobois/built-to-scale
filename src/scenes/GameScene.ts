@@ -122,6 +122,7 @@ export class GameScene extends BaseScene {
 	public money: number = 500;
 	public dailyStats: {
 		money: number;
+		tip: number;
 		happyCustomers: number;
 		angryCustomers: number;
 	};
@@ -144,7 +145,7 @@ export class GameScene extends BaseScene {
 		this.input.dragDistanceThreshold = 10;
 
 		// Reset daily stats
-		this.dailyStats = { money: 0, happyCustomers: 0, angryCustomers: 0 };
+		this.dailyStats = { money: 0, tip: 0, happyCustomers: 0, angryCustomers: 0 };
 		this.savedPurchases = {
 			stations: [
 				StationId.WaitingSeatTier1,
@@ -508,7 +509,7 @@ export class GameScene extends BaseScene {
 		this.ui.setDay(this.day);
 
 		// Reset daily stats
-		this.dailyStats = { money: 0, happyCustomers: 0, angryCustomers: 0 };
+		this.dailyStats = { money: 0, tip: 0,happyCustomers: 0, angryCustomers: 0 };
 
 		// Reset depth
 		this.stations.forEach((s) => s.setDepth(0));
@@ -564,7 +565,12 @@ export class GameScene extends BaseScene {
 		let delay = 4000;
 
 		// Randomly select customer type
-		const id = Phaser.Math.RND.pick(this.customerSpawnPool);
+		let id = Phaser.Math.RND.pick(this.customerSpawnPool);
+
+		// Very first customer
+		if (this.day == 1 && this.timeOfDay == 0) {
+			id = CustomerId.SmallRed;
+		}
 
 		if (this.canSpawnCustomer(id)) {
 			this.addCustomer(id);
@@ -791,7 +797,7 @@ export class GameScene extends BaseScene {
 
 		customer.on("tip", (money: number) => {
 			this.money += money;
-			this.dailyStats.money += money;
+			this.dailyStats.tip += money;
 			this.ui.setMoney(this.money);
 		});
 
