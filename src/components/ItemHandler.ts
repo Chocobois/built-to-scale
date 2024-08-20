@@ -186,7 +186,7 @@ export class ItemHandler {
             ct.happinessBonus -= 2.125;
             ct.maxHappiness = 4.01;
             ct.tipMultiplier*=0.25;
-            //ct.queueFail = true;
+            ct.queueFail();
             return;
         } else {
             ct.happinessBonus += 0.5;
