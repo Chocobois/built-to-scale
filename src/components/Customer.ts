@@ -177,6 +177,27 @@ export class Customer extends Button {
 
 		this.bindInteractive(this.sprite, true);
 		this.sprite.input!.enabled = false;
+
+		this.on("down", () => {
+			setTimeout(() => {
+				if (!this.dragged) {
+					this.scene.addEffect(new TextEffect(
+						this.scene,
+						this.x - 70 + Math.random() * 80,
+						this.y - 80,
+						"Drag me!",
+						"black",
+						30,
+						false,
+						"red",
+						800,
+						100,
+						0.7,
+						0
+					));
+				}
+			}, 200);
+		})
 	}
 
 	update(time: number, delta: number) {
@@ -283,6 +304,7 @@ export class Customer extends Button {
 		super.onOver(pointer, localX, localY, event);
 		this.toggleTimer();
 	}
+
 
 	onOut(pointer: Phaser.Input.Pointer, event: Phaser.Types.Input.EventData) {
 		super.onOut(pointer, event);
