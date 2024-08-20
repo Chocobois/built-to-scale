@@ -227,7 +227,7 @@ export class Customer extends Button {
 								40,
 								true,
 								"red",
-								800,
+								2000,
 								100,
 								0.7,
 								0
@@ -459,7 +459,7 @@ export class Customer extends Button {
 					40,
 					true,
 					"red",
-					800,
+					2000,
 					100,
 					0.7,
 					0
@@ -475,7 +475,7 @@ export class Customer extends Button {
 					40,
 					true,
 					"red",
-					800,
+					2000,
 					100,
 					0.7,
 					0
