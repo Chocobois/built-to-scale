@@ -188,6 +188,21 @@ const audios: Audio[] = [
 	sound('pickupcustomer', 'pickup', 0.5),
 	sound('dropcustomer', 'drop', 0.5),
 	sound('tree/meme_explosion_sound', 'meme_explosion_sound', 0.5),
+
+	sound("turtle/air", "air", 0.5),
+	sound("turtle/flail", "flail", 0.5),
+	sound("turtle/grab", "grab", 0.5),
+	sound("turtle/land", "land", 0.5),
+	sound("turtle/letgo1", "letgo1", 0.5),
+	sound("turtle/letgo2", "letgo2", 0.5),
+	sound("turtle/letgo3", "letgo3", 0.5),
+	sound("turtle/miss", "miss", 0.5),
+	sound("turtle/missLand", "missLand", 0.5),
+	sound("turtle/score", "score", 0.5),
+	sound("turtle/slip", "slip", 0.5),
+	sound("turtle/toss", "toss", 0.5),
+	sound("turtle/trick", "trick", 0.5),
+	sound("turtle/trip", "trip", 0.5),
 ];
 
 /* Fonts */

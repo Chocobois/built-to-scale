@@ -687,7 +687,6 @@ export class GameScene extends BaseScene {
 
 		// Picking up a customer
 		customer.on("pickup", () => {
-			this.sound.play("pickup");
 			if (customer.currentStation) {
 				// customer.currentStation.setCustomer(null);
 				// customer.setStation(null);
@@ -704,7 +703,6 @@ export class GameScene extends BaseScene {
 
 		// Dropping a customer
 		customer.on("drop", () => {
-			this.sound.play("drop");
 			let station = this.getClosestStation(customer);
 			if (station) {
 				// Let go of previous station

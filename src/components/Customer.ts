@@ -215,7 +215,7 @@ export class Customer extends Button {
 			if (this.patience <= 0) {
 				if (this.hasCompleted) {
 					if (Math.random() > 0.2) {
-						this.scene.sound.play("cashmoney");
+						this.scene.sound.play("cashmoney", { volume: 0.4 });
 						this.scene.addEffect(
 							new TextEffect(
 								this.scene,
@@ -234,10 +234,10 @@ export class Customer extends Button {
 						);
 						this.emit("pay", this.moneySpent);
 					} else {
-						this.scene.sound.play("rip");
+						this.scene.sound.play("rip", { volume: 0.4 });
 					}
 				} else {
-					this.scene.sound.play("rip");
+					this.scene.sound.play("rip", { volume: 0.4 });
 				}
 				this.leave();
 				this.thoughtBubble.showSymbol("sad");
@@ -268,7 +268,7 @@ export class Customer extends Button {
 			}
 		}
 		if (this.playFail) {
-			this.scene.sound.play("rip");
+			this.scene.sound.play("rip", { volume: 0.4 });
 			this.playFail = false;
 		}
 	}
@@ -292,6 +292,7 @@ export class Customer extends Button {
 		this.emit("pickup");
 		this.dragged = true;
 		this.sprite.setTexture(this.spriteKeys.sit);
+		this.scene.sound.play("grab", { volume: 0.5 });
 	}
 
 	onDrag(pointer: Phaser.Input.Pointer, dragX: number, dragY: number) {
@@ -305,6 +306,7 @@ export class Customer extends Button {
 		this.dragged = false;
 		this.emit("drop");
 		this.sprite.setTexture(this.spriteKeys.sit);
+		this.scene.sound.play("letgo1", { volume: 0.4 });
 	}
 
 	resetPatience() {
@@ -443,7 +445,7 @@ export class Customer extends Button {
 		} else {
 			this.actionsComplete = true;
 			this.parseMoney();
-			this.scene.sound.play("cashmoney");
+			this.scene.sound.play("cashmoney", { volume: 0.4 });
 			this.scene.addEffect(
 				new TextEffect(
 					this.scene,
@@ -656,16 +658,16 @@ export class Customer extends Button {
 		this.parseHappiness();
 	}
 
-	pauseClickable(){
-		if(!(this.sprite.input!.enabled)) {
+	pauseClickable() {
+		if (!this.sprite.input!.enabled) {
 			this.garchomp = true;
 		} else {
 			this.sprite.input!.enabled = false;
 		}
 	}
 
-	resumeClickable(){
-		if(this.garchomp) {
+	resumeClickable() {
+		if (this.garchomp) {
 			this.garchomp = false;
 		} else {
 			this.sprite.input!.enabled = true;

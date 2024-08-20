@@ -69,8 +69,10 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.buyButton.on("click", () => {
 			if (this.selectedStation) {
 				this.emit("upgradeStation", this.selectedStation);
+				this.scene.sound.play("score", { volume: 1.0 });
 			} else {
 				this.emit("upgradeEmployee", this.selectedEmployee);
+				this.scene.sound.play("score", { volume: 1.0 });
 			}
 		});
 
@@ -195,6 +197,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 				alpha: 1,
 				duration: 200,
 			});
+			this.scene.sound.play("flail", { volume: 0.3 });
 		}
 	}
 
@@ -210,5 +213,6 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 				this.emit("close");
 			},
 		});
+		this.scene.sound.play("missLand", { volume: 0.2 });
 	}
 }
