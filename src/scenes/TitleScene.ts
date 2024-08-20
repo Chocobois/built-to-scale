@@ -8,7 +8,7 @@ Lumie
 @LuxxArt
 @ArcticFqx
 @MatoCookies
-@KonixKun
+@KisoArt
 Soulsong
 Nemi
 Frassy`;
@@ -21,7 +21,7 @@ music
 art
 art
 art
-ideas`;
+QA`;
 
 export class TitleScene extends BaseScene {
 	public background: Phaser.GameObjects.Image;
