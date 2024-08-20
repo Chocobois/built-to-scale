@@ -3,7 +3,7 @@ import { StationType, StationTypeData } from "./StationData";
 
 export class ThoughtBubble extends Phaser.GameObjects.Container {
 	private background: Phaser.GameObjects.Image;
-	private image: Phaser.GameObjects.Ellipse;
+	private image: Phaser.GameObjects.Image;
 	private symbol: Phaser.GameObjects.Image;
 
 	constructor(scene: GameScene, x: number, y: number, size: number) {
@@ -16,8 +16,9 @@ export class ThoughtBubble extends Phaser.GameObjects.Container {
 		this.background.setVisible(false);
 		this.add(this.background);
 
-		this.image = this.scene.add.ellipse(0, -0.05 * size, 40, 40, 0);
+		this.image = this.scene.add.image(0, -0.02*size, "blanksq");
 		this.image.setVisible(false);
+		this.image.setScale(0.1);
 		this.add(this.image);
 
 		this.symbol = this.scene.add.image(0, -0.02 * size, "exclamation");
@@ -38,7 +39,19 @@ export class ThoughtBubble extends Phaser.GameObjects.Container {
 		this.symbol.setVisible(false);
 
 		if (type !== null) {
-			this.image.fillColor = StationTypeData[type].color;
+			switch(StationTypeData[type].color) {
+				case 0xff0000: {
+					this.image.setTexture("nail");
+					break;
+				} case 0xffff00: {
+					this.image.setTexture("wax");
+					break;
+				} case 0x0000ff: {
+					this.image.setTexture("bath");
+					break;
+				}
+			}
+			//this.image.fillColor = StationTypeData[type].color;
 		}
 
 		if (type === StationType.CashRegister) {

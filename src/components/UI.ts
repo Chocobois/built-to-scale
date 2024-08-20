@@ -101,12 +101,14 @@ export class UI extends Phaser.GameObjects.Container {
 		this.nextButton = new TextButton(scene, 0, 600, 300, 90, "Start day");
 		this.panel.add(this.nextButton);
 		this.nextButton.on("click", () => {
+			this.scene.sound.play("scroll", { volume: 0.3 });
 			this.emit("nextDay");
 		});
 
 		this.newLocationButton = new TextButton(scene, 0, 400, 300, 200, "...");
 		this.panel.add(this.newLocationButton);
 		this.newLocationButton.on("click", () => {
+			this.scene.sound.play("score", { volume: 1.0 });
 			this.emit("nextLevel");
 		});
 	}
