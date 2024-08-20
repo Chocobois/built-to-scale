@@ -66,7 +66,7 @@ export class Station extends Button {
 		this.sprite = this.scene.add.image(0, 0, this.spriteKey);
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
-		this.sprite.setTint(interpolateColor(0xffffff, this.stationTypeColor, 0.5));
+		this.sprite.setTint(interpolateColor(0xffffff, this.stationTypeColor, 0.2));
 		this.spriteCont.add(this.sprite);
 
 		this.text = this.scene.addText({
@@ -361,7 +361,7 @@ export class Station extends Button {
 	}
 
 	get spriteOffset(): number {
-		return 0.4 * this.spriteSize;
+		return 0.5 * this.spriteSize;
 	}
 
 	get taskDuration(): number {

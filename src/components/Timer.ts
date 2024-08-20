@@ -44,7 +44,7 @@ export class Timer extends Phaser.GameObjects.Container {
 			0,
 			radius - border,
 			-Math.PI / 2,
-			-Math.PI / 2 + factor * 2 * Math.PI
+			-Math.PI / 2 - factor * 2 * Math.PI
 		);
 		this.graphics.closePath();
 		this.graphics.fillPath();

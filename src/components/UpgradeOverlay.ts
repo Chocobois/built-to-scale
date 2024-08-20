@@ -5,6 +5,7 @@ import { Station } from "./Station";
 import { Employee } from "./Employee";
 import { StationData } from "./StationData";
 import { EmployeeData } from "./EmployeeData";
+import { numberWithCommas } from "@/utils/functions";
 
 export class UpgradeOverlay extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -27,7 +28,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.setAlpha(0);
 
 		// Fullscreen blackness
-		this.background = this.scene.add.rectangle(0, 0, scene.W, scene.H, 0, 0.75);
+		this.background = this.scene.add.rectangle(0, 0, scene.W, scene.H, 0, 0.8);
 		this.background.setOrigin(0);
 		this.add(this.background);
 
@@ -49,7 +50,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			text: "...",
 		});
 		this.titleText.setOrigin(0.5);
-		this.titleText.setStroke("black", 4);
+		this.titleText.setStroke("black", 6);
 		this.panel.add(this.titleText);
 
 		this.moneyText = this.scene.addText({
@@ -59,7 +60,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			color: "#FFFFFF",
 			text: "...",
 		});
-		this.moneyText.setStroke("black", 4);
+		this.moneyText.setStroke("black", 6);
 		this.moneyText.setOrigin(0);
 		this.panel.add(this.moneyText);
 
@@ -132,7 +133,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		const canAfford = station.upgradeCost <= this.scene.money;
 		this.buyButton.setEnabled(canAfford);
 		this.buyButton.setVisible(!!station.upgradeTo || !station.hasBeenPurchased);
-		this.buyButton.setText(`$${station.upgradeCost}`);
+		this.buyButton.setText(`$${numberWithCommas(station.upgradeCost)}`);
 
 		this.open();
 	}
@@ -180,7 +181,7 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.buyButton.setVisible(
 			!!employee.upgradeTo || !employee.hasBeenPurchased
 		);
-		this.buyButton.setText(`$${employee.upgradeCost}`);
+		this.buyButton.setText(`$${numberWithCommas(employee.upgradeCost)}`);
 
 		this.open();
 	}

@@ -1,8 +1,8 @@
 import { GameScene } from "@/scenes/GameScene";
 
 export type GridPoint = {
-	gridX: number,
-	gridY: number
+	x: number;
+	y: number;
 };
 
 export class Board extends Phaser.GameObjects.Container {
@@ -29,7 +29,7 @@ export class Board extends Phaser.GameObjects.Container {
 		// this.size = scene.H / (height + 2);
 		this.size = cellSize;
 		this.width = width;
-		this.height = height
+		this.height = height;
 
 		this.grid = this.scene.add.grid(
 			0,
@@ -55,7 +55,7 @@ export class Board extends Phaser.GameObjects.Container {
 		// this.size = this.scene.H / height;
 		this.size = cellSize;
 		this.width = width;
-		this.height = height
+		this.height = height;
 
 		this.grid.destroy();
 		this.grid = this.scene.add.grid(
@@ -66,9 +66,9 @@ export class Board extends Phaser.GameObjects.Container {
 			this.size,
 			this.size,
 			0xffffff,
-			0.1,
+			0,
 			0xff0000,
-			0.2
+			0
 		);
 		this.add(this.grid);
 	}
@@ -81,10 +81,37 @@ export class Board extends Phaser.GameObjects.Container {
 		};
 	}
 
+	// Return coordinates of the nav grid cell
+	navGridToCoord(gridX: number, gridY: number) {
+		return {
+			x: this.x - this.grid.width / 2 + gridX * (this.size / 7),
+			y: this.y - this.grid.height / 2 + gridY * (this.size / 7),
+		};
+	}
+
 	// Return grid cell of the coordinates
 	coordToGrid(x: number, y: number): GridPoint {
 		const gridX = Math.floor((x - this.x + this.grid.width / 2) / this.size);
 		const gridY = Math.floor((y - this.y + this.grid.height / 2) / this.size);
-		return { gridX, gridY };
+		return { x: gridX, y: gridY };
+	}
+
+	// Return nav grid cell of the coordinates
+	coordToNavGrid(x: number, y: number): GridPoint {
+		const gridX = Math.floor(
+			(x - this.x + this.grid.width / 2) / (this.size / 7)
+		);
+		const gridY = Math.floor(
+			(y - this.y + this.grid.height / 2) / (this.size / 7)
+		);
+		return { x: gridX, y: gridY };
+	}
+
+	// Return nav coord of world coords, not rounded
+	coordToNav(x: number, y: number): GridPoint {
+		return {
+			x: (x - this.x + this.grid.width / 2) / (this.size / 7),
+			y: (y - this.y + this.grid.height / 2) / (this.size / 7),
+		};
 	}
 }

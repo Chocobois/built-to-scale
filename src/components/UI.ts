@@ -2,6 +2,8 @@ import { GameScene } from "@/scenes/GameScene";
 import { Timer } from "./Timer";
 import { TextButton } from "./TextButton";
 import { Level } from "./Levels";
+import { RoundRectangle } from "./elements/RoundRectangle";
+import { numberWithCommas } from "@/utils/functions";
 
 export class UI extends Phaser.GameObjects.Container {
 	public scene: GameScene;
@@ -9,7 +11,9 @@ export class UI extends Phaser.GameObjects.Container {
 	private panel: Phaser.GameObjects.Container;
 	private background: Phaser.GameObjects.Image;
 	private dayProgressTimer: Timer;
+	private clockText: Phaser.GameObjects.Text;
 	private dayText: Phaser.GameObjects.Text;
+	private moneyTitle: Phaser.GameObjects.Text;
 	private moneyText: Phaser.GameObjects.Text;
 	private nextButton: TextButton;
 	private newLocationButton: TextButton;
@@ -19,61 +23,81 @@ export class UI extends Phaser.GameObjects.Container {
 		scene.add.existing(this);
 		this.scene = scene;
 
-		const panelWidth = 300;
-		const panelHeight = 600;
+		const panelWidth = 350;
+		const panelHeight = 500;
+		const pad = 13;
 
 		this.panel = this.scene.add.container(
-			scene.W - panelWidth / 2 - 50,
-			panelHeight / 2 + 50
+			scene.W - panelWidth / 2 - pad,
+			panelHeight / 2 + pad
 		);
 		this.add(this.panel);
 
-		// this.background = this.scene.add.image(0, 0, "hud");
-		// this.background.setScale(panelHeight / this.background.height);
-		// this.background.setVisible(false);
-		// this.panel.add(this.background);
-		const rect = this.scene.add.rectangle(
-			0,
-			0,
-			panelWidth,
-			panelHeight,
-			0x000000,
-			0.5
-		);
+		const rect = new RoundRectangle(scene, {
+			x: 0,
+			y: 0,
+			width: panelWidth,
+			height: panelHeight,
+			radius: 20,
+			color: 0x000000,
+			alpha: 0.6,
+		});
 		this.panel.add(rect);
 
 		this.dayProgressTimer = new Timer(
 			scene,
 			0,
-			-0.3 * panelHeight,
-			200,
+			-panelHeight / 2 + 215,
+			370,
 			0xff7700
 		);
 		this.panel.add(this.dayProgressTimer);
 
+		this.clockText = this.scene.addText({
+			x: 0,
+			y: this.dayProgressTimer.y,
+			size: 40,
+			color: "#FFFFFF",
+			text: "09:00",
+		});
+		this.clockText.setOrigin(0.5);
+		this.clockText.setStroke("black", 6);
+		this.panel.add(this.clockText);
+
 		this.dayText = this.scene.addText({
 			x: 0,
-			y: 0,
+			y: -panelHeight / 2 + 70,
 			size: 60,
 			color: "#FFFFFF",
 			text: "Day 1",
 		});
 		this.dayText.setOrigin(0.5);
-		this.dayText.setStroke("black", 4);
+		this.dayText.setStroke("black", 8);
 		this.panel.add(this.dayText);
+
+		this.moneyTitle = this.scene.addText({
+			x: 0,
+			y: 105,
+			size: 30,
+			color: "#FFFFFF",
+			text: "Money",
+		});
+		this.moneyTitle.setStroke("black", 6);
+		this.moneyTitle.setOrigin(0.5);
+		this.panel.add(this.moneyTitle);
 
 		this.moneyText = this.scene.addText({
 			x: 0,
-			y: 100,
-			size: 40,
+			y: this.moneyTitle.y + 55,
+			size: 60,
 			color: "#FFFFFF",
-			text: "Money: $0",
+			text: "$0",
 		});
-		this.moneyText.setStroke("black", 4);
+		this.moneyText.setStroke("black", 8);
 		this.moneyText.setOrigin(0.5);
 		this.panel.add(this.moneyText);
 
-		this.nextButton = new TextButton(scene, 0, 600, 300, 80, "Start day");
+		this.nextButton = new TextButton(scene, 0, 600, 300, 90, "Start day");
 		this.panel.add(this.nextButton);
 		this.nextButton.on("click", () => {
 			this.emit("nextDay");
@@ -97,26 +121,38 @@ export class UI extends Phaser.GameObjects.Container {
 
 	setTimeOfDay(time: number) {
 		this.dayProgressTimer.redraw(time);
+
+		const startHour = 9;
+		const endHour = 16;
+		const hour = endHour - time * (endHour - startHour);
+		const minute = (hour % 1) * 60;
+		const hourStr = Math.floor(hour).toString().padStart(2, "0");
+		const minuteStr = (Math.floor(minute / 10) * 10)
+			.toString()
+			.padStart(2, "0");
+		this.clockText.setText(`${hourStr}:${minuteStr}`);
 	}
 
 	setLevel(level: Level) {
 		this.newLocationButton.setData("cost", level.upgradeCost);
 		this.newLocationButton.setVisible(level.upgradeCost !== undefined);
 		this.newLocationButton.setText(
-			`Upgrade\n     shop\n   $${level.upgradeCost}`
+			`Upgrade\n     shop\n   $${numberWithCommas(level.upgradeCost ?? 0)}`
 		);
 	}
 
 	setMoney(money: number) {
-		this.moneyText.setText(`Money: $${money}`);
+		this.moneyText.setText(`$${numberWithCommas(money)}`);
 
 		const upgradeCost = this.newLocationButton.getData("cost");
 		const canUpgrade = money >= upgradeCost;
-		this.newLocationButton.setAlpha(canUpgrade ? 1 : 0.5);
-		this.newLocationButton.enabled = canUpgrade;
+		this.newLocationButton.setEnabled(canUpgrade);
 	}
 
 	setShoppingMode(isShopping: boolean) {
 		this.nextButton.setVisible(isShopping);
+
+		const canUpgrade = this.newLocationButton.getData("cost") !== undefined;
+		this.newLocationButton.setVisible(isShopping && canUpgrade);
 	}
 }

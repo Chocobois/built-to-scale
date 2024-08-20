@@ -33,7 +33,6 @@ enum GameState {
 	Intermission,
 }
 
-
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
 	private board: Board;
@@ -128,7 +127,7 @@ export class GameScene extends BaseScene {
 				StationId.ScalePolishTier1,
 				StationId.CashRegister,
 			],
-			employees: [EmployeeId.RaccoonTier1],
+			employees: [EmployeeId.RaccoonGrayTier1],
 		};
 
 		// Background
@@ -145,6 +144,7 @@ export class GameScene extends BaseScene {
 		this.ui = new UI(this);
 		this.ui.setDepth(1000);
 		this.ui.on("nextDay", () => {
+			if (this.inventory.isOpen) this.toggleInventory();
 			this.startDay();
 		});
 		this.ui.on("nextLevel", () => {
@@ -152,6 +152,7 @@ export class GameScene extends BaseScene {
 			if (this.money >= upgradeCost) {
 				this.money -= upgradeCost;
 				this.ui.setMoney(this.money);
+				if (this.inventory.isOpen) this.toggleInventory();
 				this.intermission.fadeToIntermission(Mode.NextLevelCutscene);
 			}
 		});
@@ -199,8 +200,8 @@ export class GameScene extends BaseScene {
 		this.invButton.on("click", () => {
 			this.togglePanel();
 		});
-		this.inventory.setDepth(10);
-		this.invButton.setDepth(9);
+		this.inventory.setDepth(800);
+		this.invButton.setDepth(900);
 		this.invButton.setAlpha(0.75);
 		this.activeItem = new ItemButton(
 			this,
@@ -219,14 +220,16 @@ export class GameScene extends BaseScene {
 			this.money -= station.upgradeCost;
 			this.ui.setMoney(this.money);
 			station.upgrade();
-			this.upgradeOverlay.selectStation(station);
+			// this.upgradeOverlay.selectStation(station);
+			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
 			this.money -= employee.upgradeCost;
 			this.ui.setMoney(this.money);
 			employee.upgrade();
-			this.upgradeOverlay.selectEmployee(employee);
+			// this.upgradeOverlay.selectEmployee(employee);
+			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("close", () => {
@@ -352,7 +355,7 @@ export class GameScene extends BaseScene {
 		});
 
 		if (isShopping && this.day > 0) {
-			this.summaryOverlay.open(this.dailyStats);
+			this.summaryOverlay.open(this.day, this.dailyStats);
 		}
 	}
 
@@ -399,8 +402,20 @@ export class GameScene extends BaseScene {
 					case BlockType.CashRegister:
 						this.addStation(gridX, gridY, StationId.CashRegister);
 						break;
-					case BlockType.Employee:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonTier1);
+					case BlockType.EmployeeGray:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGrayTier1);
+						break;
+					case BlockType.EmployeeBrown:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonBrownTier1);
+						break;
+					case BlockType.EmployeeYellow:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonYellowTier1);
+						break;
+					case BlockType.EmployeePurple:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonPurpleTier1);
+						break;
+					case BlockType.EmployeeGreen:
+						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGreenTier1);
 						break;
 				}
 			}
@@ -471,7 +486,7 @@ export class GameScene extends BaseScene {
 				this.ui.setTimeOfDay(1 - this.timeOfDay / 100);
 			},
 			onComplete: () => {
-				// Shop closed. Play sound.
+				this.sound.play("endday");
 			},
 		});
 	}
@@ -480,8 +495,8 @@ export class GameScene extends BaseScene {
 		this.customerSpawnTimer.destroy();
 
 		//this.stations.forEach((s) => s.returnItems());
-		this.sound.play("endday");
-		this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
+		// Fix this later
+		// this.employees.forEach((e) => e.walkTo(e.startX, e.startY));
 		this.resumeInvButton();
 		this.cycleCount++;
 		this.setState(GameState.Shopping);
@@ -499,7 +514,7 @@ export class GameScene extends BaseScene {
 	// Attempt to spawn customer and reset timer
 	attemptSpawnCustomer() {
 		// Delay to next customer spawn
-		let delay = 2000;
+		let delay = 4000;
 
 		// Randomly select customer type
 		const id = Phaser.Math.RND.pick(this.customerSpawnPool);
@@ -508,8 +523,8 @@ export class GameScene extends BaseScene {
 			this.addCustomer(id);
 
 			// TODO: Adjust to difficulty
-			let delayMin = Math.max(1000, 5000 - 500 * this.day);
-			let delayMax = delayMin + 4000 - 500 * this.day;
+			let delayMin = Math.max(2000, 6000 - 400 * this.day);
+			let delayMax = delayMin + 10000 - 400 * this.day;
 			delay = Phaser.Math.Between(delayMin, delayMax);
 
 			console.log(`Customer spawned. Waiting ${delay} ms`);
@@ -529,16 +544,15 @@ export class GameScene extends BaseScene {
 	updateSpawnPool() {
 		this.customerSpawnPool = [];
 
-		const tier2StationCount = this.stations.filter(
-			(s) => s.stationTier >= 2 && s.hasBeenPurchased
-		).length;
-		const tier3StationCount = this.stations.filter(
-			(s) => s.stationTier >= 2 && s.hasBeenPurchased
-		).length;
+		this.stations.forEach((s) => {
+			if (s.hasBeenPurchased) {
+				if (s.stationTier >= 1) this.customerSpawnPool.push(CustomerId.Small);
+				if (s.stationTier >= 2) this.customerSpawnPool.push(CustomerId.Medium);
+				if (s.stationTier >= 3) this.customerSpawnPool.push(CustomerId.Large);
+			}
+		});
 
-		this.customerSpawnPool.push(CustomerId.Small);
-		if (tier2StationCount >= 2) this.customerSpawnPool.push(CustomerId.Medium);
-		if (tier3StationCount >= 2) this.customerSpawnPool.push(CustomerId.Large);
+		console.log("Spawn pool:", this.customerSpawnPool);
 	}
 
 	updateSavedPurchases() {
@@ -629,8 +643,7 @@ export class GameScene extends BaseScene {
 
 	// Add new customer
 	addCustomer(id: CustomerId) {
-		const coord = this.board.gridToCoord(-8, 0);
-		const customer = new Customer(this, coord.x, coord.y, id, this.board.size);
+		const customer = new Customer(this, 0, 0, id, this.board.size);
 		this.customers.push(customer);
 
 		// Place in available waiting seat
@@ -638,13 +651,39 @@ export class GameScene extends BaseScene {
 		if (seat) {
 			seat.setCustomer(customer);
 			customer.setStation(seat);
-			customer.snapTo(seat.x, seat.y);
+			// customer.snapTo(seat.x, seat.y);
+
+			// Pathfinding to seat
+			const startY = LevelData[this.level].height - 3;
+			const startCoord = this.board.gridToCoord(0, startY);
+			const start = this.board.coordToNav(startCoord.x, startCoord.y);
+			const goal = this.board.coordToNav(seat.x, seat.y);
+
+			// Starting location outside of screen
+			customer.snapTo(startCoord.x - 2 * this.board.size, startCoord.y, true);
+
+			const navPath = this.navmesh.findPath(start, goal);
+			if (navPath) {
+				const points = navPath.map((pos) =>
+					this.board.navGridToCoord(pos.x, pos.y)
+				);
+				const path = new Phaser.Curves.Path();
+				path.moveTo(customer.x, customer.y);
+				points.forEach((point) => path.lineTo(point.x, point.y));
+
+				customer.walk(path);
+			} else {
+				// Snap to station if pathfinding fails
+				console.warn("No path found", start, "->", goal);
+			}
 		} else {
 			console.error("Whoops");
 		}
 
-		// Set list of activities for customer
-		this.setCustomerItinerary(customer);
+		// Customer getting seated
+		customer.on("seated", () => {
+			this.setCustomerItinerary(customer);
+		});
 
 		// Picking up a customer
 		customer.on("pickup", () => {
@@ -769,20 +808,19 @@ export class GameScene extends BaseScene {
 		return closestStation;
 	}
 
-	// Request an available employee to serve the customer
-	callEmployee(customer: Customer) {
-		// Abort if customer is not assigned to a station
-		if (!customer.currentStation || customer.currentEmployee) {
-			return;
-		}
-
+	// Find the closest employee to coord
+	getClosestEmployee(x: number, y: number): Employee | null {
 		let closestEmployee: Employee = null as unknown as Employee;
 		let closestDistance = Infinity;
 
+		// Offset to top-left corner, the employee working location
+		x -= this.board.size / 4;
+		y -= this.board.size / 2;
+
 		this.employees.forEach((employee) => {
 			const distance = Phaser.Math.Distance.Between(
-				customer.x,
-				customer.y,
+				x,
+				y,
 				employee.x,
 				employee.y
 			);
@@ -796,37 +834,56 @@ export class GameScene extends BaseScene {
 			}
 		});
 
+		return closestEmployee;
+	}
+
+	// Request an available employee to serve the customer
+	callEmployee(customer: Customer) {
+		// Abort if customer is not assigned to a station
+		if (!customer.currentStation || customer.currentEmployee) {
+			return;
+		}
+
+		const closestEmployee = this.getClosestEmployee(customer.x, customer.y);
+
 		if (closestEmployee) {
 			const station = customer.currentStation;
-			const { gridX, gridY } = this.board.coordToGrid(station.x, station.y);
-			const { x, y } = this.board.gridToCoord(gridX, gridY - 1);
-
 			customer.setRequest(null);
 			customer.setEmployee(closestEmployee);
-
 			closestEmployee.setCustomer(customer);
-			closestEmployee.walkTo(x, y);
-			
-			const [cx, cy] = centerOnSubdividedCoord(this.board, station, 7);
-			const posEmp = this.board.coordToGrid(closestEmployee.x, closestEmployee.y);
-			const posSta = this.board.coordToGrid(station.x, station.y);
 
+			const start = this.board.coordToNav(closestEmployee.x, closestEmployee.y);
+			const goal = this.board.coordToNav(station.x, station.y);
+			goal.x -= 2.6;
+			goal.y -= 3.6;
 
-			const scale = ({gridX, gridY}: GridPoint) => {
-				return {x: gridX*7, y: gridY*7}
+			const gridPath = this.navmesh.findPath(start, goal);
+			// Pathfinding success, walk to station
+			if (gridPath) {
+				const points = gridPath.map((pos) =>
+					this.board.navGridToCoord(pos.x, pos.y)
+				);
+				const path = new Phaser.Curves.Path();
+				path.moveTo(closestEmployee.x, closestEmployee.y);
+				points.forEach((point) => path.lineTo(point.x, point.y));
+				// const path = new Phaser.Curves.Spline(points);
+
+				closestEmployee.walk(path);
 			}
+			// Fallback to direct line if pathfinding fails
+			else {
+				console.error("No path found");
+				const debug = this.board.navGridToCoord(goal.x, goal.y);
+				this.add.ellipse(debug.x, debug.y, 30, 30, 0xff0000);
 
-			//this.navmesh.findPath({})
-		
-			console.log(scale(posEmp))
-			
-			const path = this.navmesh.findPath(scale(posEmp), scale(posSta));
-
-
-
-			console.log("path", path)
-
-			// Wait for employee.on("walkend")
+				const path = new Phaser.Curves.Path();
+				path.moveTo(closestEmployee.x, closestEmployee.y);
+				path.lineTo(
+					station.x - this.board.size / 3,
+					station.y - this.board.size / 3
+				);
+				closestEmployee.walk(path);
+			}
 		}
 	}
 
@@ -934,7 +991,7 @@ export class GameScene extends BaseScene {
 	}
 
 	snapItem() {
-		if(this.activeItem.snap == SnapType.STATION) {
+		if (this.activeItem.snap == SnapType.STATION) {
 			let s = this.getClosestStationToItem(this.activeItem);
 			if (s) {
 				this.activeItem.snapTo(s.x, s.y);
@@ -943,13 +1000,12 @@ export class GameScene extends BaseScene {
 			console.log("Snapping to Customer");
 			let ct = this.getClosestCustomerToItem(this.activeItem);
 			if (ct) {
-				this.activeItem.snapTo(ct.x, ct.y-30);
+				this.activeItem.snapTo(ct.x, ct.y - 30);
 			}
 		}
-
 	}
 
-	applyToStation(){
+	applyToStation() {
 		let s = this.getClosestStationToItem(this.activeItem);
 		if (s) {
 			s.applyItem(this.activeItem.id, this.activeItem.sprname);
@@ -971,9 +1027,7 @@ export class GameScene extends BaseScene {
 		);
 	}
 
-	
-
-	applyToCustomer(){
+	applyToCustomer() {
 		let cs = this.getClosestCustomerToItem(this.activeItem);
 		if (cs) {
 			cs.applyItem(this.activeItem.id, this.activeItem.sprname);
@@ -996,9 +1050,9 @@ export class GameScene extends BaseScene {
 	}
 
 	cleanUpItem() {
-		if(this.activeItem.snap == SnapType.CUSTOMER){
+		if (this.activeItem.snap == SnapType.CUSTOMER) {
 			this.applyToCustomer();
-		} else if (this.activeItem.snap == SnapType.STATION){
+		} else if (this.activeItem.snap == SnapType.STATION) {
 			this.applyToStation();
 		}
 		this.inventory.unglassify();
@@ -1023,12 +1077,26 @@ export class GameScene extends BaseScene {
 		this.invButton.setAlpha(0.85);
 	}
 
-	parseCustomerItems(i: number, ct: Customer){
-		this.iHandler.processCustomerItem(this.inventory.itemList[i],ct);
+	buyItem(id: number, qt:number) {
+		this.inventory.buyItem(id, qt);
+	}
+
+	pauseInvButton(){
+		this.invButton.spr.input!.enabled = false;
+		this.invButton.setAlpha(0.34);
+	}
+
+	resumeInvButton(){
+		this.invButton.spr.input!.enabled = true;
+		this.invButton.setAlpha(0.85);
+	}
+
+	parseCustomerItems(i: number, ct: Customer) {
+		this.iHandler.processCustomerItem(this.inventory.itemList[i], ct);
 		this.sound.play(this.inventory.itemList[i].sound);
 	}
 
-	getClosestCustomerToItem(item: ItemButton): Customer | null{
+	getClosestCustomerToItem(item: ItemButton): Customer | null {
 		let closestCustomer = null;
 		let closestDistance = Infinity;
 		const maxDistance = 70;
@@ -1037,13 +1105,13 @@ export class GameScene extends BaseScene {
 				item.dragX,
 				item.dragY,
 				cs.x,
-				(cs.y-30)
+				cs.y - 30
 			);
 			if (
-				(cs.itemList.length < 3) &&
+				cs.itemList.length < 3 &&
 				distance < closestDistance &&
 				distance < maxDistance &&
-				!(cs.actionsComplete)
+				!cs.actionsComplete
 			) {
 				closestCustomer = cs;
 				closestDistance = distance;
@@ -1215,19 +1283,154 @@ export class GameScene extends BaseScene {
 		return this.inventory.itemList[id].quant;
 	}
 
-	veilInvButton(){
+	removeMoney(n: number){
+		this.money -= n;
+		this.ui.setMoney(this.money);
+		this.sound.play("cashmoney");
+		/*
+		this.addEffect(
+			new TextEffect(
+				scene,
+				this.x - 70 + Math.random() * 80,
+				this.y - 80,
+				"+" + this.moneySpent + " €",
+				"yellow",
+				40,
+				true,
+				"red",
+				800,
+				100,
+				0.7,
+				0
+			)
+		);*/
+	}
+
+	beginShopTutorial(n: number){
+		this.shopTutorialIndex = n;
+		this.shopTutorialInitialized = false;
+		this.ownerImage.input!.enabled = false;
+		this.ownerImage.setFrame(this.shopTutorialFrames[n]);
+		this.shopText.setText(this.shopTutorialText[n]);
+		this.shopClicker.setVisible(true);
+		this.shopSpeech.setVisible(true);
+		this.shopSpeech.setAlpha(0);
+		this.tutorialTimer = 1000;
+		if(n > 0) {
+			this.pauseInvButton();
+		}
+	}
+
+	updateShopTutorial(t: number, d: number){
+		
+		if(this.dinonugget > 0) {
+			this.dinonugget -= d;
+			//console.log("DINO NUGGET");
+			if(this.dinonugget <= 0) {
+				this.shopClicker.setAlpha(0);
+				this.shopSpeech.setAlpha(0);
+				this.shopSpeech.setVisible(false);
+				this.shopClicker.setVisible(false);
+				this.shopOwnerState = -1
+			} else {
+				this.shopClicker.setAlpha(this.dinonugget/300);
+				this.shopSpeech.setAlpha(this.dinonugget/300);
+			}
+		}
+		if(this.viewedShopTutorial){
+			return;
+		}
+		if(!this.shopTutorialInitialized) {
+			if(this.tutorialTimer > 0) {
+				if((this.tutorialTimer > 300)) {
+					this.tutorialTimer -= d;
+					if(this.tutorialTimer <= 300) {
+						this.shopClicker.setPosition(1460, 540);
+					} else {
+						this.shopClicker.setPosition(1460,1480+-940*(1-((this.tutorialTimer-300)/700)));
+					}
+				} else if (this.tutorialTimer <= 300){
+					this.tutorialTimer -= d;
+					if(this.tutorialTimer <= 0) {
+						this.shopSpeech.setAlpha(1);
+						this.shopTutorialInitialized = true;
+						this.ownerImage.input!.enabled = true;
+						if(this.shopTutorialIndex == 0){
+							this.shopOpenCheck = true;
+						}
+						this.canProceed = [true,false,false];
+					}
+					this.shopSpeech.setAlpha(1-(this.tutorialTimer/300));
+				}
+			}
+		} else if (!this.viewedShopTutorial) {
+			if(this.tutorialTimer > 0) {
+				this.tutorialTimer -= d;
+				if(this.tutorialTimer <= 0){
+					this.shopSpeech.setAlpha(1);
+					this.canProceed = [true,false,false];
+					this.ownerImage.input!.enabled = true;
+				} else {
+					this.shopSpeech.setAlpha(1-(this.tutorialTimer/300));
+				}
+			}
+		}
+	}
+
+	proceedShopTutorial(){
+		if(this.shopOpenCheck || (!this.canProceed)) {
+			return;
+		}
+		this.shopTutorialIndex++;
+		if(this.shopTutorialIndex < this.shopTutorialText.length) {
+			this.canProceed=[false,false,false];
+			this.tutorialTimer=300;
+			this.shopSpeech.setAlpha(0);
+			this.shopText.setText(this.shopTutorialText[this.shopTutorialIndex]);
+			this.ownerImage.setFrame(this.shopTutorialFrames[this.shopTutorialIndex]);
+			this.ownerImage.input!.enabled = false;
+		} else {
+			this.completeShopTutorial();
+		}
+	}
+
+	completeShopTutorial(){
+		this.canProceed=[false,false,false];
+		this.ownerImage.input!.enabled = false;
+		this.viewedShopTutorial = true;
+		this.sound.play("meme_explosion_sound");
+		this.dinonugget = 300;
+		this.shopOwnerState = 2;
+		this.resumeInvButton();
+	}
+
+	pauseAllClickables(){
+		this.stations.forEach((s) => s.pauseClickable());
+		this.customers.forEach((c) => c.pauseClickable());
+		this.employees.forEach((e) => e.pauseClickable());
+	}
+
+	resumeAllClickables(){
+		this.stations.forEach((s) => s.resumeClickable());
+		this.customers.forEach((c) => c.resumeClickable());
+		this.employees.forEach((e) => e.resumeClickable());
+	}
+
+	getAmountOwned(id: number){
+		return this.inventory.itemList[id].quant;
+	}
+
+	veilInvButton() {
 		this.invButton.setAlpha(0.17);
 	}
 
-	unveilInvButton(){
+	unveilInvButton() {
 		this.invButton.setAlpha(0.85);
 	}
 
 	sortDepth() {
-		this.stations.forEach((s) => s.setDepth(s.y / 100 + 0));
-		this.employees.forEach((e) => e.setDepth(e.y / 100 + 1));
-		this.customers.forEach((c) =>
-			c.setDepth(c.y / 100 + (c.dragged ? 100 : 1))
-		);
+		this.stations.forEach((s) => s.setDepth(s.y / 50 + 0));
+		this.employees.forEach((e) => e.setDepth(e.y / 50 + 1));
+		this.customers.forEach((c) => c.setDepth(c.y / 50 + (c.dragged ? 100 : 1)));
 	}
 }
