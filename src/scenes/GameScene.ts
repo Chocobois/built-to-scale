@@ -484,10 +484,10 @@ export class GameScene extends BaseScene {
 			if (!this.viewedShopTutorial) {
 				this.beginShopTutorial(0);
 				return;
-			}
-		} else {
-			if(this.shopinventory.isOpen){
-				this.toggleShop();
+			} else {
+				if(this.shopinventory.isOpen){
+					this.toggleShop();
+				}
 			}
 		}
 		this.setState(GameState.Day);
