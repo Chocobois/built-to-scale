@@ -42,11 +42,13 @@ export class SimpleButton extends Button {
     }
 
     turnOff(){
+        this.sprite.input!.enabled = false;
         this.disabled = true;
         this.resetState();
     }
 
     turnOn(){
+        this.sprite.input!.enabled = true;
         this.disabled = false;
         this.resetState();
     }

@@ -19,6 +19,8 @@ export class Employee extends Button {
 	private sprite: Phaser.GameObjects.Sprite;
 	// private graphics: Phaser.GameObjects.Graphics;
 
+	private linoone: boolean = false;
+
 	public startX: number;
 	public startY: number;
 
@@ -78,6 +80,11 @@ export class Employee extends Button {
 		}
 
 		this.currentCustomer = customer;
+		if(this.currentCustomer){
+			if(this.currentCustomer.currentStation) {
+				this.currentCustomer.currentStation.taskHaste*=this.workSpeed;
+			}
+		}
 	}
 
 	walk(path: Phaser.Curves.Path) {
@@ -137,6 +144,22 @@ export class Employee extends Button {
 		} else if (this.upgradeTo) {
 			this.employeeId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKeys.idle);
+		}
+	}
+
+	pauseClickable(){
+		if(!(this.sprite.input!.enabled)){
+			this.linoone = true;
+		} else {
+			this.sprite.input!.enabled = false;
+		}
+	}
+
+	resumeClickable(){
+		if(this.linoone) {
+			this.linoone = false;
+		} else {
+			this.sprite.input!.enabled = true;
 		}
 	}
 

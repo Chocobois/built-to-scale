@@ -170,6 +170,10 @@ export class Inventory extends Phaser.GameObjects.Container {
         
     }
 
+    buyItem(id: number, qt: number){
+        this.itemList[id].quant += qt;
+    }
+
     updateAmountText(id:number, i: number){
         if(i > 0) {
             this.title.setText(this.itemList[id].name + " x" + i);
