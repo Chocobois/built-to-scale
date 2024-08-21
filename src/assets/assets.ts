@@ -26,6 +26,7 @@ const images: Image[] = [
 	// Characters
 	image('characters/player', 'player'),
 	image('characters/worker', 'worker'),
+	image('characters/workerSing', 'workerSing'),
 	// WALK ANIMATION SHOULD LOOP LIKE THIS: walk1 - walk2 - walk3 - walk2
 	image('characters/workerWalkDown1', 'workerWalk1'),
 	image('characters/workerWalkDown2', 'workerWalk2'),
@@ -36,6 +37,7 @@ const images: Image[] = [
 	// ALT WORKER SKINS
 	// Skin 1
 	image('characters/workerAlt1', 'workerAlt1'),
+	image('characters/workerAlt1Sing', 'workerAlt1Sing'),
 	image('characters/workerAlt1WalkDown1', 'workerAlt1Walk1'),
 	image('characters/workerAlt1WalkDown2', 'workerAlt1Walk2'),
 	image('characters/workerAlt1WalkDown3', 'workerAlt1Walk3'),
@@ -44,6 +46,7 @@ const images: Image[] = [
 
 	// Skin 2
 	image('characters/workerAlt2', 'workerAlt2'),
+	image('characters/workerAlt2Sing', 'workerAlt2Sing'),
 	image('characters/workerAlt2WalkDown1', 'workerAlt2Walk1'),
 	image('characters/workerAlt2WalkDown2', 'workerAlt2Walk2'),
 	image('characters/workerAlt2WalkDown3', 'workerAlt2Walk3'),
@@ -52,6 +55,7 @@ const images: Image[] = [
 
 	// Skin 3
 	image('characters/workerAlt3', 'workerAlt3'),
+	image('characters/workerAlt3Sing', 'workerAlt3Sing'),
 	image('characters/workerAlt3WalkDown1', 'workerAlt3Walk1'),
 	image('characters/workerAlt3WalkDown2', 'workerAlt3Walk2'),
 	image('characters/workerAlt3WalkDown3', 'workerAlt3Walk3'),
@@ -60,6 +64,7 @@ const images: Image[] = [
 	
 	// Skin 4
 	image('characters/workerAlt4', 'workerAlt4'),
+	image('characters/workerAlt4Sing', 'workerAlt4Sing'),
 	image('characters/workerAlt4WalkDown1', 'workerAlt4Walk1'),
 	image('characters/workerAlt4WalkDown2', 'workerAlt4Walk2'),
 	image('characters/workerAlt4WalkDown3', 'workerAlt4Walk3'),

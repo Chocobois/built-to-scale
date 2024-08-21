@@ -58,9 +58,9 @@ export class GameScene extends BaseScene {
 	
 	public tArray: number[];
 
-	public musicBase: Phaser.Sound.WebAudioSound;
-	public musicCutscene: Phaser.Sound.WebAudioSound;
-	public musicDowntime: Phaser.Sound.WebAudioSound;
+	public musicBase: Music;
+	public musicCutscene: Music;
+	public musicDowntime: Music;
 
 	private shopClicker: Button;
 	private ownerImage: Phaser.GameObjects.Sprite;
@@ -1450,5 +1450,17 @@ export class GameScene extends BaseScene {
 		this.musicBase.setVolume(		 clamp(intendedVolume.base,		  0, 1) * volumeModifier);
 		this.musicDowntime.setVolume(clamp(intendedVolume.downtime, 0, 1) * volumeModifier);
 		this.musicCutscene.setVolume(clamp(intendedVolume.cutscene, 0, 1) * volumeModifier);
+
+		// Singing animation
+		
+		if (this.game.hasFocus) {
+
+			const sing = this.musicDowntime.volume > 0.1
+				? this.musicDowntime.noteActive
+				: false;
+	
+			this.employees.forEach(e => e.isSinging = sing);
+		}
+
 	}
 }
