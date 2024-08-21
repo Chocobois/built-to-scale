@@ -33,6 +33,7 @@ export class TitleScene extends BaseScene {
 	public washbear_hand: Phaser.GameObjects.Image;
 	public tail: Phaser.GameObjects.Image;
 	public hand: Phaser.GameObjects.Image;
+	public sparkles: Phaser.GameObjects.Particles.ParticleEmitter;
 	public logo: Phaser.GameObjects.Image;
 
 	public credits: Phaser.GameObjects.Container;
@@ -59,26 +60,31 @@ export class TitleScene extends BaseScene {
 			.setAlpha(0)
 			.setVisible(false);
 		this.chairs = this.add
-			.image(70 + 214, 220 + 226, "title_chairs")
+			.image(70 + 214, 220 + (226*1.8), "title_chairs")
+			.setOrigin(0.5, 0.9)
 			.setAlpha(0)
 			.setVisible(false);
 		this.bath = this.add
-			.image(425 + 173, 430 + 155, "title_bath")
+			.image(425 + 173, 430 + (155*1.9), "title_bath")
+			.setOrigin(0.5, 0.9)
 			.setAlpha(0)
 			.setVisible(false);
 		this.washbear_tail = this.add
-			.image(630 + 156, 590 + 190, "title_washbear_tail")
+			.image(630 + 156, 590 + (190*1.8), "title_washbear_tail")
+			.setOrigin(0.5, 0.9)
 			.setAlpha(0)
 			.setVisible(false);
 		this.tail = this.add.image(0, 0, "title_tail").setAlpha(0).setOrigin(0);
 		this.hand = this.add.image(this.W, 0, "title_hand").setAlpha(0).setOrigin(1, 0);
+		this.sparkles = this.add.particles(0, 0, "sparklesyass", sparkleConfig);
 		this.washbear_hand = this.add
-			.image(1180 + 195, 600 + 240, "title_washbear_hand")
+			.image(1180 + 195, 600 + (240*1.8), "title_washbear_hand")
+			.setOrigin(0.5, 0.9)
 			.setAlpha(0)
 			.setVisible(false);
 		this.logo = this.add
 			.image(this.CX, 270, "title_logo")
-			.setScale(2)
+			.setScale(1)
 			.setAlpha(0)
 			.setVisible(false);
 
@@ -86,6 +92,10 @@ export class TitleScene extends BaseScene {
 
 		this.tail.x -= 400;
 		this.hand.x += 400;
+		this.sparkles.stop(true);
+		// this.sparkles.onParticleEmit( () =>
+		// 	this.sparkles.setFrequency(Phaser.Math.RND.between(200, 400))
+		// );
 
 		this.subtitle = this.addText({
 			x: this.CX,
@@ -260,7 +270,22 @@ export class TitleScene extends BaseScene {
 		if (bar >= 4) this.bath.setVisible(true);
 		if (bar >= 7) this.washbear_tail.setVisible(true);
 		if (bar >= 8) this.washbear_hand.setVisible(true);
+		if (bar >= 8) this.sparkles.start();
 		if (bar >= 10) this.logo.setVisible(true);
+		if (bar == 11) this.tweens.add({
+			targets: this.logo,
+			angle: {from: 0, to: -3},
+			duration: 800,
+			ease: Phaser.Math.Easing.Sine.InOut,
+		})
+		if (bar == 13) this.tweens.add({
+			targets: this.logo,
+			scale: {from: 1.03, to: 1},
+			angle: {from: 3, to: 0},
+			duration: 500,
+			delay: 150,
+			ease: Phaser.Math.Easing.Cubic.Out,
+		})
 		if (bar >= 14) {
 			this.subtitle.setVisible(true);
 			this.credits.setVisible(true);
@@ -271,3 +296,29 @@ export class TitleScene extends BaseScene {
 		// this.select.play();
 	}
 }
+
+const sparkleConfig: Phaser.Types.GameObjects.Particles.ParticleEmitterConfig = {
+	lifespan: {min: 700, max: 1300},
+	blendMode: "ADD",
+	speed: 0,
+	scale: { start: 1.1, end: 0.9 },
+	alpha: { start: 1,   end: 0 },
+	frequency: 200,
+	frame: [0, 1, 2, 3],
+	emitting: true,
+	emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone({
+		getRandomPoint(point) {
+			const shape = new Phaser.Geom.Rectangle(1360, 380, 440, 500);
+			const shape2 = new Phaser.Geom.Polygon("1440 470 1615 410 1740 610 1655 715 1610 855 1490 820 1400 640");
+			for (let i = 0; i < 10; i++) {
+				const newPoint = shape.getRandomPoint();
+				if (shape2.contains(newPoint.x, newPoint.y)) {
+					point.x = newPoint.x;
+					point.y = newPoint.y;
+				}
+			}
+			point.x = point.x ?? 1450;
+			point.y = point.y ?? 550;
+		},
+	}),
+};

@@ -199,6 +199,8 @@ const images: Image[] = [
 
 /* Spritesheets */
 const spritesheets: SpriteSheet[] = [
+	// Title screen sparkle
+	spritesheet('titlescreen/sparklesyass', 'sparklesyass', 64, 64),
 	//temp
 	spritesheet('temp/invbutton', 'invbutton', 240, 480),
 	spritesheet('temp/fwbutton', 'fwbutton', 64, 262),
