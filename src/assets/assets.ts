@@ -11,6 +11,12 @@ const images: Image[] = [
 	image('backgrounds/grid3', 'grid3'),
 	image('backgrounds/grid4', 'grid4'),
 
+	// Background tops
+	image('backgrounds/grid1-top', 'grid1-top'),
+	image('backgrounds/grid2-top', 'grid2-top'),
+	image('backgrounds/grid3-top', 'grid3-top'),
+	image('backgrounds/grid4-top', 'grid4-top'),
+
 	// Cutscenes
 	image('cutscenes/dummy1', 'cutscene_dummy1'),
 	image('cutscenes/dummy2', 'cutscene_dummy2'),
