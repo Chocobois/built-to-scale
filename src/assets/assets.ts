@@ -230,10 +230,16 @@ const spritesheets: SpriteSheet[] = [
 
 /* Audios */
 const audios: Audio[] = [
+	// Music
 	music('bgm_intro', 'm_main_menu'),
 	music('salonbase', 'm_salonbase'),
 	music('saloncutscene', 'm_saloncutscene'),
 	music('salondowntime', 'm_salondowntime'),
+
+	// Ambience
+	music('bgs_bubbling', 'bgs_bubbling'),
+
+	// Sounds
 	sound('place', 'place', 0.5),
 	sound('return', 'return', 0.5),
 	sound('scroll', 'scroll', 0.5),
