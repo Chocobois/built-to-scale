@@ -980,6 +980,8 @@ export class GameScene extends BaseScene {
 			const path = new Phaser.Curves.Path();
 			path.moveTo(customer.x, customer.y);
 			path.lineTo(seat.x, seat.y);
+
+			customer.walk(path);
 		}
 	}
 
