@@ -12,6 +12,7 @@ export enum EmployeeType {
 export interface EmployeeTypeInterface {
 	spriteKeys: {
 		idle: string;
+		sing: string;
 		walk: string[];
 		work: string[];
 	};
@@ -23,6 +24,7 @@ export const EmployeeTypeData: {
 	[EmployeeType.RaccoonGray]: {
 		spriteKeys: {
 			idle: "worker",
+			sing: "workerSing",
 			walk: ["workerWalk1", "workerWalk2", "workerWalk3", "workerWalk2"],
 			work: ["workerWork1", "workerWork2"],
 		},
@@ -30,6 +32,7 @@ export const EmployeeTypeData: {
 	[EmployeeType.RaccoonBrown]: {
 		spriteKeys: {
 			idle: "workerAlt1",
+			sing: "workerAlt1Sing",
 			walk: [
 				"workerAlt1Walk1",
 				"workerAlt1Walk2",
@@ -42,6 +45,7 @@ export const EmployeeTypeData: {
 	[EmployeeType.RaccoonYellow]: {
 		spriteKeys: {
 			idle: "workerAlt2",
+			sing: "workerAlt2Sing",
 			walk: [
 				"workerAlt2Walk1",
 				"workerAlt2Walk2",
@@ -54,6 +58,7 @@ export const EmployeeTypeData: {
 	[EmployeeType.RaccoonPurple]: {
 		spriteKeys: {
 			idle: "workerAlt3",
+			sing: "workerAlt3Sing",
 			walk: [
 				"workerAlt3Walk1",
 				"workerAlt3Walk2",
@@ -66,6 +71,7 @@ export const EmployeeTypeData: {
 	[EmployeeType.RaccoonGreen]: {
 		spriteKeys: {
 			idle: "workerAlt4",
+			sing: "workerAlt4Sing",
 			walk: [
 				"workerAlt4Walk1",
 				"workerAlt4Walk2",
@@ -78,6 +84,7 @@ export const EmployeeTypeData: {
 	[EmployeeType.Human]: {
 		spriteKeys: {
 			idle: "player",
+			sing: "player",
 			walk: ["player"],
 			work: ["player"],
 		},

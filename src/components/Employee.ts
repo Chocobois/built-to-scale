@@ -24,6 +24,9 @@ export class Employee extends Button {
 	public startX: number;
 	public startY: number;
 
+	/** Uses alt. idle sprite. To be toggled externally */
+	public isSinging: boolean;
+
 	constructor(
 		scene: GameScene,
 		x: number,
@@ -38,6 +41,7 @@ export class Employee extends Button {
 		this.cellSize = cellSize;
 		this.currentCustomer = null;
 		this.isWorking = false;
+		this.isSinging = false;
 
 		this.startX = x;
 		this.startY = y;
@@ -65,6 +69,13 @@ export class Employee extends Button {
 		const factor = this.isWorking ? 0.1 : this.hasBeenPurchased ? 0.02 : 0;
 		const squish = 1.0 + factor * Math.sin((6 * time) / 1000);
 		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
+
+		if (this.hasBeenPurchased) {
+			const currentKey = this.sprite.frame.source.texture.key;
+			if (currentKey == this.spriteKeys.idle || currentKey == this.spriteKeys.sing) {
+				this.sprite.setTexture(this.idleFrame());
+			}
+		}
 
 		if (this.isWorking) {
 			const count = this.spriteKeys.work.length;
@@ -114,7 +125,7 @@ export class Employee extends Button {
 				this.setPosition(pos.x, pos.y);
 
 				// this.graphics.clear();
-				this.sprite.setTexture(this.spriteKeys.idle);
+				this.sprite.setTexture(this.idleFrame());
 				this.emit("walkend");
 			},
 		});
@@ -123,7 +134,7 @@ export class Employee extends Button {
 	setAction(isWorking: boolean) {
 		this.isWorking = isWorking;
 		if (!isWorking) {
-			this.sprite.setTexture(this.spriteKeys.idle);
+			this.sprite.setTexture(this.idleFrame());
 		}
 	}
 
@@ -139,7 +150,7 @@ export class Employee extends Button {
 			this.setAlpha(1.0);
 		} else if (this.upgradeTo) {
 			this.employeeId = this.upgradeTo!;
-			this.sprite.setTexture(this.spriteKeys.idle);
+			this.sprite.setTexture(this.idleFrame());
 		}
 	}
 
@@ -164,7 +175,11 @@ export class Employee extends Button {
 		this.hasBeenPurchased = true;
 		this.setAlpha(1.0);
 		this.employeeId = id;
-		this.sprite.setTexture(this.spriteKeys.idle);
+		this.sprite.setTexture(this.idleFrame());
+	}
+
+	idleFrame() {
+		return this.isSinging ? this.spriteKeys.sing : this.spriteKeys.idle;
 	}
 
 	/* Getters */

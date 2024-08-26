@@ -11,6 +11,7 @@ export class Music extends Phaser.Sound.WebAudioSound {
 	public speed: number;
 	public start: number;
 	public loopSum: number;
+	public notes: [number, number][];
 
 	constructor(scene: any, myKey: MusicKey, config = {}) {
 		super(scene.sound, myKey, config);
@@ -39,6 +40,7 @@ export class Music extends Phaser.Sound.WebAudioSound {
 		this.speed = 60 / this.bpm;
 		this.maxBar = Math.round((this.end - this.start) / this.speed);
 		this.loopSum = 0;
+		this.notes = custom.notes ?? [];
 	}
 
 	update() {
@@ -82,5 +84,12 @@ export class Music extends Phaser.Sound.WebAudioSound {
 
 	get barTime() {
 		return (this.totalTime - this.offset) / this.speed;
+	}
+
+	get noteActive() {
+		const possibleNotes = this.notes
+			.filter( ([start, end]) => start < this.seek && end > this.seek )
+
+		return possibleNotes.length != 0;
 	}
 }

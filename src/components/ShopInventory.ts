@@ -177,16 +177,17 @@ export class ShopInventory extends Phaser.GameObjects.Container {
             this.itemList[this.highlightIndex].quant -= nr;
             if(this.itemList[this.highlightIndex].quant <= 0){
                 this.itemList[this.highlightIndex].quant = 0;
-                this.display[this.highlightIndex].shadow();
+                this.display[this.highlightIndex-this.currentIndices[0]].shadow();
                 this.updateButtons(this.highlightIndex);
                 this.hideInvDisp();
                 this.clearPriceDisp();
                 this.clearTextDisplays();
             } else {
-                this.display[this.highlightIndex].updateAmt(this.itemList[this.highlightIndex].quant);
+
                 this.updateButtons(this.highlightIndex);
                 this.updateInvDisp(this.highlightIndex);
                 this.updatePriceDisp(n);
+                this.display[this.highlightIndex-this.currentIndices[0]].updateAmt(this.itemList[this.highlightIndex].quant);
             }
         }
     }

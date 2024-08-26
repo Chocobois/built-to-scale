@@ -45,7 +45,7 @@ export class Inventory extends Phaser.GameObjects.Container {
         this.scene=scene;
         this.itemList = [
             new Item(0,"rock",stock[0],1,["rock","cheap"],["cheap"],"Complimentary Pet Rock","A loving pet rock to cheer up any customer. Works modestly well.", SnapType.CUSTOMER, "doink"),
-            new Item(1,"sugar",stock[1],20,["drug"],["illegal","cool"],"Sugar","A delicious white powder made from plants. Improves working speed a whole bunch!", SnapType.STATION, "chomp"),
+            new Item(1,"coke",stock[1],20,["drug"],["illegal","cool"],"Sugar","A delicious white powder made from plants. Improves working speed a whole bunch!", SnapType.STATION, "chomp"),
             new Item(2,"hotdog",stock[2],25,["red"],["red"],"Hot Dog","A thick wiener with condiments. This savory snack is great for hot-headed customers.", SnapType.CUSTOMER, "chomp"),
             new Item(3,"brocc",stock[3],12,["green"],["green"],"Broccoli","Verdant customers will be overjoyed to have this stalk of organic free-range broccoli.", SnapType.CUSTOMER, "chomp"),
             new Item(4,"snowglobe",stock[4],30,["blue"],["blue"],"Snowglobe", "A cute little snowglobe that appeals to frosty-looking customers.", SnapType.CUSTOMER, "doink"),

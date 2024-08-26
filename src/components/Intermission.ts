@@ -23,7 +23,7 @@ export class Intermission extends Phaser.GameObjects.Container {
 
 	private rect: Phaser.GameObjects.Rectangle;
 	private subtitles: Phaser.GameObjects.Text;
-	private queuedLines: { text: string; tint?: number }[];
+	private queuedLines: { text: string; tint?: string }[];
 
 	private button: Button;
 
@@ -113,26 +113,26 @@ export class Intermission extends Phaser.GameObjects.Container {
 				this.cutscene.setTexture("cutscene_dummy1");
 				this.queuedLines = [
 					{ text: "Somewhere in Chocoland" },
-					{ text: "What a nice day for a walk.", tint: 0xfff69b },
-					{ text: "Nothing can go wrong...", tint: 0xffb8aa },
+					{ text: "What a nice day for a walk.", tint: ColorStr.Lime800 },
+					{ text: "Nothing can go wrong...", tint: ColorStr.Orange900 },
 				];
 				break;
 
 			case Mode.IntroCutscene2:
 				this.cutscene.setTexture("cutscene_dummy2");
 				this.queuedLines = [
-					{ text: "Oh no!", tint: 0xffb8aa },
-					{ text: "Not the mud...!", tint: 0xffb8aa },
+					{ text: "Oh no!", tint: ColorStr.Orange900 },
+					{ text: "Not the mud...!", tint: ColorStr.Orange900 },
 				];
 				break;
 
 			case Mode.IntroCutscene3:
 				this.cutscene.setTexture("cutscene_dummy3");
 				this.queuedLines = [
-					{ text: "Are you OK?", tint: 0xfff69b },
-					{ text: "My scales are all dirty.", tint: 0xffb8aa },
-					{ text: "Let's get you cleaned up.", tint: 0xfff69b },
-					{ text: "(*gasp* A customer!)", tint: 0xffd34f },
+					{ text: "Are you OK?", tint: ColorStr.Lime800 },
+					{ text: "My scales are all dirty.", tint: ColorStr.Orange900 },
+					{ text: "Let's get you cleaned up.", tint: ColorStr.Lime800 },
+					{ text: "(*gasp* A customer!)", tint: ColorStr.Yellow500 },
 				];
 				break;
 
@@ -179,7 +179,8 @@ export class Intermission extends Phaser.GameObjects.Container {
 		let line = this.queuedLines.shift();
 		if (line) {
 			this.subtitles.setText(line.text);
-			this.subtitles.setTint(line.tint ?? 0xffffff);
+
+			this.subtitles.setColor(line.tint ?? ColorStr.Black);
 			this.subtitles.setVisible(true);
 			this.button.setVisible(true);
 		}
