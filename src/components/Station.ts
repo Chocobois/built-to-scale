@@ -60,7 +60,7 @@ export class Station extends Button {
 		this.hasBeenPurchased = false;
 
 		/* Sprite */
-		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
+		this.spriteCont = this.scene.add.container(this.spriteOffsetX, this.spriteOffsetY);
 		this.add(this.spriteCont);
 
 		this.sprite = this.scene.add.image(0, 0, this.spriteKey);
@@ -252,7 +252,8 @@ export class Station extends Button {
 		} else if (this.upgradeTo) {
 			this.stationId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
-			this.spriteCont.y = this.spriteOffset;
+			this.spriteCont.x = this.spriteOffsetX;
+			this.spriteCont.y = this.spriteOffsetY;
 			this.sprite.setScale(this.spriteSize / this.sprite.width);
 		}
 	}
@@ -263,7 +264,8 @@ export class Station extends Button {
 		this.setAlpha(1.0);
 		this.stationId = id;
 		this.sprite.setTexture(this.spriteKey);
-		this.spriteCont.y = this.spriteOffset;
+		this.spriteCont.x = this.spriteOffsetX;
+		this.spriteCont.y = this.spriteOffsetY;
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 	}
 
@@ -360,8 +362,14 @@ export class Station extends Button {
 		return this.spriteScale * this.cellSize;
 	}
 
-	get spriteOffset(): number {
-		return 0.5 * this.spriteSize;
+	get spriteOffsetX(): number {
+		const x = StationData[this.stationId].spriteOffsetX ?? 0;
+		return x * this.spriteSize;
+	}
+
+	get spriteOffsetY(): number {
+		const y = StationData[this.stationId].spriteOffsetY ?? 0;
+		return (0.5 + y) * this.spriteSize;
 	}
 
 	get taskDuration(): number {

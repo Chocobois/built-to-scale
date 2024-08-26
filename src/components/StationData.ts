@@ -60,6 +60,8 @@ export interface StationInterface {
 	tier: number; // Tier number
 	spriteKey: string; // Station image key
 	spriteScale: number; // Multiplier for sprite size
+	spriteOffsetX?: number; // Sprite offset X to center sitting location
+	spriteOffsetY?: number; // Sprite offset Y to center sitting location
 	taskDuration?: number; // Time it takes to complete a task
 	admissionFee?: number; // Customer pays this amount to use the station
 	cost: number; // Cost to purchase the station
@@ -82,6 +84,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 2,
 		spriteKey: "waitchair_2",
 		spriteScale: 1.25,
+		spriteOffsetX: -0.03,
+		spriteOffsetY: -0.07,
 		cost: 250,
 		upgradeTo: StationId.WaitingSeatTier3,
 	},
@@ -90,7 +94,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		name: "Waiting throne",
 		tier: 3,
 		spriteKey: "waitchair_3",
-		spriteScale: 1.5,
+		spriteScale: 1.4,
+		spriteOffsetY: -0.12,
 		cost: 500,
 	},
 
@@ -100,6 +105,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 1,
 		spriteKey: "nail_1",
 		spriteScale: 1.0,
+		spriteOffsetY: 0.06,
 		taskDuration: 3000,
 		admissionFee: 20,
 		cost: 150,
@@ -111,6 +117,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 2,
 		spriteKey: "nail_2",
 		spriteScale: 1.25,
+		spriteOffsetX: 0.01,
+		spriteOffsetY: -0.05,
 		taskDuration: 2500,
 		admissionFee: 40,
 		cost: 250,
@@ -121,7 +129,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		name: "Talonicure bed",
 		tier: 3,
 		spriteKey: "nail_3",
-		spriteScale: 1.5,
+		spriteScale: 1.4,
+		spriteOffsetY: -0.05,
 		taskDuration: 2000,
 		admissionFee: 60,
 		cost: 400,
@@ -144,6 +153,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 2,
 		spriteKey: "wax_2",
 		spriteScale: 1.25,
+		spriteOffsetX: 0.08,
+		spriteOffsetY: -0.1,
 		taskDuration: 1500,
 		admissionFee: 20,
 		cost: 250,
@@ -154,7 +165,9 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		name: "Scalicure divan",
 		tier: 3,
 		spriteKey: "wax_3",
-		spriteScale: 1.5,
+		spriteScale: 1.4,
+		spriteOffsetX: 0.01,
+		spriteOffsetY: -0.1,
 		taskDuration: 1000,
 		admissionFee: 30,
 		cost: 500,
@@ -187,7 +200,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		name: "Dracuzzi",
 		tier: 3,
 		spriteKey: "bath_3",
-		spriteScale: 1.5,
+		spriteScale: 1.4,
+		spriteOffsetY: -0.05,
 		taskDuration: 2000,
 		admissionFee: 40,
 		cost: 600,
@@ -199,6 +213,7 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		tier: 1,
 		spriteKey: "checkout",
 		spriteScale: 1.4,
+		spriteOffsetY: 0.1,
 		taskDuration: 500,
 		cost: 0,
 	},
