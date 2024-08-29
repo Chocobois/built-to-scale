@@ -143,7 +143,7 @@ export class GameScene extends BaseScene {
 
 		// Touch input settings
 		this.input.addPointer(2);
-		this.input.dragDistanceThreshold = 10;
+		this.input.dragDistanceThreshold = 32;
 
 		// Reset daily stats
 		this.dailyStats = { money: 0, tip: 0, happyCustomers: 0, angryCustomers: 0 };
