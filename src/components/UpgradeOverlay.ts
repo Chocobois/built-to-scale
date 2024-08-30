@@ -96,13 +96,8 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.titleText.setText(station.stationName);
 
 		// Position panel
-		if (station.x > this.scene.W / 2) {
-			this.panel.x = station.x - 500;
-			this.panel.y = station.y;
-		} else {
-			this.panel.x = station.x + 500;
-			this.panel.y = station.y;
-		}
+		this.panel.x = station.x + 450 * Math.sign(this.scene.W / 2 - station.x);
+		this.panel.y = Phaser.Math.Clamp(station.y, 200, this.scene.H - 250);
 
 		// Upgrade text if there is an upgrade available
 		if (station.upgradeTo && station.hasBeenPurchased) {
@@ -146,13 +141,8 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 		this.titleText.setText(employee.employeeName);
 
 		// Position panel
-		if (employee.x > this.scene.W / 2) {
-			this.panel.x = employee.x - 500;
-			this.panel.y = employee.y;
-		} else {
-			this.panel.x = employee.x + 500;
-			this.panel.y = employee.y;
-		}
+		this.panel.x = employee.x + 450 * Math.sign(this.scene.W / 2 - employee.x);
+		this.panel.y = Phaser.Math.Clamp(employee.y, 200, this.scene.H - 250);
 
 		// Upgrade text if there is an upgrade available
 		if (employee.upgradeTo && employee.hasBeenPurchased) {
