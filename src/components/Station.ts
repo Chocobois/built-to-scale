@@ -11,6 +11,7 @@ import {
 import { interpolateColor } from "@/utils/functions";
 import { SimpleButton } from "./elements/SimpleButton";
 import { TextEffect } from "./TextEffect";
+import { UpgradeIcon } from "./UpgradeIcon";
 
 export class Station extends Button {
 	public stationId: StationId;
@@ -38,9 +39,9 @@ export class Station extends Button {
 	private cellSize: number;
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Image;
-	private text: Phaser.GameObjects.Text;
 
 	private progressTimer: Timer;
+	private upgradeIcon: UpgradeIcon;
 
 	constructor(
 		scene: GameScene,
@@ -60,7 +61,10 @@ export class Station extends Button {
 		this.hasBeenPurchased = false;
 
 		/* Sprite */
-		this.spriteCont = this.scene.add.container(this.spriteOffsetX, this.spriteOffsetY);
+		this.spriteCont = this.scene.add.container(
+			this.spriteOffsetX,
+			this.spriteOffsetY
+		);
 		this.add(this.spriteCont);
 
 		this.sprite = this.scene.add.image(0, 0, this.spriteKey);
@@ -69,16 +73,11 @@ export class Station extends Button {
 		this.sprite.setTint(interpolateColor(0xffffff, this.stationTypeColor, 0.2));
 		this.spriteCont.add(this.sprite);
 
-		this.text = this.scene.addText({
-			x: 0,
-			y: cellSize / 2,
-			size: 32,
-			text: "Available",
-		});
-		this.text.setOrigin(0.5);
-		this.text.setVisible(false);
-		this.text.setStroke("#000000", 4);
-		this.add(this.text);
+		this.upgradeIcon = new UpgradeIcon(
+			scene,
+			x + 0.3 * cellSize,
+			y + 0.3 * cellSize
+		);
 
 		this.progressTimer = new Timer(
 			scene,
@@ -113,19 +112,29 @@ export class Station extends Button {
 		this.clearButton.setVisible(false);
 	}
 
+	destroy(): void {
+		this.upgradeIcon.destroy();
+		super.destroy();
+	}
+
 	update(time: number, delta: number) {
-		const amount = this.hasBeenPurchased ? 0.02 : 0;
+		const amount = this.hasBeenPurchased ? 0.01 : 0;
 		const squish = 1.0 + amount * Math.sin((6 * time) / 1000);
 		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
+
+		this.upgradeIcon.update(time, delta);
+	}
+
+	setDepth(value: number): this {
+		this.upgradeIcon.setDepth(value + 50);
+		return super.setDepth(value);
 	}
 
 	setCustomer(customer: Customer | null) {
 		this.currentCustomer = customer;
-		this.text.setText(customer ? "Click me!" : "Available");
 	}
 
 	startTask() {
-		this.text.setText("Working");
 		this.currentCustomer
 			? (this.taskHaste *= this.currentCustomer.workMultiplier)
 			: (this.taskHaste *= 1);
@@ -158,7 +167,6 @@ export class Station extends Button {
 				this.resetTempVariables();
 				this.emit("taskend");
 				this.progressTimer.setVisible(false);
-				this.text.setText("Click me!");
 			},
 		});
 		this.setCrits(this.taskDuration * this.taskHaste * this.taskSpeed);
@@ -225,6 +233,11 @@ export class Station extends Button {
 
 	setClickable(value: boolean) {
 		this.sprite.input!.enabled = value;
+		this.upgradeIcon.setVisible(value && this.upgradeTo !== undefined);
+	}
+
+	setMoney(value: number) {
+		this.upgradeIcon.setAffordable(value >= this.upgradeCost);
 	}
 
 	pauseClickable() {
@@ -243,18 +256,22 @@ export class Station extends Button {
 		}
 	}
 
+	// Called upon the player purchasing an upgrade
 	upgrade() {
-		// this.scene.sound.play("upgrade", {volume: 0.5 });
-
 		if (!this.hasBeenPurchased) {
 			this.hasBeenPurchased = true;
 			this.setAlpha(1.0);
+			this.upgradeIcon.setPurchased(true);
 		} else if (this.upgradeTo) {
 			this.stationId = this.upgradeTo!;
 			this.sprite.setTexture(this.spriteKey);
 			this.spriteCont.x = this.spriteOffsetX;
 			this.spriteCont.y = this.spriteOffsetY;
 			this.sprite.setScale(this.spriteSize / this.sprite.width);
+		}
+
+		if (this.upgradeTo === undefined) {
+			this.upgradeIcon.setVisible(false);
 		}
 	}
 
@@ -267,6 +284,7 @@ export class Station extends Button {
 		this.spriteCont.x = this.spriteOffsetX;
 		this.spriteCont.y = this.spriteOffsetY;
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
+		this.upgradeIcon.setPurchased(true);
 	}
 
 	applyItem(id: number, sp: string) {

@@ -51,7 +51,9 @@ export enum StationId {
 	GoldBathTier1,
 	GoldBathTier2,
 	GoldBathTier3,
-	CashRegister,
+	CashRegisterTier1,
+	CashRegisterTier2,
+	CashRegisterTier3,
 }
 
 export interface StationInterface {
@@ -207,14 +209,36 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		cost: 600,
 	},
 
-	[StationId.CashRegister]: {
+	[StationId.CashRegisterTier1]: {
 		type: StationType.CashRegister,
 		name: "Cash register",
 		tier: 1,
 		spriteKey: "checkout",
 		spriteScale: 1.4,
 		spriteOffsetY: 0.1,
-		taskDuration: 500,
+		taskDuration: 1500,
 		cost: 0,
+		upgradeTo: StationId.CashRegisterTier2,
+	},
+	[StationId.CashRegisterTier2]: {
+		type: StationType.CashRegister,
+		name: "Cash register",
+		tier: 2,
+		spriteKey: "checkout",
+		spriteScale: 1.4,
+		spriteOffsetY: 0.1,
+		taskDuration: 1000,
+		cost: 400,
+		upgradeTo: StationId.CashRegisterTier3,
+	},
+	[StationId.CashRegisterTier3]: {
+		type: StationType.CashRegister,
+		name: "Cash register",
+		tier: 3,
+		spriteKey: "checkout",
+		spriteScale: 1.4,
+		spriteOffsetY: 0.1,
+		taskDuration: 500,
+		cost: 800,
 	},
 };

@@ -55,7 +55,7 @@ export class GameScene extends BaseScene {
 	private invButton: ToggleButton;
 	private iHandler: ItemHandler;
 	public activeItem: ItemButton;
-	
+
 	public tArray: number[];
 
 	public musicBase: Music;
@@ -146,13 +146,18 @@ export class GameScene extends BaseScene {
 		this.input.dragDistanceThreshold = 32;
 
 		// Reset daily stats
-		this.dailyStats = { money: 0, tip: 0, happyCustomers: 0, angryCustomers: 0 };
+		this.dailyStats = {
+			money: 0,
+			tip: 0,
+			happyCustomers: 0,
+			angryCustomers: 0,
+		};
 		this.savedPurchases = {
 			stations: [
 				StationId.WaitingSeatTier1,
 				StationId.HornAndNailsTier1,
 				StationId.ScalePolishTier1,
-				StationId.CashRegister,
+				StationId.CashRegisterTier1,
 			],
 			employees: [EmployeeId.RaccoonGrayTier1],
 		};
@@ -161,7 +166,7 @@ export class GameScene extends BaseScene {
 		this.background = this.add.image(0, 0, "grid1");
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
-		
+
 		this.backgroundTop = this.add.image(0, 0, "grid1-top");
 		this.backgroundTop.setOrigin(0);
 		this.backgroundTop.setDepth(50);
@@ -183,8 +188,7 @@ export class GameScene extends BaseScene {
 		this.ui.on("nextLevel", () => {
 			const upgradeCost = LevelData[this.level].upgradeCost ?? 0;
 			if (this.money >= upgradeCost) {
-				this.money -= upgradeCost;
-				this.ui.setMoney(this.money);
+				this.addMoney(-upgradeCost);
 				if (this.inventory.isOpen) this.toggleInventory();
 				this.intermission.fadeToIntermission(Mode.NextLevelCutscene);
 			}
@@ -251,18 +255,16 @@ export class GameScene extends BaseScene {
 		this.upgradeOverlay = new UpgradeOverlay(this);
 		this.upgradeOverlay.setDepth(1010);
 		this.upgradeOverlay.on("upgradeStation", (station: Station) => {
-			this.money -= station.upgradeCost;
-			this.ui.setMoney(this.money);
+			const cost = station.upgradeCost;
 			station.upgrade();
-			// this.upgradeOverlay.selectStation(station);
+			this.addMoney(-cost);
 			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
 		this.upgradeOverlay.on("upgradeEmployee", (employee: Employee) => {
-			this.money -= employee.upgradeCost;
-			this.ui.setMoney(this.money);
+			const cost = employee.upgradeCost;
 			employee.upgrade();
-			// this.upgradeOverlay.selectEmployee(employee);
+			this.addMoney(-cost);
 			this.upgradeOverlay.close();
 			this.updateSavedPurchases();
 		});
@@ -273,7 +275,7 @@ export class GameScene extends BaseScene {
 		this.summaryOverlay = new SummaryOverlay(this);
 		this.summaryOverlay.setDepth(1020);
 		this.summaryOverlay.on("progress", () => {
-			this.summaryOverlay.setVisible(false);
+			this.summaryOverlay.close();
 		});
 
 		//shop
@@ -327,6 +329,7 @@ export class GameScene extends BaseScene {
 
 		this.loadLevel(LevelId.Level1);
 		this.setState(GameState.Shopping);
+		this.sortDepth();
 		// this.startDay();
 		// this.intermission.fadeToGame(); // Comment this out to see cutscenes
 		this.tArray = [];
@@ -466,7 +469,7 @@ export class GameScene extends BaseScene {
 						this.addStation(gridX, gridY, StationId.GoldBathTier1);
 						break;
 					case BlockType.CashRegister:
-						this.addStation(gridX, gridY, StationId.CashRegister);
+						this.addStation(gridX, gridY, StationId.CashRegisterTier1);
 						break;
 					case BlockType.EmployeeGray:
 						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGrayTier1);
@@ -511,8 +514,16 @@ export class GameScene extends BaseScene {
 		this.ui.setLevel(level);
 		this.ui.setMoney(this.money);
 		this.ui.setDay(this.day);
+		this.addMoney(0);
 
 		this.setState(GameState.Shopping);
+	}
+
+	addMoney(amount: number) {
+		this.money += amount;
+		this.ui.setMoney(this.money);
+		this.stations.forEach((s) => s.setMoney(this.money));
+		this.employees.forEach((e) => e.setMoney(this.money));
 	}
 
 	// Start a new day
@@ -522,7 +533,7 @@ export class GameScene extends BaseScene {
 				this.beginShopTutorial(0);
 				return;
 			} else {
-				if(this.shopinventory.isOpen){
+				if (this.shopinventory.isOpen) {
 					this.toggleShop();
 				}
 			}
@@ -532,7 +543,12 @@ export class GameScene extends BaseScene {
 		this.ui.setDay(this.day);
 
 		// Reset daily stats
-		this.dailyStats = { money: 0, tip: 0,happyCustomers: 0, angryCustomers: 0 };
+		this.dailyStats = {
+			money: 0,
+			tip: 0,
+			happyCustomers: 0,
+			angryCustomers: 0,
+		};
 
 		// Reset depth
 		this.stations.forEach((s) => s.setDepth(0));
@@ -740,8 +756,6 @@ export class GameScene extends BaseScene {
 		const customer = new Customer(this, 0, 0, id, this.board.size);
 		this.customers.push(customer);
 
-
-
 		// Place in available waiting seat
 		const seat = this.getAvailableWaitingSeat(id);
 		if (seat) {
@@ -818,16 +832,14 @@ export class GameScene extends BaseScene {
 
 		// Customer completing their itinerary and paying
 		customer.on("pay", (money: number) => {
-			this.money += money;
+			this.addMoney(money);
 			this.dailyStats.money += money;
 			this.dailyStats.happyCustomers += 1;
-			this.ui.setMoney(this.money);
 		});
 
 		customer.on("tip", (money: number) => {
-			this.money += money;
+			this.addMoney(money);
 			this.dailyStats.tip += money;
-			this.ui.setMoney(this.money);
 		});
 
 		// Customer leaving angry
@@ -964,7 +976,7 @@ export class GameScene extends BaseScene {
 		const goal = this.board.coordToNav(seat.x, seat.y);
 
 		// Starting location outside of screen
-		customer.snapTo(startCoord.x - 2 * this.board.size, startCoord.y, true);
+		customer.snapTo(-this.board.size, startCoord.y, true);
 
 		const navPath = this.navmesh.findPath(start, goal);
 		if (navPath) {
@@ -1254,26 +1266,8 @@ export class GameScene extends BaseScene {
 	}
 
 	removeMoney(n: number) {
-		this.money -= n;
-		this.ui.setMoney(this.money);
+		this.addMoney(-n);
 		this.sound.play("cashmoney", { volume: 0.4 });
-		/*
-		this.addEffect(
-			new TextEffect(
-				scene,
-				this.x - 70 + Math.random() * 80,
-				this.y - 80,
-				"+" + this.moneySpent + " €",
-				"yellow",
-				40,
-				true,
-				"red",
-				800,
-				100,
-				0.7,
-				0
-			)
-		);*/
 	}
 
 	beginShopTutorial(n: number) {
@@ -1361,9 +1355,9 @@ export class GameScene extends BaseScene {
 			this.shopText.setText(this.shopTutorialText[this.shopTutorialIndex]);
 			this.ownerImage.setFrame(this.shopTutorialFrames[this.shopTutorialIndex]);
 			this.ownerImage.input!.enabled = false;
-			this.sound.play("button", {volume: 0.5});
+			this.sound.play("button", { volume: 0.5 });
 		} else {
-			this.sound.play("button", {volume: 0.5});
+			this.sound.play("button", { volume: 0.5 });
 			this.completeShopTutorial();
 		}
 	}
@@ -1402,8 +1396,10 @@ export class GameScene extends BaseScene {
 		this.invButton.setAlpha(0.85);
 	}
 
-	restockShop(){
-		this.shopinventory.itemList.forEach((st) => (st.quant += (Math.trunc(Math.random()*10))));
+	restockShop() {
+		this.shopinventory.itemList.forEach(
+			(st) => (st.quant += Math.trunc(Math.random() * 10))
+		);
 	}
 
 	sortDepth() {
@@ -1412,18 +1408,17 @@ export class GameScene extends BaseScene {
 		this.customers.forEach((c) => c.setDepth(c.y / 50 + (c.dragged ? 100 : 1)));
 	}
 
-	refreshStationIDArray(){
+	refreshStationIDArray() {
 		this.tArray = [];
 		this.stations.forEach((st) => {
-			if(st.stationType == StationType.HornAndNails) {
+			if (st.stationType == StationType.HornAndNails) {
 				this.tArray.push(0);
 			} else if (st.stationType == StationType.ScalePolish) {
 				this.tArray.push(1);
 			} else if (st.stationType == StationType.GoldBath) {
 				this.tArray.push(2);
 			}
-		} 
-		);
+		});
 	}
 
 	updateMusicState() {
@@ -1435,34 +1430,36 @@ export class GameScene extends BaseScene {
 			base: 1,
 			cutscene: 0,
 			downtime: 0,
-		}
-
-		if (this.state != GameState.Day) intendedVolume = {
-			base: 0,
-			cutscene: 0,
-			downtime: 1,
 		};
-		
+
+		if (this.state != GameState.Day)
+			intendedVolume = {
+				base: 0,
+				cutscene: 0,
+				downtime: 1,
+			};
+
 		if (this.intermission.visible) {
 			intendedVolume.cutscene = 1 - tween;
 			intendedVolume.downtime *= tween;
 			intendedVolume.base *= tween;
 		}
 
-		this.musicBase.setVolume(		 clamp(intendedVolume.base,		  0, 1) * volumeModifier);
-		this.musicDowntime.setVolume(clamp(intendedVolume.downtime, 0, 1) * volumeModifier);
-		this.musicCutscene.setVolume(clamp(intendedVolume.cutscene, 0, 1) * volumeModifier);
+		this.musicBase.setVolume(clamp(intendedVolume.base, 0, 1) * volumeModifier);
+		this.musicDowntime.setVolume(
+			clamp(intendedVolume.downtime, 0, 1) * volumeModifier
+		);
+		this.musicCutscene.setVolume(
+			clamp(intendedVolume.cutscene, 0, 1) * volumeModifier
+		);
 
 		// Singing animation
-		
+
 		if (this.game.hasFocus) {
+			const sing =
+				this.musicDowntime.volume > 0.1 ? this.musicDowntime.noteActive : false;
 
-			const sing = this.musicDowntime.volume > 0.1
-				? this.musicDowntime.noteActive
-				: false;
-	
-			this.employees.forEach(e => e.isSinging = sing);
+			this.employees.forEach((e) => (e.isSinging = sing));
 		}
-
 	}
 }
