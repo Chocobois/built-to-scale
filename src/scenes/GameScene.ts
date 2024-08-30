@@ -39,7 +39,7 @@ enum GameState {
 
 export class GameScene extends BaseScene {
 	private background: Phaser.GameObjects.Image;
-	private backgroundTop: Phaser.GameObjects.Image;
+	private foreground: Phaser.GameObjects.Image;
 	private board: Board;
 	private stations: Station[];
 	private employees: Employee[];
@@ -163,14 +163,14 @@ export class GameScene extends BaseScene {
 		};
 
 		// Background
-		this.background = this.add.image(0, 0, "grid1");
+		this.background = this.add.image(0, 0, "6x4_bg");
 		this.background.setOrigin(0);
 		this.fitToScreen(this.background);
 
-		this.backgroundTop = this.add.image(0, 0, "grid1-top");
-		this.backgroundTop.setOrigin(0);
-		this.backgroundTop.setDepth(50);
-		this.fitToScreen(this.backgroundTop);
+		this.foreground = this.add.image(0, 0, "6x4_fg");
+		this.foreground.setOrigin(0);
+		this.foreground.setDepth(50);
+		this.fitToScreen(this.foreground);
 
 		this.board = new Board(this, this.CX, this.CY, 6, 4, 100);
 
@@ -424,15 +424,7 @@ export class GameScene extends BaseScene {
 		const level = LevelData[id];
 
 		this.background.setTexture(level.background);
-		const topKey = `${level.background}-top`;
-
-		if (this.textures.exists(topKey)) {
-			this.backgroundTop.setVisible(true);
-			this.backgroundTop.setTexture(topKey);
-			// this.backgroundTop.setTint(0xff0000); // Debug
-		} else {
-			this.backgroundTop.setVisible(false);
-		}
+		this.foreground.setTexture(level.foreground);
 
 		this.board.resize(level.width, level.height, level.cellSize);
 

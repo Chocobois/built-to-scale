@@ -4,18 +4,14 @@ import { image, sound, music, loadFont, spritesheet } from './util';
 /* Images */
 const images: Image[] = [
 	// Backgrounds
-	image('backgrounds/background', 'background'),
-	image('backgrounds/playarea-base', 'playArea_base'),
-	image('backgrounds/grid1', 'grid1'),
-	image('backgrounds/grid2', 'grid2'),
-	image('backgrounds/grid3', 'grid3'),
-	image('backgrounds/grid4', 'grid4'),
-
-	// Background tops
-	image('backgrounds/grid1-top', 'grid1-top'),
-	image('backgrounds/grid2-top', 'grid2-top'),
-	image('backgrounds/grid3-top', 'grid3-top'),
-	image('backgrounds/grid4-top', 'grid4-top'),
+	image('backgrounds/6x4_bg', '6x4_bg'),
+	image('backgrounds/6x4_fg', '6x4_fg'),
+	image('backgrounds/7x5_bg', '7x5_bg'),
+	image('backgrounds/7x5_fg', '7x5_fg'),
+	image('backgrounds/8x6_bg', '8x6_bg'),
+	image('backgrounds/8x6_fg', '8x6_fg'),
+	image('backgrounds/10x8_bg', '10x8_bg'),
+	image('backgrounds/10x8_fg', '10x8_fg'),
 
 	// Cutscenes
 	image('cutscenes/dummy1', 'cutscene_dummy1'),

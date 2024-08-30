@@ -7,6 +7,7 @@ export enum LevelId {
 export interface Level {
 	id: LevelId;
 	background: string;
+	foreground: string;
 	width: number;
 	height: number;
 	cellSize: number;
@@ -42,7 +43,8 @@ const E = BlockType.EmployeeGreen;
 export const LevelData: Level[] = [
 	{
 		id: LevelId.Level1,
-		background: "grid1",
+		background: "6x4_bg",
+		foreground: "6x4_fg",
 		width: 6 + 2,
 		height: 4 + 2,
 		cellSize: 191,
@@ -58,7 +60,8 @@ export const LevelData: Level[] = [
 	},
 	{
 		id: LevelId.Level2,
-		background: "grid4",
+		background: "7x5_bg",
+		foreground: "7x5_fg",
 		width: 7 + 2,
 		height: 5 + 2,
 		cellSize: 150,
@@ -75,7 +78,8 @@ export const LevelData: Level[] = [
 	},
 	{
 		id: LevelId.Level3,
-		background: "grid2",
+		background: "8x6_bg",
+		foreground: "8x6_fg",
 		width: 8 + 2,
 		height: 6 + 2,
 		cellSize: 138,
