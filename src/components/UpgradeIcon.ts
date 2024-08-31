@@ -5,15 +5,17 @@ import { ColorStr } from "@/utils/colors";
 export class UpgradeIcon extends Phaser.GameObjects.Container {
 	public scene: GameScene;
 
+	private size: number;
 	private upText: Phaser.GameObjects.Text;
 	private plusText: Phaser.GameObjects.Text;
 
 	private affordable: boolean = false;
 
-	constructor(scene: GameScene, x: number, y: number) {
+	constructor(scene: GameScene, x: number, y: number, cellSize: number) {
 		super(scene, x, y);
 		scene.add.existing(this);
 		this.scene = scene;
+		this.size = cellSize / 190;
 
 		this.upText = this.scene
 			.addText({
@@ -53,9 +55,13 @@ export class UpgradeIcon extends Phaser.GameObjects.Container {
 	setAffordable(isAffordable: boolean) {
 		this.affordable = isAffordable;
 
-		this.upText.setColor(this.affordable ? ColorStr.Green600 : ColorStr.Gray700);
-		this.plusText.setColor(this.affordable ? ColorStr.Sky600 : ColorStr.Gray700);
+		this.upText.setColor(
+			this.affordable ? ColorStr.Green600 : ColorStr.Gray700
+		);
+		this.plusText.setColor(
+			this.affordable ? ColorStr.Sky600 : ColorStr.Gray700
+		);
 		this.setAlpha(isAffordable ? 1 : 0.3);
-		this.setScale(isAffordable ? 1 : 0.75);
+		this.setScale(isAffordable ? this.size : 0.75 * this.size);
 	}
 }

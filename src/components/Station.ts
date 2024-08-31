@@ -76,7 +76,8 @@ export class Station extends Button {
 		this.upgradeIcon = new UpgradeIcon(
 			scene,
 			x + 0.3 * cellSize,
-			y + 0.3 * cellSize
+			y + 0.3 * cellSize,
+			cellSize
 		);
 
 		this.progressTimer = new Timer(

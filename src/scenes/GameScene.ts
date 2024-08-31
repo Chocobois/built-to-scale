@@ -206,7 +206,8 @@ export class GameScene extends BaseScene {
 			const nextLevel = {
 				[LevelId.Level1]: LevelId.Level2,
 				[LevelId.Level2]: LevelId.Level3,
-				[LevelId.Level3]: LevelId.Level1,
+				[LevelId.Level3]: LevelId.Level4,
+				[LevelId.Level4]: LevelId.Level1,
 			}[this.level];
 			this.loadLevel(nextLevel);
 
