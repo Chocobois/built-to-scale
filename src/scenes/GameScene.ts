@@ -864,12 +864,9 @@ export class GameScene extends BaseScene {
 		y -= this.board.size / 2;
 
 		this.employees.forEach((employee) => {
-			const distance = Phaser.Math.Distance.Between(
-				x,
-				y,
-				employee.x,
-				employee.y
-			);
+			let distance = Phaser.Math.Distance.Between(x, y, employee.x, employee.y);
+			distance /= employee.walkSpeed;
+
 			if (
 				employee.hasBeenPurchased &&
 				!employee.currentCustomer &&
