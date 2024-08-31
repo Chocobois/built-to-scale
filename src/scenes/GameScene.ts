@@ -366,11 +366,6 @@ export class GameScene extends BaseScene {
 		}
 		this.upgradeOverlay.update(time, delta);
 
-		// Depth sorting hack
-		if (this.state === GameState.Day) {
-			this.sortDepth();
-		}
-
 		// Highlight button for tutorial
 		if (this.shopTutorialIndex == 0) {
 			this.invButton.setScale(0.5 + 0.08 * Math.sin(time / 100));
@@ -378,6 +373,7 @@ export class GameScene extends BaseScene {
 			this.invButton.setScale(0.5);
 		}
 
+		this.sortDepth();
 		this.updateMusicState();
 	}
 
@@ -514,10 +510,6 @@ export class GameScene extends BaseScene {
 			happyCustomers: 0,
 			angryCustomers: 0,
 		};
-
-		// Reset depth
-		this.stations.forEach((s) => s.setDepth(0));
-		this.employees.forEach((e) => e.setDepth(0));
 
 		// Reset customer spawning
 		if (this.customerSpawnTimer) this.customerSpawnTimer.destroy();
@@ -666,9 +658,6 @@ export class GameScene extends BaseScene {
 		station.on("click", () => {
 			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
 				this.upgradeOverlay.selectStation(station);
-
-				this.sortDepth();
-				station.setDepth(2000);
 			}
 		});
 	}
@@ -709,9 +698,6 @@ export class GameScene extends BaseScene {
 		employee.on("click", () => {
 			if (this.state === GameState.Shopping && !this.upgradeOverlay.visible) {
 				this.upgradeOverlay.selectEmployee(employee);
-
-				this.sortDepth();
-				employee.setDepth(2000);
 			}
 		});
 	}
@@ -1372,6 +1358,15 @@ export class GameScene extends BaseScene {
 		this.stations.forEach((s) => s.setDepth(s.y / 50 + 0));
 		this.employees.forEach((e) => e.setDepth(e.y / 50 + 1));
 		this.customers.forEach((c) => c.setDepth(c.y / 50 + (c.dragged ? 100 : 1)));
+
+		const focusStation = this.stations.find(
+			(s) => this.upgradeOverlay.selectedStation == s
+		);
+		const focusEmployee = this.employees.find(
+			(e) => this.upgradeOverlay.selectedEmployee == e
+		);
+		if (focusStation) focusStation.setDepth(2000);
+		if (focusEmployee) focusEmployee.setDepth(2000);
 	}
 
 	refreshStationIDArray() {

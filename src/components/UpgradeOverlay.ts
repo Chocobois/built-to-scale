@@ -10,8 +10,8 @@ import { numberWithCommas } from "@/utils/functions";
 export class UpgradeOverlay extends Phaser.GameObjects.Container {
 	public scene: GameScene;
 
-	private selectedStation: Station | null = null;
-	private selectedEmployee: Employee | null = null;
+	public selectedStation: Station | null = null;
+	public selectedEmployee: Employee | null = null;
 
 	private background: Phaser.GameObjects.Rectangle;
 	private panel: RoundRectangle;
@@ -200,6 +200,8 @@ export class UpgradeOverlay extends Phaser.GameObjects.Container {
 			duration: 200,
 			onComplete: () => {
 				this.setVisible(false);
+				this.selectedStation = null;
+				this.selectedEmployee = null;
 				this.emit("close");
 			},
 		});

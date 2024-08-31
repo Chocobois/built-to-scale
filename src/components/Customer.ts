@@ -63,7 +63,7 @@ export class Customer extends Button {
 	private cellSize: number;
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Sprite;
-	private customColor: number;
+	private hitarea: Phaser.GameObjects.Rectangle;
 	// private graphics: Phaser.GameObjects.Graphics;
 	private thoughtBubble: ThoughtBubble;
 	private angryImage: Phaser.GameObjects.Sprite;
@@ -118,32 +118,6 @@ export class Customer extends Button {
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
 
-		const colors = [
-			Color.Red600,
-			Color.Orange600,
-			Color.Amber600,
-			Color.Yellow600,
-			Color.Lime600,
-			Color.Green600,
-			Color.Emerald600,
-			Color.Teal600,
-			Color.Cyan600,
-			Color.Sky600,
-			Color.Blue600,
-			Color.Indigo600,
-			Color.Violet600,
-			Color.Purple600,
-			Color.Fuchsia600,
-			Color.Pink600,
-			Color.Rose600,
-		];
-		// White wash
-		this.customColor = interpolateColor(
-			Phaser.Math.RND.pick(colors),
-			0xffffff,
-			0.8
-		);
-
 		// this.graphics = this.scene.add.graphics();
 
 		const s = this.spriteSize;
@@ -174,8 +148,12 @@ export class Customer extends Button {
 		this.itemList = [];
 		this.sprList = [];
 
-		this.bindInteractive(this.sprite, true);
-		this.sprite.input!.enabled = false;
+		this.hitarea = this.scene.add
+			.rectangle(0, 0, cellSize, 1.5 * cellSize, 0, 0)
+			.setOrigin(0.5, 0.625);
+		this.add(this.hitarea);
+		this.bindInteractive(this.hitarea, true);
+		this.hitarea.input!.enabled = false;
 	}
 
 	update(time: number, delta: number) {
@@ -385,7 +363,7 @@ export class Customer extends Button {
 				this.sprite.setTexture(this.spriteKeys.sit);
 				this.sprite.flipX = false;
 				this.hasEnteredShop = true;
-				this.sprite.input!.enabled = true;
+				this.hitarea.input!.enabled = true;
 				this.scene.sound.play("letgo1", { volume: 0.2 });
 				this.emit("seated");
 			},
@@ -401,7 +379,8 @@ export class Customer extends Button {
 				duration: 200,
 				ease: "Sine.easeInOut",
 				onUpdate: (tween, target, key, current) => {
-					this.spriteCont.y = this.spriteOffset - 0.25 * this.cellSize * current;
+					this.spriteCont.y =
+						this.spriteOffset - 0.25 * this.cellSize * current;
 				},
 				onYoyo: () => {
 					this.setMask(station.foregroundMask);
@@ -434,7 +413,7 @@ export class Customer extends Button {
 	setEmployee(employee: Employee | null) {
 		this.currentEmployee = employee;
 
-		this.sprite.input!.enabled = !employee;
+		this.hitarea.input!.enabled = !employee;
 
 		if (employee) {
 			this.untoggleTimer();
@@ -505,7 +484,7 @@ export class Customer extends Button {
 	}
 
 	leave() {
-		this.sprite.input!.enabled = false;
+		this.hitarea.input!.enabled = false;
 		this.testTimer.setVisible(false);
 		this.setRequest(null);
 		this.patienceTimer.setVisible(false);
@@ -681,10 +660,10 @@ export class Customer extends Button {
 	}
 
 	pauseClickable() {
-		if (!this.sprite.input!.enabled) {
+		if (!this.hitarea.input!.enabled) {
 			this.garchomp = true;
 		} else {
-			this.sprite.input!.enabled = false;
+			this.hitarea.input!.enabled = false;
 		}
 	}
 
@@ -692,7 +671,7 @@ export class Customer extends Button {
 		if (this.garchomp) {
 			this.garchomp = false;
 		} else {
-			this.sprite.input!.enabled = true;
+			this.hitarea.input!.enabled = true;
 		}
 	}
 
