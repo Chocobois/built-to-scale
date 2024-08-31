@@ -392,8 +392,27 @@ export class Customer extends Button {
 		});
 	}
 
+	applyMask(station: Station) {
+		if (station.foregroundMask) {
+			this.scene.tweens.addCounter({
+				from: 0,
+				to: 1,
+				yoyo: true,
+				duration: 200,
+				ease: "Sine.easeInOut",
+				onUpdate: (tween, target, key, current) => {
+					this.spriteCont.y = this.spriteOffset - 0.3 * this.cellSize * current;
+				},
+				onYoyo: () => {
+					this.setMask(station.foregroundMask);
+				},
+			});
+		}
+	}
+
 	setStation(station: Station | null) {
 		this.currentStation = station;
+		this.clearMask();
 
 		if (station) {
 			this.lastX = station.x;

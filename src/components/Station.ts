@@ -40,6 +40,9 @@ export class Station extends Button {
 	private spriteCont: Phaser.GameObjects.Container;
 	private sprite: Phaser.GameObjects.Image;
 
+	private maskImage: Phaser.GameObjects.Image;
+	public foregroundMask: Phaser.Display.Masks.BitmapMask;
+
 	private progressTimer: Timer;
 	private upgradeIcon: UpgradeIcon;
 
@@ -72,6 +75,19 @@ export class Station extends Button {
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.sprite.setTint(interpolateColor(0xffffff, this.stationTypeColor, 0.2));
 		this.spriteCont.add(this.sprite);
+
+		const frontKey = this.spriteKey + "_front";
+		if (scene.textures.exists(frontKey)) {
+			this.maskImage = this.scene.make
+				.image({
+					key: frontKey,
+					add: false,
+				})
+				.setOrigin(0.5, 1);
+
+			this.foregroundMask = this.maskImage.createBitmapMask();
+			this.foregroundMask.invertAlpha = true;
+		}
 
 		this.upgradeIcon = new UpgradeIcon(
 			scene,
@@ -122,6 +138,11 @@ export class Station extends Button {
 		const amount = this.hasBeenPurchased ? 0.01 : 0;
 		const squish = 1.0 + amount * Math.sin((6 * time) / 1000);
 		this.spriteCont.setScale(1.0, squish - 0.2 * this.holdSmooth);
+
+		if (this.maskImage) {
+			const scale = this.spriteSize / this.maskImage.width;
+			this.maskImage.setScale(scale, scale * (squish - 0.2 * this.holdSmooth));
+		}
 
 		this.upgradeIcon.update(time, delta);
 	}
@@ -265,10 +286,7 @@ export class Station extends Button {
 			this.upgradeIcon.setPurchased(true);
 		} else if (this.upgradeTo) {
 			this.stationId = this.upgradeTo!;
-			this.sprite.setTexture(this.spriteKey);
-			this.spriteCont.x = this.spriteOffsetX;
-			this.spriteCont.y = this.spriteOffsetY;
-			this.sprite.setScale(this.spriteSize / this.sprite.width);
+			this.updateTexture();
 		}
 
 		if (this.upgradeTo === undefined) {
@@ -281,11 +299,24 @@ export class Station extends Button {
 		this.hasBeenPurchased = true;
 		this.setAlpha(1.0);
 		this.stationId = id;
+		this.updateTexture();
+		this.upgradeIcon.setPurchased(true);
+	}
+
+	updateTexture() {
 		this.sprite.setTexture(this.spriteKey);
 		this.spriteCont.x = this.spriteOffsetX;
 		this.spriteCont.y = this.spriteOffsetY;
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
-		this.upgradeIcon.setPurchased(true);
+
+		if (this.maskImage) {
+			this.maskImage.setTexture(this.spriteKey + "_front");
+			this.maskImage.setPosition(
+				this.x + this.spriteCont.x,
+				this.y + this.spriteCont.y
+			);
+			this.maskImage.setScale(this.spriteSize / this.maskImage.width);
+		}
 	}
 
 	applyItem(id: number, sp: string) {

@@ -453,8 +453,6 @@ export class GameScene extends BaseScene {
 				if (employeeId !== undefined) {
 					this.addEmployee(gridX, gridY, employeeId);
 				}
-
-				console.log(blockType, stationId, employeeId);
 			}
 		}
 
@@ -744,8 +742,7 @@ export class GameScene extends BaseScene {
 		// Picking up a customer
 		customer.on("pickup", () => {
 			if (customer.currentStation) {
-				// customer.currentStation.setCustomer(null);
-				// customer.setStation(null);
+				customer.clearMask();
 			}
 		});
 
@@ -769,8 +766,10 @@ export class GameScene extends BaseScene {
 
 				station.setCustomer(customer);
 				customer.setStation(station);
+				customer.applyMask(station);
 			} else if (customer.currentStation) {
 				customer.snapTo(customer.currentStation.x, customer.currentStation.y);
+				customer.applyMask(customer.currentStation);
 			} else {
 				customer.snapTo(customer.lastX, customer.lastY);
 			}
@@ -819,11 +818,13 @@ export class GameScene extends BaseScene {
 	// Get available seat for new customers to go to
 	getAvailableWaitingSeat(id: CustomerId) {
 		// TODO: Use id to ensure seat and stations are available for tier
-		return this.stations.find(
-			(s) =>
-				s.stationType === StationType.Waiting &&
-				s.hasBeenPurchased &&
-				!s.currentCustomer
+		return Phaser.Math.RND.pick(
+			this.stations.filter(
+				(s) =>
+					s.stationType === StationType.Waiting &&
+					s.hasBeenPurchased &&
+					!s.currentCustomer
+			)
 		);
 	}
 
