@@ -1,3 +1,6 @@
+import { EmployeeId } from "./EmployeeData";
+import { StationId } from "./StationData";
+
 export enum LevelId {
 	Level1,
 	Level2,
@@ -18,27 +21,48 @@ export interface Level {
 export enum BlockType {
 	Empty = 0,
 	Wall = 1,
-	WaitingSeat = 2,
-	HornAndNails = 3,
-	ScalePolish = 4,
-	GoldBath = 5,
-	CashRegister = 6,
+	Waiting = 2,
+	Nail = 3,
+	Wax = 4,
+	Bath = 5,
+	Register = 6,
 
-	EmployeeGray = 11,
-	EmployeeBrown = 12,
-	EmployeeYellow = 13,
-	EmployeePurple = 14,
-	EmployeeGreen = 15,
+	Washbear = 11,
+	Tanuki = 12,
+	Bunny = 13,
+	Kobold = 14,
+	Cat = 15,
+	Human = 16,
 }
+
+export const BlockTypeStations: { [key: number]: StationId } = {
+	[BlockType.Waiting]: StationId.Waiting_1,
+	[BlockType.Nail]: StationId.Nail_1,
+	[BlockType.Wax]: StationId.Wax_1,
+	[BlockType.Bath]: StationId.Bath_1,
+	[BlockType.Register]: StationId.Register_1,
+};
+
+export const BlockTypeEmployees: { [key: number]: EmployeeId } = {
+	[BlockType.Washbear]: EmployeeId.Washbear_1,
+	[BlockType.Tanuki]: EmployeeId.Tanuki_1,
+	[BlockType.Bunny]: EmployeeId.Bunny_1,
+	[BlockType.Kobold]: EmployeeId.Kobold_1,
+	[BlockType.Cat]: EmployeeId.Cat_1,
+	[BlockType.Human]: EmployeeId.Human_1,
+};
+
+/* Level maps */
 
 const _ = BlockType.Empty;
 const X = BlockType.Wall;
 
-const A = BlockType.EmployeeGray;
-const B = BlockType.EmployeeBrown;
-const C = BlockType.EmployeeYellow;
-const D = BlockType.EmployeePurple;
-const E = BlockType.EmployeeGreen;
+const A = BlockType.Washbear;
+const B = BlockType.Tanuki;
+const C = BlockType.Bunny;
+const D = BlockType.Kobold;
+const E = BlockType.Cat;
+const F = BlockType.Human;
 
 export const LevelData: Level[] = [
 	{

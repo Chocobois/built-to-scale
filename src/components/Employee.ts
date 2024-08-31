@@ -222,7 +222,7 @@ export class Employee extends Button {
 	}
 
 	get employeeName(): string {
-		return EmployeeData[this.employeeId].name;
+		return EmployeeTypeData[this.employeeType].name;
 	}
 
 	get employeeTier(): number {

@@ -73,7 +73,7 @@ export function GenerateNavMesh(board: Board, level: Level) {
 						}
 					}
 					break;
-				case BlockType.WaitingSeat:
+				case BlockType.Waiting:
 					for (let sy = 0; sy < seatMask.length; sy++) {
 						for (let sx = 0; sx < seatMask.length; sx++) {
 							if (!seatMask[sy][sx]) {
@@ -82,10 +82,10 @@ export function GenerateNavMesh(board: Board, level: Level) {
 						}
 					}
 					break;
-				case BlockType.HornAndNails:
-				case BlockType.ScalePolish:
-				case BlockType.GoldBath:
-				case BlockType.CashRegister:
+				case BlockType.Nail:
+				case BlockType.Wax:
+				case BlockType.Bath:
+				case BlockType.Register:
 					for (let sy = 0; sy < stationMask.length; sy++) {
 						for (let sx = 0; sx < stationMask.length; sx++) {
 							if (!stationMask[sy][sx]) {

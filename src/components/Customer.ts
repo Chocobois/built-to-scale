@@ -445,7 +445,7 @@ export class Customer extends Button {
 			this.setRequest(this.itinerary.shift() || null);
 		} else if (!this.hasCompleted) {
 			this.hasCompleted = true;
-			this.setRequest(StationType.CashRegister);
+			this.setRequest(StationType.Register);
 		} else {
 			this.actionsComplete = true;
 			this.parseMoney();

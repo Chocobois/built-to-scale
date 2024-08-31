@@ -1,37 +1,39 @@
 /* Station category data */
 
 export enum StationType {
-	WaitingSeat,
-	HornAndNails,
-	ScalePolish,
-	GoldBath,
-	CashRegister,
+	Waiting,
+	Nail,
+	Wax,
+	Bath,
+	Register,
 }
 
+export type StationSymbol = "seat" | "nail" | "wax" | "bath" | "money";
+
 export interface StationTypeInterface {
-	symbolKey: string; // Image to be shown in the thoughtbubble
+	symbolKey: StationSymbol; // Image to be shown in the thoughtbubble
 	color: number; // Debug color
 }
 
 export const StationTypeData: { [key in StationType]: StationTypeInterface } = {
-	[StationType.WaitingSeat]: {
+	[StationType.Waiting]: {
 		symbolKey: "seat",
 		color: 0x227777,
 	},
-	[StationType.HornAndNails]: {
+	[StationType.Nail]: {
 		symbolKey: "nail",
 		color: 0xff0000,
 	},
-	[StationType.ScalePolish]: {
+	[StationType.Wax]: {
 		symbolKey: "wax",
 		color: 0xffff00,
 	},
-	[StationType.GoldBath]: {
-		symbolKey: "gold",
+	[StationType.Bath]: {
+		symbolKey: "bath",
 		color: 0x0000ff,
 	},
-	[StationType.CashRegister]: {
-		symbolKey: "cash",
+	[StationType.Register]: {
+		symbolKey: "money",
 		color: 0x00ff00,
 	},
 };
@@ -39,21 +41,21 @@ export const StationTypeData: { [key in StationType]: StationTypeInterface } = {
 /* Specific station instance data */
 
 export enum StationId {
-	WaitingSeatTier1,
-	WaitingSeatTier2,
-	WaitingSeatTier3,
-	HornAndNailsTier1,
-	HornAndNailsTier2,
-	HornAndNailsTier3,
-	ScalePolishTier1,
-	ScalePolishTier2,
-	ScalePolishTier3,
-	GoldBathTier1,
-	GoldBathTier2,
-	GoldBathTier3,
-	CashRegisterTier1,
-	CashRegisterTier2,
-	CashRegisterTier3,
+	Waiting_1,
+	Waiting_2,
+	Waiting_3,
+	Nail_1,
+	Nail_2,
+	Nail_3,
+	Wax_1,
+	Wax_2,
+	Wax_3,
+	Bath_1,
+	Bath_2,
+	Bath_3,
+	Register_1,
+	Register_2,
+	Register_3,
 }
 
 export interface StationInterface {
@@ -71,17 +73,17 @@ export interface StationInterface {
 }
 
 export const StationData: { [key in StationId]: StationInterface } = {
-	[StationId.WaitingSeatTier1]: {
-		type: StationType.WaitingSeat,
+	[StationId.Waiting_1]: {
+		type: StationType.Waiting,
 		name: "Waiting seat",
 		tier: 1,
 		spriteKey: "waitchair_1",
 		spriteScale: 1.0,
 		cost: 100,
-		upgradeTo: StationId.WaitingSeatTier2,
+		upgradeTo: StationId.Waiting_2,
 	},
-	[StationId.WaitingSeatTier2]: {
-		type: StationType.WaitingSeat,
+	[StationId.Waiting_2]: {
+		type: StationType.Waiting,
 		name: "Waiting armchair",
 		tier: 2,
 		spriteKey: "waitchair_2",
@@ -89,10 +91,10 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		spriteOffsetX: -0.03,
 		spriteOffsetY: -0.07,
 		cost: 250,
-		upgradeTo: StationId.WaitingSeatTier3,
+		upgradeTo: StationId.Waiting_3,
 	},
-	[StationId.WaitingSeatTier3]: {
-		type: StationType.WaitingSeat,
+	[StationId.Waiting_3]: {
+		type: StationType.Waiting,
 		name: "Waiting throne",
 		tier: 3,
 		spriteKey: "waitchair_3",
@@ -101,8 +103,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		cost: 500,
 	},
 
-	[StationId.HornAndNailsTier1]: {
-		type: StationType.HornAndNails,
+	[StationId.Nail_1]: {
+		type: StationType.Nail,
 		name: "Talonicure pillow",
 		tier: 1,
 		spriteKey: "nail_1",
@@ -111,10 +113,10 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		taskDuration: 3000,
 		admissionFee: 20,
 		cost: 150,
-		upgradeTo: StationId.HornAndNailsTier2,
+		upgradeTo: StationId.Nail_2,
 	},
-	[StationId.HornAndNailsTier2]: {
-		type: StationType.HornAndNails,
+	[StationId.Nail_2]: {
+		type: StationType.Nail,
 		name: "Talonicure beanbag",
 		tier: 2,
 		spriteKey: "nail_2",
@@ -124,10 +126,10 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		taskDuration: 2500,
 		admissionFee: 40,
 		cost: 250,
-		upgradeTo: StationId.HornAndNailsTier3,
+		upgradeTo: StationId.Nail_3,
 	},
-	[StationId.HornAndNailsTier3]: {
-		type: StationType.HornAndNails,
+	[StationId.Nail_3]: {
+		type: StationType.Nail,
 		name: "Talonicure bed",
 		tier: 3,
 		spriteKey: "nail_3",
@@ -138,8 +140,8 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		cost: 400,
 	},
 
-	[StationId.ScalePolishTier1]: {
-		type: StationType.ScalePolish,
+	[StationId.Wax_1]: {
+		type: StationType.Wax,
 		name: "Scalicure chair",
 		tier: 1,
 		spriteKey: "wax_1",
@@ -147,10 +149,10 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		taskDuration: 2000,
 		admissionFee: 10,
 		cost: 100,
-		upgradeTo: StationId.ScalePolishTier2,
+		upgradeTo: StationId.Wax_2,
 	},
-	[StationId.ScalePolishTier2]: {
-		type: StationType.ScalePolish,
+	[StationId.Wax_2]: {
+		type: StationType.Wax,
 		name: "Scalicure station",
 		tier: 2,
 		spriteKey: "wax_2",
@@ -160,10 +162,10 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		taskDuration: 1500,
 		admissionFee: 20,
 		cost: 250,
-		upgradeTo: StationId.ScalePolishTier3,
+		upgradeTo: StationId.Wax_3,
 	},
-	[StationId.ScalePolishTier3]: {
-		type: StationType.ScalePolish,
+	[StationId.Wax_3]: {
+		type: StationType.Wax,
 		name: "Scalicure divan",
 		tier: 3,
 		spriteKey: "wax_3",
@@ -175,69 +177,71 @@ export const StationData: { [key in StationId]: StationInterface } = {
 		cost: 500,
 	},
 
-	[StationId.GoldBathTier1]: {
-		type: StationType.GoldBath,
+	[StationId.Bath_1]: {
+		type: StationType.Bath,
 		name: "Draconic bath",
 		tier: 1,
 		spriteKey: "bath_1",
 		spriteScale: 1.0,
+		spriteOffsetY: -0.15,
 		taskDuration: 4000,
 		admissionFee: 20,
 		cost: 200,
-		upgradeTo: StationId.GoldBathTier2,
+		upgradeTo: StationId.Bath_2,
 	},
-	[StationId.GoldBathTier2]: {
-		type: StationType.GoldBath,
+	[StationId.Bath_2]: {
+		type: StationType.Bath,
 		name: "Draconic shower",
 		tier: 2,
 		spriteKey: "bath_2",
 		spriteScale: 1.25,
+		spriteOffsetY: -0.08,
 		taskDuration: 3000,
 		admissionFee: 30,
 		cost: 350,
-		upgradeTo: StationId.GoldBathTier3,
+		upgradeTo: StationId.Bath_3,
 	},
-	[StationId.GoldBathTier3]: {
-		type: StationType.GoldBath,
+	[StationId.Bath_3]: {
+		type: StationType.Bath,
 		name: "Dracuzzi",
 		tier: 3,
 		spriteKey: "bath_3",
 		spriteScale: 1.4,
-		spriteOffsetY: -0.05,
+		spriteOffsetY: -0.13,
 		taskDuration: 2000,
 		admissionFee: 40,
 		cost: 600,
 	},
 
-	[StationId.CashRegisterTier1]: {
-		type: StationType.CashRegister,
+	[StationId.Register_1]: {
+		type: StationType.Register,
 		name: "Cash register",
 		tier: 1,
 		spriteKey: "checkout",
 		spriteScale: 1.4,
-		spriteOffsetY: 0.1,
+		spriteOffsetY: 0.05,
 		taskDuration: 1500,
 		cost: 0,
-		upgradeTo: StationId.CashRegisterTier2,
+		upgradeTo: StationId.Register_2,
 	},
-	[StationId.CashRegisterTier2]: {
-		type: StationType.CashRegister,
+	[StationId.Register_2]: {
+		type: StationType.Register,
 		name: "Cash register",
 		tier: 2,
 		spriteKey: "checkout",
 		spriteScale: 1.4,
-		spriteOffsetY: 0.1,
+		spriteOffsetY: 0.05,
 		taskDuration: 1000,
 		cost: 400,
-		upgradeTo: StationId.CashRegisterTier3,
+		upgradeTo: StationId.Register_3,
 	},
-	[StationId.CashRegisterTier3]: {
-		type: StationType.CashRegister,
+	[StationId.Register_3]: {
+		type: StationType.Register,
 		name: "Cash register",
 		tier: 3,
 		spriteKey: "checkout",
 		spriteScale: 1.4,
-		spriteOffsetY: 0.1,
+		spriteOffsetY: 0.05,
 		taskDuration: 500,
 		cost: 800,
 	},

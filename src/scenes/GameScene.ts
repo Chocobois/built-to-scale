@@ -1,5 +1,5 @@
 import { BaseScene } from "@/scenes/BaseScene";
-import { Board, GridPoint } from "@/components/Board";
+import { Board } from "@/components/Board";
 import { Employee } from "@/components/Employee";
 import { Customer } from "@/components/Customer";
 import { CustomerId } from "@/components/CustomerData";
@@ -7,26 +7,26 @@ import { Station } from "@/components/Station";
 import { UI } from "@/components/UI";
 import { StationData, StationId, StationType } from "@/components/StationData";
 import { Inventory } from "@/components/Inventory";
-import { SimpleButton } from "@/components/elements/SimpleButton";
 import { ToggleButton } from "@/components/elements/ToggleButton";
 import { ItemButton } from "@/components/ItemButton";
 import { ItemHandler } from "@/components/ItemHandler";
 import { UpgradeOverlay } from "@/components/UpgradeOverlay";
 import { SummaryOverlay } from "@/components/SummaryOverlay";
 import { EmployeeData, EmployeeId } from "@/components/EmployeeData";
-import { BlockType, LevelData, LevelId } from "@/components/Levels";
+import {
+	BlockType,
+	BlockTypeEmployees,
+	BlockTypeStations,
+	LevelData,
+	LevelId,
+} from "@/components/Levels";
 import { Effect } from "@/components/Effect";
-import { TextEffect } from "@/components/TextEffect";
-import { BasicEffect } from "@/components/BasicEffect";
 import { Intermission, Mode } from "@/components/Intermission";
 import { SnapType } from "@/components/Item";
 import { Music } from "@/utils/Music";
 
 import { NavMesh } from "navmesh";
-import {
-	centerOnSubdividedCoord,
-	GenerateNavMesh,
-} from "@/utils/NavMeshHelper";
+import { GenerateNavMesh } from "@/utils/NavMeshHelper";
 import { Button } from "@/components/elements/Button";
 import { ShopInventory } from "@/components/ShopInventory";
 
@@ -154,12 +154,12 @@ export class GameScene extends BaseScene {
 		};
 		this.savedPurchases = {
 			stations: [
-				StationId.WaitingSeatTier1,
-				StationId.HornAndNailsTier1,
-				StationId.ScalePolishTier1,
-				StationId.CashRegisterTier1,
+				StationId.Waiting_1,
+				StationId.Nail_1,
+				StationId.Wax_1,
+				StationId.Register_1,
 			],
-			employees: [EmployeeId.RaccoonGrayTier1],
+			employees: [EmployeeId.Washbear_1],
 		};
 
 		// Background
@@ -441,44 +441,19 @@ export class GameScene extends BaseScene {
 			for (let x = 0; x < level.width; x++) {
 				const gridX = x;
 				const gridY = y;
-				const block = level.grid[y][x];
+				const blockType: BlockType = level.grid[y][x];
 
-				switch (block) {
-					case BlockType.Empty:
-						break;
-					case BlockType.Wall:
-						break;
-					case BlockType.WaitingSeat:
-						this.addStation(gridX, gridY, StationId.WaitingSeatTier1);
-						break;
-					case BlockType.HornAndNails:
-						this.addStation(gridX, gridY, StationId.HornAndNailsTier1);
-						break;
-					case BlockType.ScalePolish:
-						this.addStation(gridX, gridY, StationId.ScalePolishTier1);
-						break;
-					case BlockType.GoldBath:
-						this.addStation(gridX, gridY, StationId.GoldBathTier1);
-						break;
-					case BlockType.CashRegister:
-						this.addStation(gridX, gridY, StationId.CashRegisterTier1);
-						break;
-					case BlockType.EmployeeGray:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGrayTier1);
-						break;
-					case BlockType.EmployeeBrown:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonBrownTier1);
-						break;
-					case BlockType.EmployeeYellow:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonYellowTier1);
-						break;
-					case BlockType.EmployeePurple:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonPurpleTier1);
-						break;
-					case BlockType.EmployeeGreen:
-						this.addEmployee(gridX, gridY, EmployeeId.RaccoonGreenTier1);
-						break;
+				const stationId = BlockTypeStations[blockType];
+				if (stationId !== undefined) {
+					this.addStation(gridX, gridY, stationId);
 				}
+
+				const employeeId = BlockTypeEmployees[blockType];
+				if (employeeId !== undefined) {
+					this.addEmployee(gridX, gridY, employeeId);
+				}
+
+				console.log(blockType, stationId, employeeId);
 			}
 		}
 
@@ -845,7 +820,7 @@ export class GameScene extends BaseScene {
 		// TODO: Use id to ensure seat and stations are available for tier
 		return this.stations.find(
 			(s) =>
-				s.stationType === StationType.WaitingSeat &&
+				s.stationType === StationType.Waiting &&
 				s.hasBeenPurchased &&
 				!s.currentCustomer
 		);
@@ -1022,20 +997,20 @@ export class GameScene extends BaseScene {
 				(s) => s.stationType === type && s.hasBeenPurchased
 			);
 		};
-		const hornNailsAvailable = check(StationType.HornAndNails);
-		const scalePolishAvailable = check(StationType.ScalePolish);
-		const goldBathAvailable = check(StationType.GoldBath);
+		const nailAvailable = check(StationType.Nail);
+		const waxAvailable = check(StationType.Wax);
+		const bathAvailable = check(StationType.Bath);
 
 		function getActivities() {
 			let activities = [];
-			if (hornNailsAvailable && Math.random() < 0.6) {
-				activities.push(StationType.HornAndNails);
+			if (nailAvailable && Math.random() < 0.65) {
+				activities.push(StationType.Nail);
 			}
-			if (scalePolishAvailable && Math.random() < 0.6) {
-				activities.push(StationType.ScalePolish);
+			if (waxAvailable && Math.random() < 0.65) {
+				activities.push(StationType.Wax);
 			}
-			if (goldBathAvailable && Math.random() < 0.6) {
-				activities.push(StationType.GoldBath);
+			if (bathAvailable && Math.random() < 0.65) {
+				activities.push(StationType.Bath);
 			}
 			return activities;
 		}
@@ -1244,7 +1219,7 @@ export class GameScene extends BaseScene {
 				station.y
 			);
 			if (
-				!(station.stationType == StationType.CashRegister) &&
+				!(station.stationType == StationType.Register) &&
 				!station.currentCustomer &&
 				distance < closestDistance &&
 				distance < maxDistance &&
@@ -1403,11 +1378,11 @@ export class GameScene extends BaseScene {
 	refreshStationIDArray() {
 		this.tArray = [];
 		this.stations.forEach((st) => {
-			if (st.stationType == StationType.HornAndNails) {
+			if (st.stationType == StationType.Nail) {
 				this.tArray.push(0);
-			} else if (st.stationType == StationType.ScalePolish) {
+			} else if (st.stationType == StationType.Wax) {
 				this.tArray.push(1);
-			} else if (st.stationType == StationType.GoldBath) {
+			} else if (st.stationType == StationType.Bath) {
 				this.tArray.push(2);
 			}
 		});

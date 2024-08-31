@@ -145,7 +145,7 @@ export class Station extends Button {
 			this.playJingle();
 		}
 		this.clearItems();
-		if (this.stationType == StationType.CashRegister) {
+		if (this.stationType == StationType.Register) {
 			this.taskHaste = 1;
 		}
 		if (this.currentCustomer) {
@@ -339,15 +339,15 @@ export class Station extends Button {
 
 	playJingle() {
 		switch (this.stationType) {
-			case StationType.ScalePolish: {
+			case StationType.Wax: {
 				this.scene.sound.play("polish", { volume: 0.5 });
 				break;
 			}
-			case StationType.GoldBath: {
+			case StationType.Bath: {
 				this.scene.sound.play("goldbath", { volume: 0.5 });
 				break;
 			}
-			case StationType.HornAndNails: {
+			case StationType.Nail: {
 				this.scene.sound.play("snip", { volume: 0.5 });
 				break;
 			}

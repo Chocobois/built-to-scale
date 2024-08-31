@@ -73,13 +73,13 @@ export class ItemHandler {
 
                 //console.log(ct.itinerary);
                 if(this.scene.tArray[rs] == 0) {
-                    ct.itinerary.push(StationType.HornAndNails);
+                    ct.itinerary.push(StationType.Nail);
                     this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-30+(Math.random()*120), "+⬤", "red", 60, false, "red", 1200, 100, 0.7, 0));
                 } else if (this.scene.tArray[rs] == 1) {
-                    ct.itinerary.push(StationType.ScalePolish);
+                    ct.itinerary.push(StationType.Wax);
                     this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-30+(Math.random()*120), "+⬤", "yellow", 60, false, "red", 1200, 100, 0.7, 0));
                 } else if (this.scene.tArray[rs] == 2) { 
-                    ct.itinerary.push(StationType.GoldBath);
+                    ct.itinerary.push(StationType.Bath);
                     this.scene.addEffect(new TextEffect(this.scene, ct.x-60+(Math.random()*120), ct.y-40, "+⬤", "blue", 60, false, "red", 1200, 100, 0.7, 0));
                 }
                 //console.log(ct.itinerary);
