@@ -98,13 +98,12 @@ export class Station extends Button {
 
 		this.progressTimer = new Timer(
 			scene,
-			-0.4 * cellSize,
-			0.4 * cellSize,
+			x - 0.4 * cellSize,
+			y + 0.4 * cellSize,
 			0.8 * cellSize,
 			0xed51a4
 		);
 		this.progressTimer.setVisible(false);
-		this.add(this.progressTimer);
 
 		// Make station clickable during shopping
 		this.bindInteractive(this.sprite);
@@ -130,6 +129,7 @@ export class Station extends Button {
 	}
 
 	destroy(): void {
+		this.progressTimer.destroy();
 		this.upgradeIcon.destroy();
 		super.destroy();
 	}
@@ -148,6 +148,7 @@ export class Station extends Button {
 	}
 
 	setDepth(value: number): this {
+		this.progressTimer.setDepth(value + 50);
 		this.upgradeIcon.setDepth(value + 50);
 		return super.setDepth(value);
 	}
