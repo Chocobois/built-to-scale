@@ -5,7 +5,7 @@ import { Employee } from "./Employee";
 import { Timer } from "./Timer";
 import { interpolateColor } from "@/utils/functions";
 import { ThoughtBubble } from "./ThoughtBubble";
-import { StationType } from "./StationData";
+import { StationType, StationTypeData } from "./StationData";
 import { CustomerData, CustomerId } from "./CustomerData";
 import { Effect } from "./Effect";
 import { TextEffect } from "./TextEffect";
@@ -113,7 +113,7 @@ export class Customer extends Button {
 		this.spriteCont = this.scene.add.container(0, this.spriteOffset);
 		this.add(this.spriteCont);
 
-		this.sprite = this.scene.add.sprite(0, 0, (this.spriteKeys.sit));
+		this.sprite = this.scene.add.sprite(0, 0, this.spriteKeys.sit);
 		this.sprite.setOrigin(0.5, 1.0);
 		this.sprite.setScale(this.spriteSize / this.sprite.width);
 		this.spriteCont.add(this.sprite);
@@ -157,8 +157,7 @@ export class Customer extends Button {
 		this.thoughtBubble = new ThoughtBubble(
 			scene,
 			0.4 * cellSize,
-			-0.6 * cellSize,
-			cellSize
+			-0.6 * cellSize
 		);
 		this.add(this.thoughtBubble);
 
@@ -189,7 +188,7 @@ export class Customer extends Button {
 		this.setScale(1.0, squish - 0.2 * this.holdSmooth);
 
 		this.sprite.setTint(
-			interpolateColor(0xff0000, 0xFFFFFF, 2 * this.patience)
+			interpolateColor(0xff0000, 0xffffff, 2 * this.patience)
 		);
 
 		if (this.isWaiting) {
@@ -283,7 +282,6 @@ export class Customer extends Button {
 		super.onOver(pointer, localX, localY, event);
 		this.toggleTimer();
 	}
-
 
 	onOut(pointer: Phaser.Input.Pointer, event: Phaser.Types.Input.EventData) {
 		super.onOut(pointer, event);
@@ -428,15 +426,14 @@ export class Customer extends Button {
 
 	setAction(temp: boolean) {
 		this.doingCuteThing = temp;
-		//this.thoughtBubble.hide();
 	}
 
 	setRequest(type: StationType | null) {
 		if (type !== null) {
 			this.requestedStation = type;
-			this.thoughtBubble.setRequest(type);
+			this.thoughtBubble.setRequest(StationTypeData[type].symbolKey);
 		} else {
-			this.thoughtBubble.setRequest(null);
+			this.thoughtBubble.setVisible(false);
 		}
 	}
 
@@ -680,13 +677,9 @@ export class Customer extends Button {
 		}
 	}
 
-	getColorTags(){
+	getColorTags() {}
 
-	}
-
-	getColorAntiTags(){
-
-	}
+	getColorAntiTags() {}
 
 	/* Getters */
 
