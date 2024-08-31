@@ -746,7 +746,6 @@ export class GameScene extends BaseScene {
 				// Let go of previous station
 				if (customer.currentStation) {
 					customer.currentStation.setCustomer(null);
-					customer.setStation(null);
 				}
 
 				station.setCustomer(customer);

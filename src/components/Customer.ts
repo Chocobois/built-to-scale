@@ -172,9 +172,9 @@ export class Customer extends Button {
 		if (this.isWaiting) {
 			this.patienceTimer.setVisible(true);
 			if (!this.dragged) {
-				// 20 seconds
+				// 30 seconds
 				if (!this.lockPatience) {
-					this.patience -= (1 / 40) * (delta / 1000);
+					this.patience -= (1 / 30) * (delta / 1000);
 				}
 			}
 
@@ -390,6 +390,7 @@ export class Customer extends Button {
 	}
 
 	setStation(station: Station | null) {
+		const prevStation = this.currentStation;
 		this.currentStation = station;
 		this.clearMask();
 
@@ -397,11 +398,12 @@ export class Customer extends Button {
 			this.lastX = station.x;
 			this.lastY = station.y;
 
+			// If moved to the correct station, restore some patience
 			if (
-				this.patience < 0.25 &&
-				this.requestedStation !== station.stationType
+				this.patience < 0.3 &&
+				station.stationType != prevStation?.stationType
 			) {
-				this.patience = 0.25;
+				this.patience = 0.3;
 			}
 
 			if (this.requestedStation === station.stationType) {
