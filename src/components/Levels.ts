@@ -5,6 +5,7 @@ export enum LevelId {
 	Level1,
 	Level2,
 	Level3,
+	Level4,
 }
 
 export interface Level {
@@ -116,6 +117,27 @@ export const LevelData: Level[] = [
 			[_, _, _, 5, 5, 5, _, _, _, X],
 			[X, _, _, _, _, _, _, 6, _, _],
 			[X, X, X, X, X, X, X, X, X, X],
+		],
+		// upgradeCost: 5000,
+	},
+	{
+		id: LevelId.Level4,
+		background: "10x8_bg",
+		foreground: "10x8_fg",
+		width: 10 + 2,
+		height: 8 + 2,
+		cellSize: 109,
+		grid: [
+			[X, X, X, X, X, X, X, X, X, X, X, X],
+			[X, 2, _, A, B, C, D, E, F, _, _, X],
+			[X, 2, _, 3, 3, _, 3, _, _, 4, 4, X],
+			[X, 2, _, _, _, _, _, _, _, _, _, X],
+			[X, 2, _, 3, _, 3, 3, _, 4, 4, _, X],
+			[X, 2, _, _, _, _, _, _, _, _, _, X],
+			[X, 2, _, 5, _, 5, _, 5, _, 4, 4, X],
+			[_, _, _, _, 5, _, 5, _, _, _, _, X],
+			[X, 2, _, _, _, _, _, _, _, 6, _, _],
+			[X, X, X, X, X, X, X, X, X, X, X, X],
 		],
 	},
 ];
