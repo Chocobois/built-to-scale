@@ -107,7 +107,6 @@ export class GameScene extends BaseScene {
 	private shopOwnerState: number = -1;
 	private proceedButton: Button;
 	private hitRectangle: Phaser.GameObjects.Rectangle;
-	private cycleCount: number = 0;
 
 	public effects: Effect[];
 	private navmesh: NavMesh;
@@ -494,7 +493,7 @@ export class GameScene extends BaseScene {
 
 	// Start a new day
 	startDay() {
-		if (this.cycleCount > 0) {
+		if (this.day > 1) {
 			if (!this.viewedShopTutorial) {
 				this.beginShopTutorial(0);
 				return;
@@ -531,6 +530,7 @@ export class GameScene extends BaseScene {
 			timeOfDay: { from: 0, to: 100 },
 
 			onStart: () => {
+				this.timeOfDay = 0;
 				this.attemptSpawnCustomer();
 				this.sound.play("endday", { volume: 0.2 });
 			},
@@ -556,7 +556,6 @@ export class GameScene extends BaseScene {
 
 		//this.stations.forEach((s) => s.returnItems());
 		this.resumeInvButton();
-		this.cycleCount++;
 		this.restockShop();
 		this.setState(GameState.Shopping);
 	}
@@ -1015,7 +1014,8 @@ export class GameScene extends BaseScene {
 		}
 
 		let activities: StationType[] = [];
-		while (activities.length < 1) {
+		let limit = 100;
+		while (activities.length < 1 && limit-- > 0) {
 			activities = getActivities();
 		}
 

@@ -401,7 +401,7 @@ export class Customer extends Button {
 				duration: 200,
 				ease: "Sine.easeInOut",
 				onUpdate: (tween, target, key, current) => {
-					this.spriteCont.y = this.spriteOffset - 0.3 * this.cellSize * current;
+					this.spriteCont.y = this.spriteOffset - 0.25 * this.cellSize * current;
 				},
 				onYoyo: () => {
 					this.setMask(station.foregroundMask);

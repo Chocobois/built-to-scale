@@ -286,12 +286,13 @@ export class Station extends Button {
 			this.upgradeIcon.setPurchased(true);
 		} else if (this.upgradeTo) {
 			this.stationId = this.upgradeTo!;
-			this.updateTexture();
 		}
 
 		if (this.upgradeTo === undefined) {
 			this.upgradeIcon.setVisible(false);
 		}
+
+		this.updateTexture();
 	}
 
 	// Only used when loading levels
